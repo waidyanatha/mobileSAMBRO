@@ -1,0 +1,54 @@
+
+<md-toolbar style="position: fixed;" flex>
+  <div class="md-toolbar-tools" layout="row" layout-align="space-between center">
+    <md-button class="md-icon-button md-primary" aria-label="Menu" ng-click="main.toggle()">
+      <ng-md-icon icon="menu"></ng-md-icon>
+    </md-button>
+    <p>{{ main.title }}</p>
+    <div ></div>
+  </div>
+</md-toolbar>
+
+<md-sidenav class="md-sidenav-left" md-component-id="left">
+  <md-toolbar>
+    <h1 class="md-toolbar-tools">{{main.username}}</h1>
+  </md-toolbar>
+  <md-list ng-cloak>
+    <md-list-item >
+      <ng-md-icon icon="verified_user"></ng-md-icon>
+      <p>Profile</p>
+    </md-list-item>
+    <md-list-item ng-click="main.logout()">
+      <ng-md-icon icon="verified_user"></ng-md-icon>
+      <p>Logout</p>
+    </md-list-item>
+  </md-list>
+</md-sidenav>
+
+<md-content class="content" layout="column" flex>
+  <div style="height:55px;"></div>
+  <div layout="row">
+    <div flex="5"></div>
+      <md-whiteframe class="md-whiteframe-3dp" layout="column" flex="90">
+
+        <md-list ng-cloak>
+          <md-list-item class="md-3-line" ng-repeat="dataAlert in main.dataAlerts" >
+
+            <ng-md-icon icon="image" class="md-avatar"></ng-md-icon>
+            <div class="md-list-item-text" layout="column">
+              <h3>{{ dataAlert['cap_info.headline'] }}</h3>
+              <h4>{{ dataAlert['cap_area.name'] }}</h4>
+              <p>{{ dataAlert['event_event_type.name']}} - {{ dataAlert.scope }}</p>
+            </div>
+
+          </md-list-item>
+        </md-list>
+
+        <md-divider></md-divider>
+        
+      </md-whiteframe>
+    <div flex="5"></div>
+  </div>
+  <div style="height:10px;"></div>
+</md-content>
+
