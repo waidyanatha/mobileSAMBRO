@@ -12,7 +12,6 @@ angular.module("ngapp")
     this.hideErrorMessage = true;
     this.shared = shared;
 
-    $http.defaults.headers.common.Authorization = 'Basic ';
     $localStorage.$reset();
     $localStorage['username'] = "";
     $localStorage['password'] = "";
@@ -32,6 +31,7 @@ angular.module("ngapp")
       var promiseLoadData = shared.loadDataLogin('http://sambro.geoinfo.ait.ac.th/eden/default/index/user_info',ctrl.loginForm.email,ctrl.loginForm.password);
       promiseLoadData.then(function(response) {
         console.log('success');
+        console.log(response);
         $localStorage['username'] = ctrl.loginForm.email;
         $localStorage['password'] = ctrl.loginForm.password;
 

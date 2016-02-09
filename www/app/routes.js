@@ -1,6 +1,9 @@
 "use strict";
 
-angular.module("ngapp").config(["$stateProvider", "$urlRouterProvider", function($stateProvider, $urlRouterProvider,$routeProvider){
+angular.module("ngapp")
+.config(["$stateProvider", "$urlRouterProvider", function($stateProvider, $urlRouterProvider,$routeProvider){
+
+    
 
     $urlRouterProvider.otherwise("/login");
 

@@ -3,6 +3,8 @@
 angular.module("ngapp")
 .controller("MainController", function(shared, $state, $scope, $mdSidenav, $mdComponentRegistry, $http, $cordovaDevice, $cordovaStatusbar,$cordovaGeolocation,$cordovaDialogs,$location,$localStorage){
 
+    shared.checkUserCached();
+
     var ctrl = this;
 
     this.auth = shared.info.auth;

@@ -24,8 +24,7 @@ angular.module("ngapp").service("shared", function($http,$localStorage,$sessionS
     };
 
     this.loadDataAlert = function(url) {
-        var username = 'angga.bayu.marthafifsa@gmail.com';
-        var password = 'anggabayu';
+  
       return $http({
               method: 'GET',
               url: url,
@@ -37,9 +36,18 @@ angular.module("ngapp").service("shared", function($http,$localStorage,$sessionS
     };
 
     this.loadDataLogin = function(url,username,password) {
+      $http.defaults.headers.common['Authorization'] = 'Basic ' + ctrl.setHTTPHeaderAuth(username,password); 
       return $http({
               method: 'GET',
               url: url,
+              beforeSend: function(xhr) {
+                console.log('123');
+                console.log(xhr);
+                console.log(xhr.headers);
+                console.log(ctrl.setHTTPHeaderAuth(username,password));
+
+                //return ctrl.setHTTPHeaderAuth(username,password);
+              },
               headers: ctrl.setHTTPHeaderAuth(username,password)
           }).then(
           function (response) {
@@ -48,7 +56,17 @@ angular.module("ngapp").service("shared", function($http,$localStorage,$sessionS
     };
 
     this.logout = function(){
+      $localStorage.$reset();
+      $localStorage['username'] = "";
+      $localStorage['password'] = "";
+      $http.defaults.headers.common.Authorization = 'Basic ';
     	$location.path("/login");
     };
+
+    this.checkUserCached = function(){
+      if($localStorage['username'] == ""){
+        $location.path("/login");
+      }
+    }
 
 });
