@@ -10,11 +10,11 @@
     <description>
         CAP on Mobile.
     </description>
-    <author email="angga.bayu.marthafifsa@gmail.com" href="#">
+    <author email="angga.bayu.marthafifsa@gmail.com">
         Angga Bayu
     </author>
     <content src="index.html" />
-    <icon src="cap.jpg" />
+    <icon src="www/cap.png" />
 
     <preference name="permissions" value="none" />
     <preference name="orientation" value="default" />
@@ -41,10 +41,11 @@
     <feature name="http://api.phonegap.com/1.0/network"/>
     <feature name="http://api.phonegap.com/1.0/notification"/>
 
-    <plugin name="cordova-plugin-whitelist" spec="1.2.1" />
-    <plugin name="org.apache.cordova.dialogs" spec="0.3.0" source="pgb" />
-    <plugin name="cordova-plugin-geolocation" spec="1.0.1" source="pgb" />
-    <plugin name="org.apache.cordova.statusbar" spec="0.1.4" source="pgb" />
+    <plugin name="cordova-plugin-whitelist" />
+    <plugin name="org.apache.cordova.dialogs" source="pgb" />
+    <plugin name="cordova-plugin-geolocation" source="pgb" />
+    <plugin name="org.apache.cordova.statusbar" source="pgb" />
+    <plugin name="io.litehelpers.cordova.sqlite" spec="0.7.10" source="pgb" />
 
     <access origin="*" />
     <allow-intent href="http://*/*" />
