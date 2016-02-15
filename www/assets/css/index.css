@@ -8,6 +8,7 @@ body {
     -webkit-text-size-adjust: none;             /* prevent webkit from resizing text to fit */
     -webkit-user-select: none;                  /* prevent copy paste, to allow, change 'none' to 'text' */
     background-attachment:fixed;
+    background-color: #F44336;
     font-family:"RobotoDraft", Helvetica, Arial, sans-serif;
     height:100%;
     margin:0px;

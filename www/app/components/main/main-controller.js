@@ -1,7 +1,7 @@
 "use strict";
 
 angular.module("ngapp")
-.controller("MainController", function(shared, $state, $scope, $mdSidenav, $mdComponentRegistry, $http, $cordovaDevice, $cordovaStatusbar,$cordovaGeolocation,$cordovaDialogs,$location,$localStorage){
+.controller("MainController", function(shared, $state, $scope, $mdSidenav, $mdComponentRegistry, $http, $cordovaDevice, $cordovaStatusbar,$cordovaGeolocation,$cordovaDialogs,$location,$localStorage,$cordovaSQLite){
 
     shared.checkUserCached();
 
@@ -11,13 +11,16 @@ angular.module("ngapp")
     this.username = $localStorage['username'];
 
     this.toggle = angular.noop;
+    this.addAlert = function(){
+      $location.path("/alert-form");
+    }
 
     this.title = shared.info.title;
     this.logout = shared.logout;
 
     document.addEventListener("deviceready", function () {
         //alert('test0_');
-        $cordovaStatusbar.overlaysWebView(false); // Always Show Status Bar
+        $cordovaStatusbar.overlaysWebView(false); // Always Show Status Bar = false
         $cordovaStatusbar.styleHex('#E53935'); // Status Bar With Red Color, Using Angular-Material Style
         //window.plugins.orientationLock.lock("portrait");
 
@@ -36,6 +39,30 @@ angular.module("ngapp")
         }, function(err) {
           // error
         });
+
+
+
+        //$cordovaDialogs.alert('1', '1', 'OK');
+        //sqlite
+        shared.db = $cordovaSQLite.openDB({name: "offline_data.db", bgType: 1 });
+        var db = shared.db;
+        $cordovaSQLite.execute(db,"CREATE TABLE IF NOT EXISTS event_type (id integer primary key, name text)");
+
+        //$cordovaDialogs.alert('1_', '1_', 'OK');
+
+        $scope.execute = function() {
+          var query = "INSERT INTO event_type (id, name) VALUES (?,?)";
+          $cordovaSQLite.execute(db, query, [1, "abc"]).then(function(res) {
+            console.log("insertId: " + res.insertId);
+            //$cordovaDialogs.alert('insertId', res.insertId, 'OK');
+          }, function (err) {
+            //$cordovaDialogs.alert('err', err, 'OK');
+            console.error(err);
+          });
+        };
+
+        //$scope.execute();
+        //$cordovaDialogs.alert('2', '2', 'OK');
 
 
       }, false);

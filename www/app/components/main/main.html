@@ -1,5 +1,6 @@
 
-<md-toolbar style="position: fixed;" flex>
+
+<md-toolbar class="mainToolbar" flex>
   <div class="md-toolbar-tools" layout="row" layout-align="space-between center">
     <md-button class="md-icon-button md-primary" aria-label="Menu" ng-click="main.toggle()">
       <ng-md-icon icon="menu"></ng-md-icon>
@@ -8,14 +9,14 @@
     <div ></div>
   </div>
   <!-- ADD FILE BUTTON -->
-  <md-button class="add-file-button md-fab md-warn" style="position:absolute;right:10px;top:10px;" aria-label="Add file">
+  <md-button class="add-file-button md-fab md-warn addTopButton" aria-label="Add file" ng-click="main.addAlert()">
       <ng-md-icon icon="add"></ng-md-icon>
   </md-button>
   <!-- / ADD FILE BUTTON -->
 </md-toolbar>
 
 <md-sidenav class="md-sidenav-left" md-component-id="left">
-  <md-toolbar>
+  <md-toolbar class="sideLeftNavTopBar">
     <h1 class="md-toolbar-tools">{{main.username}}</h1>
   </md-toolbar>
   <md-list ng-cloak>
@@ -31,7 +32,7 @@
 </md-sidenav>
 
 <md-content class="content" layout="column" flex>
-  <div style="height:55px;"></div>
+  <div class="spaceTop"></div>
   <div layout="row">
     <div flex="5"></div>
       <md-whiteframe class="md-whiteframe-3dp" layout="column" flex="90">
@@ -54,6 +55,6 @@
       </md-whiteframe>
     <div flex="5"></div>
   </div>
-  <div style="height:10px;"></div>
+  <div class="spaceBottom"></div>
 </md-content>
 

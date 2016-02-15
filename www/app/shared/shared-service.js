@@ -69,4 +69,6 @@ angular.module("ngapp").service("shared", function($http,$localStorage,$sessionS
       }
     }
 
+    this.db = null;
+
 });

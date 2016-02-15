@@ -15,6 +15,14 @@ angular.module("ngapp")
         controllerAs: "main"
     });
 
+    $stateProvider.state("alertForm", {
+        url: "/alert-form",
+        templateUrl: "app/components/alert/alert-form.html",
+        title: "Cordova Angular-Material",
+        controller: "AlertFormController",
+        controllerAs: "alertForm"
+    });
+
     $stateProvider.state("login", {
         url: "/login",
         templateUrl: "app/components/login/login.html",

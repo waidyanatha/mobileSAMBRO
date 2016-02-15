@@ -1,0 +1,65 @@
+
+<md-toolbar class="mainToolbar" flex>
+  <div class="md-toolbar-tools" layout="row" layout-align="space-between center">
+    <md-button ng-click="alertForm.goBack()"> < Back </md-button>
+    <p>{{ alertForm.title }}</p>
+    <md-button> Next > </md-button>
+  </div>
+  
+</md-toolbar>
+
+<md-content class="content" layout="column" flex>
+  <div class="spaceTop"></div>
+  <div layout="row">
+    <div flex="5"></div>
+      <md-whiteframe class="md-whiteframe-3dp" layout="column" flex="90">
+
+<!--
+        <div flex>
+          <div class="demo-swipe" md-swipe-left="onSwipeLeft()" style="height:150px;">
+            <span class="no-select">Swipe me to the left</span>
+            <md-icon md-font-icon="android" aria-label="android"></md-icon>
+          </div>
+          <md-divider></md-divider>
+          <div class="demo-swipe" md-swipe-right="onSwipeRight()" style="height:150px;">
+            <span class="no-select">Swipe me to the right</span>
+          </div>
+        </div>
+        <md-divider></md-divider>
+        <div flex layout="row">
+          <div flex layout="row" layout-align="center center"
+               class="demo-swipe" md-swipe-up="onSwipeUp()" style="height:150px;">
+            <span class="no-select">Swipe me up</span>
+          </div>
+          <md-divider></md-divider>
+          <div flex layout="row" layout-align="center center"
+               class="demo-swipe" md-swipe-down="onSwipeDown()" style="height:150px;">
+            <span class="no-select">Swipe me down</span>
+          </div>
+        </div>
+
+        <md-divider></md-divider>
+-->
+  
+      <div ng-hide="alertForm.hidePage[0]">  
+        <md-subheader class="md-no-sticky">Event Types</md-subheader>
+        <md-list-item ng-repeat="dataEventTypeOption in alertForm.dataEventTypeOptions" ng-click="alertForm.goToTemplate($event,dataEventTypeOption['@value'])">
+          <img alt="{{ dataEventTypeOption.$ }}" ng-src="assets/images/disaster/27832-200.png" class="md-avatar" />
+          <p>{{dataEventTypeOption.$}}</p>
+        </md-list-item>
+      </div>
+
+      <div ng-hide="alertForm.hidePage[1]">  
+        <md-subheader class="md-no-sticky">Templates</md-subheader>
+        <md-list-item ng-repeat="dataTemplateOption in alertForm.dataTemplateOptions" ng-click="goToPerson(person.name, $event)">
+          <img alt="{{ dataTemplateOption.template_title }}" ng-src="assets/images/disaster/27832-200.png" class="md-avatar" />
+          <p>{{dataTemplateOption.template_title}}</p>
+        </md-list-item>
+      </div>
+
+      </md-whiteframe>
+    <div flex="5"></div>
+  </div>
+  <div class="spaceBottom"></div>
+</md-content>
+
