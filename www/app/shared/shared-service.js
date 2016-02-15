@@ -4,7 +4,7 @@ angular.module("ngapp").service("shared", function($http,$localStorage,$sessionS
 
 	var ctrl = this;
     this.info = {
-        title: "CAP on Mobile",
+        title: "CAP",
         auth: "Angga Bayu"
     };
 

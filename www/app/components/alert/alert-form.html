@@ -4,10 +4,10 @@
 </style>
 <md-toolbar class="mainToolbar" flex>
   <div class="md-toolbar-tools" layout="row" layout-align="space-between center">
-    <md-button ng-click="alertForm.goBack()"> < {{alertForm.btnBackName}} </md-button>
+    <md-button ng-click="alertForm.goBack()"> {{alertForm.btnBackName}} </md-button>
     <p>{{ alertForm.title }}</p>
-    <md-button ng-disabled="alertForm.disabledNextBtn()" ng-hide="alertForm.hideNextBtn" ng-click="alertForm.goNext()"> Next > </md-button>
-    <div ng-hide="!alertForm.hideNextBtn"></div>
+    <md-button ng-disabled="alertForm.disabledNextBtn()" ng-click="alertForm.goNext()"> {{alertForm.btnNextName}} </md-button>
+    
   </div>
   <!-- ADD FILE BUTTON -->
   <md-button class="add-file-button md-fab md-warn addTopButton" ng-hide="alertForm.hidePage[2]" aria-label="Add file" ng-click="alertForm.addArea()">
@@ -16,38 +16,12 @@
   <!-- / ADD FILE BUTTON -->
 </md-toolbar>
 
-<md-content class="content" layout="column" flex>
+<md-content class="content" layout="column" md-swipe-left="onSwipeLeft()" md-swipe-right="onSwipeRight()" flex>
   <div class="spaceTop"></div>
   <div layout="row">
     <div flex="5"></div>
       <md-whiteframe class="md-whiteframe-3dp" layout="column" flex="90">
 
-<!--
-        <div flex>
-          <div class="demo-swipe" md-swipe-left="onSwipeLeft()" style="height:150px;">
-            <span class="no-select">Swipe me to the left</span>
-            <md-icon md-font-icon="android" aria-label="android"></md-icon>
-          </div>
-          <md-divider></md-divider>
-          <div class="demo-swipe" md-swipe-right="onSwipeRight()" style="height:150px;">
-            <span class="no-select">Swipe me to the right</span>
-          </div>
-        </div>
-        <md-divider></md-divider>
-        <div flex layout="row">
-          <div flex layout="row" layout-align="center center"
-               class="demo-swipe" md-swipe-up="onSwipeUp()" style="height:150px;">
-            <span class="no-select">Swipe me up</span>
-          </div>
-          <md-divider></md-divider>
-          <div flex layout="row" layout-align="center center"
-               class="demo-swipe" md-swipe-down="onSwipeDown()" style="height:150px;">
-            <span class="no-select">Swipe me down</span>
-          </div>
-        </div>
-
-        <md-divider></md-divider>
--->
       <md-progress-linear md-mode="determinate" value="{{alertForm.progress}}"></md-progress-linear>
       <div ng-hide="alertForm.hidePage[0]">  
         <md-subheader class="md-no-sticky">Event Types ({{alertForm.progressText}})</md-subheader>
@@ -163,11 +137,15 @@
                         <textarea ng-model="alertForm.dataAlertForm.description" columns="4" md-maxlength="150" rows="5"></textarea>
                     </md-input-container>
                     
+                    <h4></h4>
+                    <h4></h4>
+
                     <md-button class="md-raised md-accent" aria-label="Submit"
                                ng-disabled="alertForm.disabledNextBtn()" ng-click="alertForm.submitForm()">
                         Submit
                     </md-button>
                 
+                    <h4></h4>
                     <h4></h4>
                 </div>
 

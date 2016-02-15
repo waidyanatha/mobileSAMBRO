@@ -46,10 +46,10 @@ angular.module("ngapp")
 
 
     $scope.onSwipeLeft = function(ev) {
-      alert('You swiped left!!');
+      ctrl.goNext();
     };
     $scope.onSwipeRight = function(ev) {
-      alert('You swiped right!!');
+      ctrl.goBack();
     };
     $scope.onSwipeUp = function(ev) {
       alert('You swiped up!!');
@@ -89,23 +89,27 @@ angular.module("ngapp")
     this.hidePage = [false,true,true,true,true,true];
     this.progress = 100/this.hidePage.length;
     this.progressText = ctrl.currPage.toString()+"/"+ctrl.hidePage.length.toString();
-    this.btnBackName = "Home";
+    this.btnBackName = "< Home";
+    this.btnNextName = "Next >";
     this.hideNextBtn = false;
 
     this.changePageView = function(){
+
         if(ctrl.currPage == ctrl.hidePage.length){
             ctrl.hideNextBtn = true;
+            this.btnNextName = " ";
         }
         else{
             ctrl.hideNextBtn = false;
+            this.btnNextName = "Next >";
         }
         this.progressText = ctrl.currPage.toString()+"/"+ctrl.hidePage.length.toString();
         ctrl.progress = 100/ctrl.hidePage.length*(ctrl.currPage);
         if(ctrl.currPage == 1){
-            ctrl.btnBackName = "Home";
+            ctrl.btnBackName = "< Home";
         }
         else{
-            ctrl.btnBackName = "Back";
+            ctrl.btnBackName = "< Back";
         }
     }
 
@@ -123,10 +127,16 @@ angular.module("ngapp")
     };
 
     this.goNext = function(){    
-        ctrl.hidePage[ctrl.currPage-1] = true;
-        ctrl.currPage += 1;
-        ctrl.hidePage[ctrl.currPage-1] = false;    
-        ctrl.changePageView();     
+        if(ctrl.currPage == ctrl.hidePage.length){
+            //ctrl.submitForm();
+        }
+        else{
+            ctrl.hidePage[ctrl.currPage-1] = true;
+            ctrl.currPage += 1;
+            ctrl.hidePage[ctrl.currPage-1] = false;    
+            ctrl.changePageView();    
+        }
+         
     };
 
     this.disabledNextBtn = function(){
