@@ -58,8 +58,18 @@ angular.module("ngapp")
       alert('You swiped down!!');
     };
 
+    this.dataAlertForm = {
+        eventType : {
+            id: null,
+            name: null
+        },
+        template : {
+            id: null,
+            name: null
+        }
+    };
     this.currPage = 1;
-    this.hidePage = [false,true];
+    this.hidePage = [false,true,true];
 
     this.goBack = function(){
         if(this.currPage == 1){
@@ -73,9 +83,17 @@ angular.module("ngapp")
         
     };
 
-    this.goToTemplate = function(ev,id){
+    this.clickEventTypeOption = function(ev,eventTypeObj){
+        ctrl.dataAlertForm.eventType = eventTypeObj;
         ctrl.hidePage[ctrl.currPage-1] = true;
-        ctrl.currPage = 2;
+        ctrl.currPage = 2; //go to template
+        ctrl.hidePage[ctrl.currPage-1] = false;  
+    };
+
+    this.clickTemplateOption = function(ev,templateObj){
+        ctrl.dataAlertForm.template = templateObj;
+        ctrl.hidePage[ctrl.currPage-1] = true;
+        ctrl.currPage = 3; //go to location
         ctrl.hidePage[ctrl.currPage-1] = false;  
     };
 

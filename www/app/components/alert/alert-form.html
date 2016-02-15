@@ -43,7 +43,7 @@
   
       <div ng-hide="alertForm.hidePage[0]">  
         <md-subheader class="md-no-sticky">Event Types</md-subheader>
-        <md-list-item ng-repeat="dataEventTypeOption in alertForm.dataEventTypeOptions" ng-click="alertForm.goToTemplate($event,dataEventTypeOption['@value'])">
+        <md-list-item ng-repeat="dataEventTypeOption in alertForm.dataEventTypeOptions" ng-click="alertForm.clickEventTypeOption($event,{id:dataEventTypeOption['@value'],name:dataEventTypeOption['$']})">
           <img alt="{{ dataEventTypeOption.$ }}" ng-src="assets/images/disaster/27832-200.png" class="md-avatar" />
           <p>{{dataEventTypeOption.$}}</p>
         </md-list-item>
@@ -51,10 +51,14 @@
 
       <div ng-hide="alertForm.hidePage[1]">  
         <md-subheader class="md-no-sticky">Templates</md-subheader>
-        <md-list-item ng-repeat="dataTemplateOption in alertForm.dataTemplateOptions" ng-click="goToPerson(person.name, $event)">
+        <md-list-item ng-repeat="dataTemplateOption in alertForm.dataTemplateOptions" ng-click="alertForm.clickTemplateOption($event,{id:dataTemplateOption['cap_info.event_type_id'],name:dataTemplateOption.template_title})">
           <img alt="{{ dataTemplateOption.template_title }}" ng-src="assets/images/disaster/27832-200.png" class="md-avatar" />
           <p>{{dataTemplateOption.template_title}}</p>
         </md-list-item>
+      </div>
+
+      <div ng-hide="alertForm.hidePage[2]">  
+        <md-subheader class="md-no-sticky">Location</md-subheader>
       </div>
 
       </md-whiteframe>
