@@ -3,7 +3,7 @@
 angular.module("ngapp", [ "ngTouch", "ui.router", "ngMdIcons", "ngMaterial", "ngCordova", "ngStorage" ,"ngMessages"])
 // ngTouch is No Longer Supported by Angular-Material
 
-.run(function(shared,$localStorage,$sessionStorage,$location){
+.run(function(shared,$localStorage,$sessionStorage,$location,$cordovaSQLite,$cordovaDialogs, $cordovaDevice){
   // $localStorage['username'] = ctrl.loginForm.email;
   // $localStorage['password'] = ctrl.loginForm.password;
 
@@ -22,6 +22,42 @@ angular.module("ngapp", [ "ngTouch", "ui.router", "ngMdIcons", "ngMaterial", "ng
         e.preventDefault();
       }
     }, false);*/
+
+  document.addEventListener("deviceready", function () {
+        
+        //$cordovaDialogs.alert('1', '1', 'OK');
+        //sqlite
+        //dbShared = $cordovaSQLite.openDB({name: "offline_data.db" });
+        // $cordovaSQLite.execute(dbShared,"CREATE TABLE IF NOT EXISTS event_type (id integer primary key, name text)");
+        // $scope.execute = function() {
+        //   var query = "INSERT INTO event_type (id, name) VALUES (?,?)";
+        //   $cordovaSQLite.execute(dbShared, query, [1, "abc"]).then(function(res) {
+        //     console.log("insertId: " + res.insertId);
+        //     //$cordovaDialogs.alert('insertId', res.insertId, 'OK');
+        //   }, function (err) {
+        //     //$cordovaDialogs.alert('err', err, 'OK');
+        //     console.error(err);
+        //   });
+        // };
+        // $scope.execute();
+
+        // $scope.select = function() {
+        // var query = "SELECT * FROM event_type";
+        //     $cordovaSQLite.execute(dbShared,query).then(function(result) {
+        //         if(result.rows.length > 0) {
+        //             //$cordovaDialogs.alert('row db ', "SELECTED -> " + result.rows.item(0).id + " " + result.rows.item(0).name, 'OK');
+        //             console.log("SELECTED -> " + result.rows.item(0).id + " " + result.rows.item(0).name);
+        //         } else {
+        //             console.log("NO ROWS EXIST");
+        //         }
+        //     }, function(error) {
+        //         console.error(error);
+        //     });
+        // };
+        // $scope.select();
+
+        // console.log(dbShared);
+      }, false);
 })
 .factory("interceptors_", [function() {
 

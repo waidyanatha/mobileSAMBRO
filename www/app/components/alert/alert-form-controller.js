@@ -3,6 +3,9 @@
 angular.module("ngapp")
 .controller("AlertFormController", function(shared, $state, $scope, $mdSidenav, $mdComponentRegistry, $http, $cordovaDevice, $cordovaStatusbar,$cordovaGeolocation,$cordovaDialogs,$location,$localStorage,$cordovaSQLite){
 
+    $cordovaStatusbar.overlaysWebView(false); // Always Show Status Bar = false
+    $cordovaStatusbar.styleHex('#E53935'); // Status Bar With Red Color, Using Angular-Material Style
+
     shared.checkUserCached();
 
     var ctrl = this;
@@ -14,36 +17,6 @@ angular.module("ngapp")
 
     this.title = shared.info.title;
     this.logout = shared.logout;
-
-    document.addEventListener("deviceready", function () {
-        //alert('test0_');
-        $cordovaStatusbar.overlaysWebView(false); // Always Show Status Bar = false
-        $cordovaStatusbar.styleHex('#E53935'); // Status Bar With Red Color, Using Angular-Material Style
-        //window.plugins.orientationLock.lock("portrait");
-
-        //alert('test1');    
-        //$cordovaDialogs.alert('deviceready', 'Message', 'OK');
-        //$cordovaDialogs.alert('alert', '1', 'OK');
-        var db = shared.db;
-        $scope.select = function() {
-        var query = "SELECT * FROM event_type";
-            $cordovaSQLite.execute(db,query).then(function(result) {
-                if(result.rows.length > 0) {
-                    //$cordovaDialogs.alert('row db ', "SELECTED -> " + result.rows.item(0).id + " " + result.rows.item(0).name, 'OK');
-                    
-                } else {
-                    console.log("NO ROWS EXIST");
-                }
-            }, function(error) {
-                console.error(error);
-            });
-        };
-        $scope.select();
-        //$cordovaDialogs.alert('alert', '2', 'OK');
-
-
-      }, false);
-
 
     $scope.onSwipeLeft = function(ev) {
       ctrl.goNext();
@@ -82,6 +55,7 @@ angular.module("ngapp")
         urgency : null,
         certainty : null,
         severity : null,
+        scope : null,
         description : null
     };
 
@@ -205,9 +179,10 @@ angular.module("ngapp")
     this.dataUrgencyOptions = {};
     this.dataCertaintyOptions = {};
     this.dataSeverityOptions = {};
+    this.dataScopeOptions = {};
     var promiseLoadData = shared.loadDataAlert('http://sambro.geoinfo.ait.ac.th/eden/cap/alert/create.s3json?options=true&references=true');
     promiseLoadData.then(function(response) {
-      console.log(response);
+      //console.log(response);
       ctrl.dataOptions = response;
 
       var dataField = response['$_cap_alert'][0]['$_cap_info'][0]['field'];
@@ -225,6 +200,12 @@ angular.module("ngapp")
             ctrl.dataSeverityOptions = dataField[i]['select'][0]['option'];
         }
       }
+      dataField = response['$_cap_alert'][0]['field'];
+      for(var i=0;i<dataField.length;i++){
+        if(dataField[i]['@name'] == "scope"){
+            ctrl.dataScopeOptions = dataField[i]['select'][0]['option'];
+        }
+      }
     }, function(reason) {
       console.log('Failed: ' + reason);
     });
@@ -232,7 +213,7 @@ angular.module("ngapp")
     this.dataTemplateOptions = {};
     var promiseLoadDataTemplate = shared.loadDataAlert('http://sambro.geoinfo.ait.ac.th/eden/cap/template.json');
     promiseLoadDataTemplate.then(function(response) {
-      console.log(response);
+      //console.log(response);
       ctrl.dataTemplateOptions = response;
     }, function(reason) {
       console.log('Failed: ' + reason);
@@ -241,7 +222,7 @@ angular.module("ngapp")
     this.dataPredefinedAreaOptions = {};
     var promiseLoadDataPredefinedArea = shared.loadDataAlert('http://sambro.geoinfo.ait.ac.th/eden/cap/area.json?~.is_template=True');
     promiseLoadDataPredefinedArea.then(function(response) {
-      console.log(response);
+      //console.log(response);
       ctrl.dataPredefinedAreaOptions = new Array();
       for(var i=0;i<response.length;i++){
         var dataPredefinedAreaOption = {
@@ -257,10 +238,5 @@ angular.module("ngapp")
     }, function(reason) {
       console.log('Failed: ' + reason);
     });
-
-
-
-    
-    
 
 });

@@ -90,6 +90,15 @@
 
                 <div layout="column" layout-gt-sm="column">
                     <md-input-container flex>
+                        <label>Scope</label>
+                        <md-select ng-model="alertForm.dataAlertForm.scope">
+                            <md-option ng-repeat="dataScopeOption in alertForm.dataScopeOptions" value="{{dataScopeOption['@value']}}">
+                                {{dataScopeOption['@value']}}
+                            </md-option>
+                        </md-select>
+                    </md-input-container>
+
+                    <md-input-container flex>
                         <label>Urgency</label>
                         <md-select ng-model="alertForm.dataAlertForm.urgency">
                             <md-option ng-repeat="dataUrgencyOption in alertForm.dataUrgencyOptions" value="{{dataUrgencyOption['@value']}}">
