@@ -3,6 +3,11 @@
 angular.module("ngapp")
 .controller("LoginController", function(shared, $state, $scope, $mdSidenav, $mdComponentRegistry, $http, $cordovaDevice, $cordovaStatusbar,$cordovaGeolocation,$cordovaDialogs,$localStorage,$sessionStorage,$location){
 
+    document.addEventListener("deviceready", function () {
+        $cordovaStatusbar.overlaysWebView(false); // Always Show Status Bar
+        $cordovaStatusbar.styleHex('#E53935'); // Status Bar With Red Color, Using Angular-Material Style
+    }, false);
+
     var ctrl = this;
 
     this.loginForm = {};
@@ -16,11 +21,6 @@ angular.module("ngapp")
     $localStorage['username'] = "";
     $localStorage['password'] = "";
 
-    document.addEventListener("deviceready", function () {
-        $cordovaStatusbar.overlaysWebView(false); // Always Show Status Bar
-        $cordovaStatusbar.styleHex('#E53935'); // Status Bar With Red Color, Using Angular-Material Style
-      }, false);
-
     function sendForm()
     {
       console.log('call this sendform');
@@ -28,7 +28,7 @@ angular.module("ngapp")
       console.log(ctrl.loginForm.password);
       console.log(ctrl.shared.setHTTPHeaderAuth(ctrl.loginForm.email,ctrl.loginForm.password));
 
-      var promiseLoadData = shared.loadDataLogin('http://sambro.geoinfo.ait.ac.th/eden/default/index/user_info',ctrl.loginForm.email,ctrl.loginForm.password);
+      var promiseLoadData = shared.loadDataLogin(shared.apiUrl+'default/index/user_info',ctrl.loginForm.email,ctrl.loginForm.password);
       promiseLoadData.then(function(response) {
         console.log('success');
         console.log(response);

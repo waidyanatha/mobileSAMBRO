@@ -1,10 +1,12 @@
 "use strict";
 
 angular.module("ngapp")
-.controller("AlertFormController", function(shared, $state, $scope, $mdSidenav, $mdComponentRegistry, $http, $cordovaDevice, $cordovaStatusbar,$cordovaGeolocation,$cordovaDialogs,$location,$localStorage,$cordovaSQLite){
-
-    $cordovaStatusbar.overlaysWebView(false); // Always Show Status Bar = false
-    $cordovaStatusbar.styleHex('#E53935'); // Status Bar With Red Color, Using Angular-Material Style
+.controller("AlertFormController", function(shared, $state, $scope, $mdSidenav, $mdComponentRegistry, $http, $cordovaDevice, $cordovaStatusbar,$cordovaGeolocation,$cordovaDialogs,$location,$localStorage,$cordovaSQLite,$filter){
+    document.addEventListener("deviceready", function () {
+        $cordovaStatusbar.overlaysWebView(false); // Always Show Status Bar = false
+        $cordovaStatusbar.styleHex('#E53935'); // Status Bar With Red Color, Using Angular-Material Style
+    }, false);    
+    
 
     shared.checkUserCached();
 
@@ -60,7 +62,7 @@ angular.module("ngapp")
     };
 
     this.currPage = 1;
-    this.hidePage = [false,true,true,true,true,true];
+    this.hidePage = [false,true,true,true,true,true,true];
     this.progress = 100/this.hidePage.length;
     this.progressText = ctrl.currPage.toString()+"/"+ctrl.hidePage.length.toString();
     this.btnBackName = "< Home";
@@ -142,7 +144,13 @@ angular.module("ngapp")
             }
             
         }
-        else if(ctrl.currPage == 6){
+         else if(ctrl.currPage == 6){
+            if(ctrl.dataAlertForm.scope != null){
+                return false;
+            }
+            
+        }
+        else if(ctrl.currPage == 7){
             if(ctrl.dataAlertForm.description != null && ctrl.dataAlertForm.description != ""){
                 return false;
             }
@@ -153,7 +161,59 @@ angular.module("ngapp")
     }
 
     this.submitForm = function(){
-        $location.path("/main");
+        var submitForm = {
+            "$_cap_alert": [{
+                "status": {
+                  "@value" : "Test"
+                 },
+                 "is_template" : {
+                  "@value" : "F"
+                 },
+                 "scope" : {
+                  "@value" : ctrl.dataAlertForm.scope
+                 },
+                 "template_id" : {
+                      "@value" : ctrl.dataAlertForm.template.id.toString()
+                 },
+                 "$_cap_info" : [ {
+                    "sender_name" : $localStorage["username"],
+                    "event" : ctrl.dataAlertForm.eventType.name,
+                    "headline" : ctrl.dataAlertForm.eventType.name,
+                    "description" : ctrl.dataAlertForm.description,
+                    "event_type_id" : {
+                      "@value" : ctrl.dataAlertForm.eventType.id.toString()
+                    },
+                    "urgency" : {
+                      "@value" : ctrl.dataAlertForm.urgency
+                     },
+                     "severity" : {
+                      "@value" : ctrl.dataAlertForm.severity
+                     },
+                     "certainty" : {
+                      "@value" : ctrl.dataAlertForm.certainty
+                     },
+                    "expires": {
+                        "@value" : $filter('date')(ctrl.dataAlertForm.expireDate,"yyyy-MM-ddTHH:mm:ss")  
+                    },
+                    "effective": {
+                        "@value": $filter('date')(ctrl.dataAlertForm.effectiveDate,"yyyy-MM-ddTHH:mm:ss")
+                    },
+                    "is_template": {
+                      "@value": "F"
+                    }
+                }]
+            }]
+        };
+
+        var url = shared.apiUrl+'cap/alert.s3json';
+        var promiseSendDataForm = shared.sendDataForm(url,submitForm);
+        promiseSendDataForm.then(function(response) {
+            console.log("success Save");
+            $location.path("/main");
+        }, function(reason) {
+            console.log("failed Save");
+            $location.path("/main");
+        });
     };
 
     this.clickEventTypeOption = function(ev,eventTypeObj){
@@ -180,7 +240,7 @@ angular.module("ngapp")
     this.dataCertaintyOptions = {};
     this.dataSeverityOptions = {};
     this.dataScopeOptions = {};
-    var promiseLoadData = shared.loadDataAlert('http://sambro.geoinfo.ait.ac.th/eden/cap/alert/create.s3json?options=true&references=true');
+    var promiseLoadData = shared.loadDataAlert(shared.apiUrl+'cap/alert/create.s3json?options=true&references=true');
     promiseLoadData.then(function(response) {
       //console.log(response);
       ctrl.dataOptions = response;
@@ -188,22 +248,58 @@ angular.module("ngapp")
       var dataField = response['$_cap_alert'][0]['$_cap_info'][0]['field'];
       for(var i=0;i<dataField.length;i++){
         if(dataField[i]['@name'] == "event_type_id"){
-            ctrl.dataEventTypeOptions = dataField[i]['select'][0]['option'];
+            ctrl.dataEventTypeOptions = new Array();
+            for(var j=0;j<dataField[i]['select'][0]['option'].length;j++){
+                if(dataField[i]['select'][0]['option'][j]['@value'] != ""){
+                    ctrl.dataEventTypeOptions.push(dataField[i]['select'][0]['option'][j]);
+                }
+                
+            }
         }
         else if(dataField[i]['@name'] == "urgency"){
-            ctrl.dataUrgencyOptions = dataField[i]['select'][0]['option'];
+            ctrl.dataUrgencyOptions = new Array();
+            for(var j=0;j<dataField[i]['select'][0]['option'].length;j++){
+                if(dataField[i]['select'][0]['option'][j]['@value'] != ""){
+                    ctrl.dataUrgencyOptions.push(dataField[i]['select'][0]['option'][j]);
+                }
+                
+            }
         }
         else if(dataField[i]['@name'] == "certainty"){
-            ctrl.dataCertaintyOptions = dataField[i]['select'][0]['option'];
+            ctrl.dataCertaintyOptions = new Array();
+            for(var j=0;j<dataField[i]['select'][0]['option'].length;j++){
+                if(dataField[i]['select'][0]['option'][j]['@value'] != ""){
+                    ctrl.dataCertaintyOptions.push(dataField[i]['select'][0]['option'][j]);
+                }
+                
+            }
         }
         else if(dataField[i]['@name'] == "severity"){
-            ctrl.dataSeverityOptions = dataField[i]['select'][0]['option'];
+            ctrl.dataSeverityOptions = new Array();
+            for(var j=0;j<dataField[i]['select'][0]['option'].length;j++){
+                if(dataField[i]['select'][0]['option'][j]['@value'] != ""){
+                    ctrl.dataSeverityOptions.push(dataField[i]['select'][0]['option'][j]);
+                }
+                
+            }
         }
       }
       dataField = response['$_cap_alert'][0]['field'];
       for(var i=0;i<dataField.length;i++){
         if(dataField[i]['@name'] == "scope"){
-            ctrl.dataScopeOptions = dataField[i]['select'][0]['option'];
+            ctrl.dataScopeOptions = new Array();
+
+            for(var j=0;j<dataField[i]['select'][0]['option'].length;j++){
+                if(dataField[i]['select'][0]['option'][j]['@value'] != ""){
+                    var dataScopeOption = {
+                      '@value': dataField[i]['select'][0]['option'][j]['@value'],
+                      '$':dataField[i]['select'][0]['option'][j]['$']
+                    };
+
+                    ctrl.dataScopeOptions.push(dataScopeOption);
+                }
+                
+            }
         }
       }
     }, function(reason) {
@@ -211,7 +307,7 @@ angular.module("ngapp")
     });
 
     this.dataTemplateOptions = {};
-    var promiseLoadDataTemplate = shared.loadDataAlert('http://sambro.geoinfo.ait.ac.th/eden/cap/template.json');
+    var promiseLoadDataTemplate = shared.loadDataAlert(shared.apiUrl+'cap/template.json');
     promiseLoadDataTemplate.then(function(response) {
       //console.log(response);
       ctrl.dataTemplateOptions = response;
@@ -220,7 +316,7 @@ angular.module("ngapp")
     });
 
     this.dataPredefinedAreaOptions = {};
-    var promiseLoadDataPredefinedArea = shared.loadDataAlert('http://sambro.geoinfo.ait.ac.th/eden/cap/area.json?~.is_template=True');
+    var promiseLoadDataPredefinedArea = shared.loadDataAlert(shared.apiUrl+'cap/area.json?~.is_template=True');
     promiseLoadDataPredefinedArea.then(function(response) {
       //console.log(response);
       ctrl.dataPredefinedAreaOptions = new Array();

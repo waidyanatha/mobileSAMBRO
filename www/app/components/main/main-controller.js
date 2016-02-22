@@ -2,9 +2,11 @@
 
 angular.module("ngapp")
 .controller("MainController", function(shared, $state, $scope, $mdSidenav, $mdComponentRegistry, $http, $cordovaDevice, $cordovaStatusbar,$cordovaGeolocation,$cordovaDialogs,$location,$localStorage,$cordovaSQLite){
-    $cordovaStatusbar.overlaysWebView(false); // Always Show Status Bar = false
-    $cordovaStatusbar.styleHex('#E53935'); // Status Bar With Red Color, Using Angular-Material Style
-   
+    document.addEventListener("deviceready", function () {
+      $cordovaStatusbar.overlaysWebView(false); // Always Show Status Bar = false
+      $cordovaStatusbar.styleHex('#E53935'); // Status Bar With Red Color, Using Angular-Material Style
+    }, false);
+    
     var posOptions = {timeout: 10000, enableHighAccuracy: false};
     $cordovaGeolocation
     .getCurrentPosition(posOptions)
@@ -54,7 +56,7 @@ angular.module("ngapp")
     };
 
     this.dataAlerts = {};
-    var promiseLoadData = shared.loadDataAlert('http://sambro.geoinfo.ait.ac.th/eden/cap/alert.json');
+    var promiseLoadData = shared.loadDataAlert(shared.apiUrl+'cap/alert.json');
     promiseLoadData.then(function(response) {
       //console.log(response);
       ctrl.dataAlerts = new Array();

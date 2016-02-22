@@ -35,6 +35,19 @@ angular.module("ngapp").service("shared", function($http,$localStorage,$sessionS
         });
     };
 
+    this.sendDataForm = function(url,dataForm) {
+  
+      return $http({
+              method: 'POST',
+              url: url,
+              data: JSON.stringify(dataForm),
+              headers: ctrl.setHTTPHeaderAuth($localStorage['username'],$localStorage['password'])
+          }).then(
+          function (response) {
+            return response.data;
+        });
+    };
+
     this.loadDataLogin = function(url,username,password) {
       $http.defaults.headers.common['Authorization'] = 'Basic ' + ctrl.setHTTPHeaderAuth(username,password); 
       return $http({
@@ -70,5 +83,8 @@ angular.module("ngapp").service("shared", function($http,$localStorage,$sessionS
     }
 
     this.db = null;
+
+    this.apiUrl = "http://sambro.geoinfo.ait.ac.th/eden/";
+    //this.apiUrl = "http://localhost:8000/eden/";
 
 });

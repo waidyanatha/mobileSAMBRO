@@ -90,15 +90,6 @@
 
                 <div layout="column" layout-gt-sm="column">
                     <md-input-container flex>
-                        <label>Scope</label>
-                        <md-select ng-model="alertForm.dataAlertForm.scope">
-                            <md-option ng-repeat="dataScopeOption in alertForm.dataScopeOptions" value="{{dataScopeOption['@value']}}">
-                                {{dataScopeOption['@value']}}
-                            </md-option>
-                        </md-select>
-                    </md-input-container>
-
-                    <md-input-container flex>
                         <label>Urgency</label>
                         <md-select ng-model="alertForm.dataAlertForm.urgency">
                             <md-option ng-repeat="dataUrgencyOption in alertForm.dataUrgencyOptions" value="{{dataUrgencyOption['@value']}}">
@@ -134,6 +125,21 @@
       </div>
 
       <div ng-hide="alertForm.hidePage[5]">  
+        <md-subheader class="md-no-sticky">Severity ({{alertForm.progressText}})</md-subheader>
+        <md-radio-group ng-model="alertForm.dataAlertForm.scope" >
+        <md-list-item ng-repeat="dataScopeOption in alertForm.dataScopeOptions" >
+         
+          <md-radio-button flex
+              ng-value="dataScopeOption['@value']"
+              class="md-primary" >
+              {{dataScopeOption['@value']}}
+          </md-radio-button>
+        </md-list-item>
+        </md-radio-group>
+       
+      </div>
+
+      <div ng-hide="alertForm.hidePage[6]">  
         <md-subheader class="md-no-sticky">Note ({{alertForm.progressText}})</md-subheader>
         <form id="dataForm"  name="dataForm" class="md-inline-form" novalidate>
 
@@ -168,4 +174,5 @@
   </div>
   <div class="spaceBottom"></div>
 </md-content>
+<!--<md-button class="md-primary md-fab md-fab-bottom-right"> FAB </md-button>-->
 
