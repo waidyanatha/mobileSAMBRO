@@ -1,5 +1,19 @@
 "use strict";
 
+angular.element(document).ready(function () {
+  if (window.cordova) {
+    console.log("Running in Cordova, will bootstrap AngularJS once 'deviceready' event fires.");
+    document.addEventListener('deviceready', function () {
+      console.log("Deviceready event has fired, bootstrapping AngularJS.");
+      angular.bootstrap(document.body, ['ngapp']);
+    }, false);
+  } else {
+    console.log("Running in browser, bootstrapping AngularJS now.");
+    angular.bootstrap(document.body, ['ngapp']);
+  }
+});
+
+
 angular.module("ngapp", [ "ngTouch", "ui.router", "ngMdIcons", "ngMaterial", "ngCordova", "ngStorage" ,"ngMessages"])
 // ngTouch is No Longer Supported by Angular-Material
 
@@ -23,9 +37,7 @@ angular.module("ngapp", [ "ngTouch", "ui.router", "ngMdIcons", "ngMaterial", "ng
       }
     }, false);*/
 
-  document.addEventListener("deviceready", function () {
-        
-        //$cordovaDialogs.alert('1', '1', 'OK');
+        //$cordovaDialogs.alert('Test', 'Test Body', 'OK');
         //sqlite
         //dbShared = $cordovaSQLite.openDB({name: "offline_data.db" });
         // $cordovaSQLite.execute(dbShared,"CREATE TABLE IF NOT EXISTS event_type (id integer primary key, name text)");
@@ -57,7 +69,7 @@ angular.module("ngapp", [ "ngTouch", "ui.router", "ngMdIcons", "ngMaterial", "ng
         // $scope.select();
 
         // console.log(dbShared);
-      }, false);
+      
 })
 .factory("interceptors_", [function() {
 

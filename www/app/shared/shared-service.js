@@ -44,6 +44,7 @@ angular.module("ngapp").service("shared", function($http,$localStorage,$sessionS
               headers: ctrl.setHTTPHeaderAuth($localStorage['username'],$localStorage['password'])
           }).then(
           function (response) {
+            //alert('response');
             return response.data;
         });
     };
@@ -85,6 +86,6 @@ angular.module("ngapp").service("shared", function($http,$localStorage,$sessionS
     this.db = null;
 
     this.apiUrl = "http://sambro.geoinfo.ait.ac.th/eden/";
-    //this.apiUrl = "http://localhost:8000/eden/";
+    //this.apiUrl = "http://203.159.29.147:8000/eden/";
 
 });

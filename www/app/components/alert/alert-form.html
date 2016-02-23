@@ -33,7 +33,7 @@
 
       <div ng-hide="alertForm.hidePage[1]">  
         <md-subheader class="md-no-sticky">Templates ({{alertForm.progressText}})</md-subheader>
-        <md-list-item ng-repeat="dataTemplateOption in alertForm.dataTemplateOptions" ng-click="alertForm.clickTemplateOption($event,{id:dataTemplateOption['cap_info.event_type_id'],name:dataTemplateOption.template_title})">
+        <md-list-item ng-repeat="dataTemplateOption in alertForm.dataTemplateOptions" ng-click="alertForm.clickTemplateOption($event,{id:dataTemplateOption['id'],name:dataTemplateOption.template_title})">
           <img alt="{{ dataTemplateOption.template_title }}" ng-src="assets/images/disaster/27832-200.png" class="md-avatar" />
           <p>{{dataTemplateOption.template_title}}</p>
         </md-list-item>
@@ -151,7 +151,7 @@
                         <label>Description</label>
                         <textarea ng-model="alertForm.dataAlertForm.description" columns="4" md-maxlength="150" rows="5"></textarea>
                     </md-input-container>
-                    
+                    <!--<div>{{alertForm.responseDebug}}</div>-->
                     <h4></h4>
                     <h4></h4>
 

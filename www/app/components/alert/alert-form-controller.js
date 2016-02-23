@@ -2,23 +2,21 @@
 
 angular.module("ngapp")
 .controller("AlertFormController", function(shared, $state, $scope, $mdSidenav, $mdComponentRegistry, $http, $cordovaDevice, $cordovaStatusbar,$cordovaGeolocation,$cordovaDialogs,$location,$localStorage,$cordovaSQLite,$filter){
-    document.addEventListener("deviceready", function () {
-        $cordovaStatusbar.overlaysWebView(false); // Always Show Status Bar = false
-        $cordovaStatusbar.styleHex('#E53935'); // Status Bar With Red Color, Using Angular-Material Style
-    }, false);    
-    
-
     shared.checkUserCached();
 
-    var ctrl = this;
+    var ctrl = this;    
 
-    this.auth = shared.info.auth;
-    this.username = $localStorage['username'];
+    $cordovaStatusbar.overlaysWebView(false); // Always Show Status Bar = false
+    $cordovaStatusbar.styleHex('#E53935'); // Status Bar With Red Color, Using Angular-Material Style
 
-    this.toggle = angular.noop;
+    ctrl.auth = shared.info.auth;
+    ctrl.username = $localStorage['username'];
 
-    this.title = shared.info.title;
-    this.logout = shared.logout;
+    ctrl.toggle = angular.noop;
+
+    ctrl.title = shared.info.title;
+    ctrl.logout = shared.logout;
+    ctrl.responseDebug = "";
 
     $scope.onSwipeLeft = function(ev) {
       ctrl.goNext();
@@ -33,7 +31,7 @@ angular.module("ngapp")
       alert('You swiped down!!');
     };
 
-    this.todayDate = new Date();
+    ctrl.todayDate = new Date();
     $scope.minDate = new Date(
         ctrl.todayDate.getFullYear(),
         ctrl.todayDate.getMonth() - 2,
@@ -43,7 +41,7 @@ angular.module("ngapp")
         ctrl.todayDate.getMonth() + 2,
         ctrl.todayDate.getDate());
 
-    this.dataAlertForm = {
+    ctrl.dataAlertForm = {
         eventType : {
             id: null,
             name: null
@@ -61,25 +59,25 @@ angular.module("ngapp")
         description : null
     };
 
-    this.currPage = 1;
-    this.hidePage = [false,true,true,true,true,true,true];
-    this.progress = 100/this.hidePage.length;
-    this.progressText = ctrl.currPage.toString()+"/"+ctrl.hidePage.length.toString();
-    this.btnBackName = "< Home";
-    this.btnNextName = "Next >";
-    this.hideNextBtn = false;
+    ctrl.currPage = 1;
+    ctrl.hidePage = [false,true,true,true,true,true,true];
+    ctrl.progress = 100/ctrl.hidePage.length;
+    ctrl.progressText = ctrl.currPage.toString()+"/"+ctrl.hidePage.length.toString();
+    ctrl.btnBackName = "< Home";
+    ctrl.btnNextName = "Next >";
+    ctrl.hideNextBtn = false;
 
-    this.changePageView = function(){
+    ctrl.changePageView = function(){
 
         if(ctrl.currPage == ctrl.hidePage.length){
             ctrl.hideNextBtn = true;
-            this.btnNextName = " ";
+            ctrl.btnNextName = " ";
         }
         else{
             ctrl.hideNextBtn = false;
-            this.btnNextName = "Next >";
+            ctrl.btnNextName = "Next >";
         }
-        this.progressText = ctrl.currPage.toString()+"/"+ctrl.hidePage.length.toString();
+        ctrl.progressText = ctrl.currPage.toString()+"/"+ctrl.hidePage.length.toString();
         ctrl.progress = 100/ctrl.hidePage.length*(ctrl.currPage);
         if(ctrl.currPage == 1){
             ctrl.btnBackName = "< Home";
@@ -89,8 +87,8 @@ angular.module("ngapp")
         }
     }
 
-    this.goBack = function(){
-        if(this.currPage == 1){
+    ctrl.goBack = function(){
+        if(ctrl.currPage == 1){
             $location.path("/main");
         }
         else{
@@ -102,7 +100,7 @@ angular.module("ngapp")
         
     };
 
-    this.goNext = function(){    
+    ctrl.goNext = function(){    
         if(ctrl.currPage == ctrl.hidePage.length){
             //ctrl.submitForm();
         }
@@ -115,7 +113,7 @@ angular.module("ngapp")
          
     };
 
-    this.disabledNextBtn = function(){
+    ctrl.disabledNextBtn = function(){
         if(ctrl.currPage == 1 && ctrl.dataAlertForm.eventType.id != null){
             return false;
         }
@@ -160,8 +158,9 @@ angular.module("ngapp")
         return true;
     }
 
-    this.submitForm = function(){
-        var submitForm = {
+    ctrl.submitForm = function(){
+        //console.log('click it');
+        var submitFormVal = {
             "$_cap_alert": [{
                 "status": {
                   "@value" : "Test"
@@ -173,7 +172,13 @@ angular.module("ngapp")
                   "@value" : ctrl.dataAlertForm.scope
                  },
                  "template_id" : {
-                      "@value" : ctrl.dataAlertForm.template.id.toString()
+                    "@value" : ctrl.dataAlertForm.template.id.toString()
+                 },
+                 "restriction" : {
+                    "@value" : "TEST"
+                 },
+                 "addresses" : {
+                    "@value" : "TEST"
                  },
                  "$_cap_info" : [ {
                     "sender_name" : $localStorage["username"],
@@ -205,18 +210,25 @@ angular.module("ngapp")
             }]
         };
 
+        //$cordovaDialogs.alert('go to url ', shared.apiUrl+'cap/alert.s3json', 'OK');
         var url = shared.apiUrl+'cap/alert.s3json';
-        var promiseSendDataForm = shared.sendDataForm(url,submitForm);
+        var promiseSendDataForm = shared.sendDataForm(url,submitFormVal);
         promiseSendDataForm.then(function(response) {
             console.log("success Save");
+            console.log(response);
+            ctrl.responseDebug = response;
             $location.path("/main");
+            //$cordovaDialogs.alert('success', response, 'OK');
         }, function(reason) {
             console.log("failed Save");
+            console.log(reason);
+            ctrl.responseDebug = reason;
+            //$cordovaDialogs.alert('failed', reason, 'OK');
             $location.path("/main");
         });
     };
 
-    this.clickEventTypeOption = function(ev,eventTypeObj){
+    ctrl.clickEventTypeOption = function(ev,eventTypeObj){
         
         ctrl.dataAlertForm.eventType = eventTypeObj;
         ctrl.hidePage[ctrl.currPage-1] = true;
@@ -225,7 +237,7 @@ angular.module("ngapp")
         ctrl.changePageView();
     };
 
-    this.clickTemplateOption = function(ev,templateObj){
+    ctrl.clickTemplateOption = function(ev,templateObj){
         
         ctrl.dataAlertForm.template = templateObj;
         ctrl.hidePage[ctrl.currPage-1] = true;
@@ -234,12 +246,12 @@ angular.module("ngapp")
         ctrl.changePageView();
     };
 
-    this.dataOptions = {};
-    this.dataEventTypeOptions = {};
-    this.dataUrgencyOptions = {};
-    this.dataCertaintyOptions = {};
-    this.dataSeverityOptions = {};
-    this.dataScopeOptions = {};
+    ctrl.dataOptions = {};
+    ctrl.dataEventTypeOptions = {};
+    ctrl.dataUrgencyOptions = {};
+    ctrl.dataCertaintyOptions = {};
+    ctrl.dataSeverityOptions = {};
+    ctrl.dataScopeOptions = {};
     var promiseLoadData = shared.loadDataAlert(shared.apiUrl+'cap/alert/create.s3json?options=true&references=true');
     promiseLoadData.then(function(response) {
       //console.log(response);
@@ -306,7 +318,7 @@ angular.module("ngapp")
       console.log('Failed: ' + reason);
     });
 
-    this.dataTemplateOptions = {};
+    ctrl.dataTemplateOptions = {};
     var promiseLoadDataTemplate = shared.loadDataAlert(shared.apiUrl+'cap/template.json');
     promiseLoadDataTemplate.then(function(response) {
       //console.log(response);
@@ -315,7 +327,7 @@ angular.module("ngapp")
       console.log('Failed: ' + reason);
     });
 
-    this.dataPredefinedAreaOptions = {};
+    ctrl.dataPredefinedAreaOptions = {};
     var promiseLoadDataPredefinedArea = shared.loadDataAlert(shared.apiUrl+'cap/area.json?~.is_template=True');
     promiseLoadDataPredefinedArea.then(function(response) {
       //console.log(response);
@@ -334,5 +346,7 @@ angular.module("ngapp")
     }, function(reason) {
       console.log('Failed: ' + reason);
     });
+
+
 
 });
