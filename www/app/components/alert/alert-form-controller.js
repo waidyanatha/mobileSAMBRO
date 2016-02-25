@@ -6,8 +6,8 @@ angular.module("ngapp")
 
     var ctrl = this;    
 
-    $cordovaStatusbar.overlaysWebView(false); // Always Show Status Bar = false
-    $cordovaStatusbar.styleHex('#E53935'); // Status Bar With Red Color, Using Angular-Material Style
+    //$cordovaStatusbar.overlaysWebView(false); // Always Show Status Bar = false
+    //$cordovaStatusbar.styleHex('#E53935'); // Status Bar With Red Color, Using Angular-Material Style
 
     ctrl.auth = shared.info.auth;
     ctrl.username = $localStorage['username'];
@@ -52,6 +52,7 @@ angular.module("ngapp")
         },
         expireDate : ctrl.todayDate,
         effectiveDate : ctrl.todayDate,
+        warningPriority : null,
         urgency : null,
         certainty : null,
         severity : null,
@@ -160,6 +161,19 @@ angular.module("ngapp")
 
     ctrl.submitForm = function(){
         //console.log('click it');
+        var capAreasVal = new Array();
+        for(var i=0;i<ctrl.dataPredefinedAreaOptions.length;i++){
+            if(ctrl.dataPredefinedAreaOptions[i].selected){
+                var areaVal = {
+                    "name" : ctrl.dataPredefinedAreaOptions[i].name,
+                    "is_template" : {
+                        "@value" : "F"
+                    }
+                };
+                capAreasVal.push(areaVal);
+            }    
+        }
+
         var submitFormVal = {
             "$_cap_alert": [{
                 "status": {
@@ -206,7 +220,8 @@ angular.module("ngapp")
                     "is_template": {
                       "@value": "F"
                     }
-                }]
+                }],
+                "$_cap_area" : capAreasVal
             }]
         };
 
@@ -244,6 +259,13 @@ angular.module("ngapp")
         ctrl.currPage = 3; //go to location
         ctrl.hidePage[ctrl.currPage-1] = false;  
         ctrl.changePageView();
+    };
+
+    ctrl.clickWarningPriority = function(idx){
+        console.log(idx);
+        ctrl.dataAlertForm.severity = ctrl.dataWarningPrioritys[idx].severity;
+        ctrl.dataAlertForm.certainty = ctrl.dataWarningPrioritys[idx].certainty;
+        ctrl.dataAlertForm.urgency = ctrl.dataWarningPrioritys[idx].urgency;
     };
 
     ctrl.dataOptions = {};
@@ -323,6 +345,15 @@ angular.module("ngapp")
     promiseLoadDataTemplate.then(function(response) {
       //console.log(response);
       ctrl.dataTemplateOptions = response;
+    }, function(reason) {
+      console.log('Failed: ' + reason);
+    });
+
+    ctrl.dataWarningPrioritys = {};
+    var promiseLoadDataWarningPriority = shared.loadDataAlert(shared.apiUrl+'cap/warning_priority.json');
+    promiseLoadDataWarningPriority.then(function(response) {
+      //console.log(response);
+      ctrl.dataWarningPrioritys = response;
     }, function(reason) {
       console.log('Failed: ' + reason);
     });

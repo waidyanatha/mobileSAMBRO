@@ -17,7 +17,7 @@ angular.element(document).ready(function () {
 angular.module("ngapp", [ "ngTouch", "ui.router", "ngMdIcons", "ngMaterial", "ngCordova", "ngStorage" ,"ngMessages"])
 // ngTouch is No Longer Supported by Angular-Material
 
-.run(function(shared,$localStorage,$sessionStorage,$location,$cordovaSQLite,$cordovaDialogs, $cordovaDevice){
+.run(function(shared,$localStorage,$sessionStorage,$location,$cordovaSQLite,$cordovaDialogs, $cordovaDevice,$cordovaStatusbar){
   // $localStorage['username'] = ctrl.loginForm.email;
   // $localStorage['password'] = ctrl.loginForm.password;
 
@@ -37,38 +37,26 @@ angular.module("ngapp", [ "ngTouch", "ui.router", "ngMdIcons", "ngMaterial", "ng
       }
     }, false);*/
 
-        //$cordovaDialogs.alert('Test', 'Test Body', 'OK');
-        //sqlite
-        //dbShared = $cordovaSQLite.openDB({name: "offline_data.db" });
-        // $cordovaSQLite.execute(dbShared,"CREATE TABLE IF NOT EXISTS event_type (id integer primary key, name text)");
-        // $scope.execute = function() {
-        //   var query = "INSERT INTO event_type (id, name) VALUES (?,?)";
-        //   $cordovaSQLite.execute(dbShared, query, [1, "abc"]).then(function(res) {
-        //     console.log("insertId: " + res.insertId);
-        //     //$cordovaDialogs.alert('insertId', res.insertId, 'OK');
-        //   }, function (err) {
-        //     //$cordovaDialogs.alert('err', err, 'OK');
-        //     console.error(err);
-        //   });
-        // };
-        // $scope.execute();
+  $cordovaStatusbar.overlaysWebView(true); // Always Show Status Bar = false
+  $cordovaStatusbar.styleHex('#E53935'); // Status Bar With Red Color, Using Angular-Material Style
+  $cordovaStatusbar.show();
 
-        // $scope.select = function() {
-        // var query = "SELECT * FROM event_type";
-        //     $cordovaSQLite.execute(dbShared,query).then(function(result) {
-        //         if(result.rows.length > 0) {
-        //             //$cordovaDialogs.alert('row db ', "SELECTED -> " + result.rows.item(0).id + " " + result.rows.item(0).name, 'OK');
-        //             console.log("SELECTED -> " + result.rows.item(0).id + " " + result.rows.item(0).name);
-        //         } else {
-        //             console.log("NO ROWS EXIST");
-        //         }
-        //     }, function(error) {
-        //         console.error(error);
-        //     });
-        // };
-        // $scope.select();
+  //$cordovaDialogs.alert('Test', 'Test Body', 'OK');
+  //sqlite
+  console.log('TEST MOBILE');
 
-        // console.log(dbShared);
+  dbShared = $cordovaSQLite.openDB({name: "offline_data.db" });
+  $cordovaSQLite.execute(dbShared,"CREATE TABLE IF NOT EXISTS m_user (email text, pwd text)");
+  $cordovaSQLite.execute(dbShared,"CREATE TABLE IF NOT EXISTS t_alert (id integer primary key, cap_info_headline text, cap_area_name text, cap_scope text,event_event_type_name text,sent TEXT)");
+  $cordovaSQLite.execute(dbShared,"CREATE TABLE IF NOT EXISTS t_alert_offline (id integer primary key, created_time text, data_form text);");
+  $cordovaSQLite.execute(dbShared,"CREATE TABLE IF NOT EXISTS m_event_type (fvalue text, name text,icon text)");
+  $cordovaSQLite.execute(dbShared,"CREATE TABLE IF NOT EXISTS m_urgency (fvalue text, name text)");
+  $cordovaSQLite.execute(dbShared,"CREATE TABLE IF NOT EXISTS m_certainty (fvalue text, name text)");
+  $cordovaSQLite.execute(dbShared,"CREATE TABLE IF NOT EXISTS m_severity (fvalue text, name text)");
+  $cordovaSQLite.execute(dbShared,"CREATE TABLE IF NOT EXISTS m_scope (fvalue text, name text)");
+  $cordovaSQLite.execute(dbShared,"CREATE TABLE IF NOT EXISTS m_warning_priority (id integer primary key, name text,priority_rank integer, color_code text, severity text, certainty text, urgency text, event_type_id integer)");
+  $cordovaSQLite.execute(dbShared,"CREATE TABLE IF NOT EXISTS m_template (id integer primary key, template_title text, cap_scope text, cap_info_category text, cap_info_response_type text, event_event_type_id integer)");
+  $cordovaSQLite.execute(dbShared,"CREATE TABLE IF NOT EXISTS m_predefined_area (id integer primary key, name text, event_type_id integer,location_id integer)");
       
 })
 .factory("interceptors_", [function() {

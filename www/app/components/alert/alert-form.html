@@ -82,61 +82,30 @@
       </div>
 
       <div ng-hide="alertForm.hidePage[4]">  
-        <md-subheader class="md-no-sticky">Severity ({{alertForm.progressText}})</md-subheader>
-        <form id="dataForm"  name="dataForm" class="md-inline-form" novalidate>
-
-          <md-dialog-content>
-            <div class="md-dialog-content" style="padding-left:15px;" >
-
-                <div layout="column" layout-gt-sm="column">
-                    <md-input-container flex>
-                        <label>Urgency</label>
-                        <md-select ng-model="alertForm.dataAlertForm.urgency">
-                            <md-option ng-repeat="dataUrgencyOption in alertForm.dataUrgencyOptions" value="{{dataUrgencyOption['@value']}}">
-                                {{dataUrgencyOption['@value']}}
-                            </md-option>
-                        </md-select>
-                    </md-input-container>
-
-                    <md-input-container flex>
-                        <label>Certainty</label>
-                        <md-select ng-model="alertForm.dataAlertForm.certainty">
-                            <md-option ng-repeat="dataCertaintyOption in alertForm.dataCertaintyOptions" value="{{dataCertaintyOption['@value']}}">
-                                {{dataCertaintyOption['@value']}}
-                            </md-option>
-                        </md-select>
-                    </md-input-container>
-
-                    <md-input-container flex>
-                        <label>Severity</label>
-                        <md-select ng-model="alertForm.dataAlertForm.severity">
-                            <md-option ng-repeat="dataSeverityOption in alertForm.dataSeverityOptions" value="{{dataSeverityOption['@value']}}">
-                                {{dataSeverityOption['@value']}}
-                            </md-option>
-                        </md-select>
-                    </md-input-container>
-                
-                    <h4></h4>
-                </div>
-
-            </div>
-          </md-dialog-content>
-        </form>
+        <md-subheader class="md-no-sticky">Warning Priority ({{alertForm.progressText}})</md-subheader>
+        <md-radio-group ng-model="alertForm.dataAlertForm.warningPriority" >
+          <md-list-item ng-repeat="dataWarningPriority in alertForm.dataWarningPrioritys" >
+            <md-radio-button flex
+                ng-value="dataWarningPriority['id']"
+                class="md-primary"
+                ng-click="alertForm.clickWarningPriority(alertForm.dataWarningPrioritys.indexOf(dataWarningPriority))" >
+                {{dataWarningPriority['name']}}
+            </md-radio-button>
+          </md-list-item>
+        </md-radio-group>
       </div>
 
       <div ng-hide="alertForm.hidePage[5]">  
         <md-subheader class="md-no-sticky">Severity ({{alertForm.progressText}})</md-subheader>
         <md-radio-group ng-model="alertForm.dataAlertForm.scope" >
-        <md-list-item ng-repeat="dataScopeOption in alertForm.dataScopeOptions" >
-         
-          <md-radio-button flex
-              ng-value="dataScopeOption['@value']"
-              class="md-primary" >
-              {{dataScopeOption['@value']}}
-          </md-radio-button>
-        </md-list-item>
+          <md-list-item ng-repeat="dataScopeOption in alertForm.dataScopeOptions" >
+            <md-radio-button flex
+                ng-value="dataScopeOption['@value']"
+                class="md-primary" >
+                {{dataScopeOption['@value']}}
+            </md-radio-button>
+          </md-list-item>
         </md-radio-group>
-       
       </div>
 
       <div ng-hide="alertForm.hidePage[6]">  
