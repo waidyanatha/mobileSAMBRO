@@ -1,45 +1,61 @@
-<md-toolbar flex>
+
+
+<md-toolbar class="mainToolbar" flex>
   <div class="md-toolbar-tools" layout="row" layout-align="space-between center">
     <md-button class="md-icon-button md-primary" aria-label="Menu" ng-click="main.toggle()">
       <ng-md-icon icon="menu"></ng-md-icon>
     </md-button>
     <p>{{ main.title }}</p>
-    <div style="width: 40px; height: 40px;"></div>
+    <div ></div>
   </div>
+  <!-- ADD FILE BUTTON -->
+  <md-button class="add-file-button md-fab md-warn addTopButton" aria-label="Add file" ng-click="main.addAlert()">
+      <ng-md-icon icon="add"></ng-md-icon>
+  </md-button>
+  <!-- / ADD FILE BUTTON -->
 </md-toolbar>
 
 <md-sidenav class="md-sidenav-left" md-component-id="left">
-  <md-toolbar>
-    <h1 class="md-toolbar-tools">SideNav Menu</h1>
+  <md-toolbar class="sideLeftNavTopBar">
+    <h1 class="md-toolbar-tools">{{main.username}}</h1>
   </md-toolbar>
   <md-list ng-cloak>
-    <md-list-item ng-href="http://www.google.com/design/spec/material-design/introduction.html">
-      <ng-md-icon icon="school"></ng-md-icon>
-      <p>Material Design</p>
+    <md-list-item >
+      <ng-md-icon icon="verified_user"></ng-md-icon>
+      <p>Profile</p>
     </md-list-item>
-    <md-list-item ng-href="https://material.angularjs.org/latest/">
-      <ng-md-icon icon="settings_ethernet"></ng-md-icon>
-      <p>Angular Material</p>
+    <md-list-item ng-click="main.logout()">
+      <ng-md-icon icon="verified_user"></ng-md-icon>
+      <p>Logout</p>
     </md-list-item>
   </md-list>
 </md-sidenav>
 
-<div layout="column" layout-align="center center" flex>
-  <md-whiteframe class="md-whiteframe-3dp" layout="column" style="margin: 1em; width: 22em; height: 15em;" flex>
-    <div layout="column" flex style="margin-left: 1em;">
-      <h4>Project:</h4>
-      <p style="margin-top: -1em;">Cordova-Angular-AngularMaterial-Seed</p>
-      <h4>Created by:</h4>
-      <p style="margin-top: -1em;">MarioAleo</p>
-    </div>
-    <md-divider></md-divider>
-    <div layout="row" layout-align="space-around center" flex="20">
-      <md-button class="md-icon-button" aria-label="Project" ng-href="https://github.com/marioaleogolsat/cordova-angular-angularMaterial-seed">
-        <ng-md-icon icon="github-circle"></ng-md-icon>
-      </md-button>
-      <md-button class="md-icon-button" aria-label="Creator" ng-href="https://github.com/marioaleogolsat">
-        <ng-md-icon icon="favorite"></ng-md-icon>
-      </md-button>
-    </div>
-  </md-whiteframe>
-</div>
+<md-content class="content" layout="column" flex>
+  <div class="spaceTop"></div>
+  <div layout="row">
+    <div flex="5"></div>
+      <md-whiteframe class="md-whiteframe-3dp" layout="column" flex="90">
+
+        <md-list ng-cloak>
+          <md-subheader class="md-no-sticky">Alert List</md-subheader>
+          <md-list-item class="md-3-line" ng-repeat="dataAlert in main.dataAlerts" >
+
+            <ng-md-icon icon="image" class="md-avatar"></ng-md-icon>
+            <div class="md-list-item-text" layout="column">
+              <h3>{{ dataAlert['cap_info.headline'] }}</h3>
+              <h4>{{ dataAlert['cap_area.name'] }}</h4>
+              <p>{{ dataAlert['event_event_type.name']}} - {{ dataAlert.scope }}</p>
+            </div>
+
+          </md-list-item>
+        </md-list>
+
+        <md-divider></md-divider>
+        
+      </md-whiteframe>
+    <div flex="5"></div>
+  </div>
+  <div class="spaceBottom"></div>
+</md-content>
+

@@ -1,0 +1,51 @@
+<link rel="stylesheet" type="text/css" href="app/components/login/login.css">
+
+<md-content class="content" layout="column" style="background: #e53935;" flex>
+  <div style="height:40px;"></div>
+  <div layout="row">
+    <div flex="5"></div>
+      <div layout="column" flex="90">
+        <div layout="row" layout-align="space-around center" flex="20">
+            <img src="cap.jpg">
+        </div>
+        <form style="margin:1em auto;" name="loginForm" novalidate flex="80">
+          <md-input-container class="md-block" md-no-float>
+              <input type="email" name="email" ng-model="login.loginForm.email" placeholder="Email"
+                     ng-pattern="/^.+@.+\..+$/" required>
+              <div ng-messages="loginForm.email.$error" ng-show="loginForm.email.$touched" role="alert" multiple>
+                  <div ng-message="required">
+                      <span >Email field is required</span>
+                  </div>
+                  <div ng-message="pattern">
+                      <span >Email must be a valid e-mail address</span>
+                  </div>
+              </div>
+          </md-input-container>
+
+          <md-input-container class="md-block" md-no-float>
+              <input type="password" name="password" ng-model="login.loginForm.password" placeholder="Password"
+                     required>
+              <div ng-messages="loginForm.password.$error" ng-show="loginForm.password.$touched" role="alert">
+                  <div ng-message="required">
+                      <span >Password field is required</span>
+                  </div>
+              </div>
+          </md-input-container>
+          
+            <md-button type="submit" class="md-raised md-accent" aria-label="LOG IN"
+                       ng-disabled="loginForm.$invalid || loginForm.$pristine" ng-click="login.sendForm();">
+                LOG IN
+            </md-button>
+            <div ng-hide="login.hideErrorMessage" class="msg-wrong-pass md-warn-fg text-center">Username or Password is Wrong</div>
+
+          
+        </form>
+          
+      </div>
+    <div flex="5"></div>
+  </div>
+  <div style="height:10px;"></div>
+</md-content>
+
+
+

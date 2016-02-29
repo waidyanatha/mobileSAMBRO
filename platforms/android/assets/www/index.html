@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html ng-app="ngapp">
+<html>
 
   <head>
     <meta charset="utf-8"/>
@@ -17,14 +17,15 @@
     <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto:400,300,300italic,400italic,500,500italic,700,700italic">
     <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto+Mono:400,700">
 
+    <script type="text/javascript" src="assets/lib/jquery.min.js"></script>
     <!-- AngularJs -->
     <script type="text/javascript" src="assets/lib/angular.min.js"></script>
     <script type="text/javascript" src="assets/lib/angular-ui-router.min.js"></script>
     <script type="text/javascript" src="assets/lib/angular-aria.min.js"></script>
     <script type="text/javascript" src="assets/lib/angular-animate.min.js"></script>
     <script type="text/javascript" src="assets/lib/ngStorage.min.js"></script>
-    <!--script type="text/javascript" src="assets/lib/ngTouch.min.js"></script-->
-
+    <script type="text/javascript" src="assets/lib/ngTouch.min.js"></script>
+    <script type="text/javascript" src="assets/lib/angular-messages.min.js"></script>
     <!-- Angular Material -->
     <script type="text/javascript" src="assets/lib/angular-material-icons.js"></script>
     <script type="text/javascript" src="assets/lib/angular-material.js"></script>
@@ -32,6 +33,11 @@
     <!-- Cordova -->
     <script type="text/javascript" src="assets/lib/ng-cordova.min.js"></script>
     <script src="cordova.js"></script>
+
+<script type="text/javascript">
+    var dbShared = null;
+</script>
+
 
     <!-- Modules -->
     <script type="text/javascript" src="app/app.js"></script>
@@ -44,13 +50,17 @@
 
     <!-- Controllers -->
     <script type="text/javascript" src="app/components/main/main-controller.js"></script>
+    <script type="text/javascript" src="app/components/alert/alert-form-controller.js"></script>
+    <script type="text/javascript" src="app/components/login/login-controller.js"></script>
 
-    <title>NgApp</title>
+    <link rel="stylesheet" type="text/css" href="assets/css/custom.css">
+
+    <title>CAP on Mobile</title>
   </head>
 
-  <body style="position: fixed;" ng-cloak>
+  <body layout="row" ng-cloak>
 
     <ui-view></ui-view>
-
+    
   </body>
 </html>

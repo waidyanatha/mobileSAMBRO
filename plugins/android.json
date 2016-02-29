@@ -19,13 +19,26 @@
                         {
                             "xml": "<feature name=\"OrientationLock\"><param name=\"android-package\" value=\"com.plugin.phonegap.OrientationLock\" /></feature>",
                             "count": 1
+                        },
+                        {
+                            "xml": "<feature name=\"SQLitePlugin\"><param name=\"android-package\" value=\"io.sqlc.SQLitePlugin\" /></feature>",
+                            "count": 1
+                        },
+                        {
+                            "xml": "<feature name=\"NetworkStatus\"><param name=\"android-package\" value=\"org.apache.cordova.networkinformation.NetworkManager\" /></feature>",
+                            "count": 1
                         }
                     ]
                 }
             },
             "AndroidManifest.xml": {
                 "parents": {
-                    "/*": []
+                    "/*": [
+                        {
+                            "xml": "<uses-permission android:name=\"android.permission.ACCESS_NETWORK_STATE\" />",
+                            "count": 1
+                        }
+                    ]
                 }
             }
         }
@@ -39,6 +52,12 @@
         },
         "com.phonegap.plugins.OrientationLock": {
             "PACKAGE_NAME": "io.cordova.MaterialSeed"
+        },
+        "cordova-sqlite-storage": {
+            "PACKAGE_NAME": "com.gic.cap"
+        },
+        "cordova-plugin-network-information": {
+            "PACKAGE_NAME": "com.gic.cap"
         }
     },
     "dependent_plugins": {}
