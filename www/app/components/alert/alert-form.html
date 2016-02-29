@@ -1,6 +1,8 @@
 
 <style type="text/css">
   .msgRequired{color:#c9161c;font-size:small;}
+  .selectedList{background-color:darkgray;}
+  .unSelectedList{background-color:white;}
 </style>
 <md-toolbar class="mainToolbar" flex>
   <div class="md-toolbar-tools" layout="row" layout-align="space-between center">
@@ -10,7 +12,7 @@
     
   </div>
   <!-- ADD FILE BUTTON -->
-  <md-button class="add-file-button md-fab md-warn addTopButton" ng-hide="alertForm.hidePage[2]" aria-label="Add file" ng-click="alertForm.addArea()">
+  <md-button class="add-file-button md-fab md-warn addTopButton" ng-hide="alertForm.hidePage[3]" aria-label="Add file" ng-click="alertForm.addArea()">
       <ng-md-icon icon="add"></ng-md-icon>
   </md-button>
   <!-- / ADD FILE BUTTON -->
@@ -25,21 +27,34 @@
       <md-progress-linear md-mode="determinate" value="{{alertForm.progress}}"></md-progress-linear>
       <div ng-hide="alertForm.hidePage[0]">  
         <md-subheader class="md-no-sticky">Event Types ({{alertForm.progressText}})</md-subheader>
-        <md-list-item ng-repeat="dataEventTypeOption in alertForm.dataEventTypeOptions" ng-click="alertForm.clickEventTypeOption($event,{id:dataEventTypeOption['@value'],name:dataEventTypeOption['$']})">
+        <md-list-item id="event-type-opt_{{dataEventTypeOption['@value']}}" class="event-type-opt unSelectedList" ng-repeat="dataEventTypeOption in alertForm.dataEventTypeOptions" ng-click="alertForm.clickEventTypeOption($event,dataEventTypeOption)">
           <img alt="{{ dataEventTypeOption.$ }}" ng-src="assets/images/disaster/27832-200.png" class="md-avatar" />
           <p>{{dataEventTypeOption.$}}</p>
         </md-list-item>
       </div>
 
       <div ng-hide="alertForm.hidePage[1]">  
+        <md-subheader class="md-no-sticky">Status ({{alertForm.progressText}})</md-subheader>
+        <md-radio-group ng-model="alertForm.dataAlertForm.status" >
+          <md-list-item ng-repeat="dataStatusOption in alertForm.dataStatusOptions" >
+            <md-radio-button flex
+                ng-value="dataStatusOption['@value']"
+                class="md-primary" >
+                {{dataStatusOption['@value']}}
+            </md-radio-button>
+          </md-list-item>
+        </md-radio-group>
+      </div>
+
+      <div ng-hide="alertForm.hidePage[2]">  
         <md-subheader class="md-no-sticky">Templates ({{alertForm.progressText}})</md-subheader>
-        <md-list-item ng-repeat="dataTemplateOption in alertForm.dataTemplateOptions" ng-click="alertForm.clickTemplateOption($event,{id:dataTemplateOption['id'],name:dataTemplateOption.template_title})">
+        <md-list-item id="template-opt_{{dataTemplateOption['id']}}" class="template-opt unSelectedList" ng-repeat="dataTemplateOption in alertForm.dataTemplateOptions" ng-click="alertForm.clickTemplateOption($event,dataTemplateOption)">
           <img alt="{{ dataTemplateOption.template_title }}" ng-src="assets/images/disaster/27832-200.png" class="md-avatar" />
           <p>{{dataTemplateOption.template_title}}</p>
         </md-list-item>
       </div>
 
-      <div ng-hide="alertForm.hidePage[2]">  
+      <div ng-hide="alertForm.hidePage[3]">  
         <md-subheader class="md-no-sticky">Location ({{alertForm.progressText}})</md-subheader>
         <md-list-item ng-repeat="dataPredefinedAreaOption in alertForm.dataPredefinedAreaOptions" >
           <p>{{dataPredefinedAreaOption.name}}</p>
@@ -47,41 +62,15 @@
         </md-list-item>
       </div>
 
-      <div ng-hide="alertForm.hidePage[3]">  
-        <md-subheader class="md-no-sticky">Date ({{alertForm.progressText}})</md-subheader>
-        <form id="dataForm"  name="dataForm" class="md-inline-form" novalidate>
-
-          <md-dialog-content>
-            <div class="md-dialog-content" style="padding-left:15px;" >
-
-                <div layout="column" layout-gt-sm="column">
-                    <h5>Effective Date</h5>
-                    <md-datepicker name="effectiveDate" ng-model="alertForm.dataAlertForm.effectiveDate" md-placeholder="Enter date"
-                    md-min-date="minDate" md-max-date="maxDate" required></md-datepicker>
-                    <div class="msgRequired" ng-messages="dataForm.effectiveDate.$error" ng-show="dataForm.effectiveDate.$touched" role="alert" >
-                        <div ng-message="required">
-                            <span >Effective date field is required</span>
-                        </div>
-                    </div>
-
-                    <h5>Expire Date</h5>
-                    <md-datepicker name="expireDate" ng-model="alertForm.dataAlertForm.expireDate" md-placeholder="Enter date"
-                    md-min-date="minDate" md-max-date="maxDate" required></md-datepicker>
-                    <div class="msgRequired" ng-messages="dataForm.expireDate.$error" ng-show="dataForm.expireDate.$touched" role="alert" >
-                        <div ng-message="required">
-                            <span >Expire date field is required</span>
-                        </div>
-                    </div>
-                
-                    <h4></h4>
-                </div>
-
-            </div>
-          </md-dialog-content>
-        </form>
+      <div ng-hide="alertForm.hidePage[4]">  
+        <md-subheader class="md-no-sticky">Response Type ({{alertForm.progressText}})</md-subheader>
+        <md-list-item ng-repeat="dataResponseTypeOption in alertForm.dataResponseTypeOptions" >
+          <p>{{dataResponseTypeOption['@value']}}</p>
+          <md-checkbox class="md-secondary" ng-model="dataResponseTypeOption.selected" ></md-checkbox>
+        </md-list-item>
       </div>
 
-      <div ng-hide="alertForm.hidePage[4]">  
+      <div ng-hide="alertForm.hidePage[5]">  
         <md-subheader class="md-no-sticky">Warning Priority ({{alertForm.progressText}})</md-subheader>
         <md-radio-group ng-model="alertForm.dataAlertForm.warningPriority" >
           <md-list-item ng-repeat="dataWarningPriority in alertForm.dataWarningPrioritys" >
@@ -95,8 +84,8 @@
         </md-radio-group>
       </div>
 
-      <div ng-hide="alertForm.hidePage[5]">  
-        <md-subheader class="md-no-sticky">Severity ({{alertForm.progressText}})</md-subheader>
+      <div ng-hide="alertForm.hidePage[6]">  
+        <md-subheader class="md-no-sticky">Scope ({{alertForm.progressText}})</md-subheader>
         <md-radio-group ng-model="alertForm.dataAlertForm.scope" >
           <md-list-item ng-repeat="dataScopeOption in alertForm.dataScopeOptions" >
             <md-radio-button flex
@@ -108,27 +97,153 @@
         </md-radio-group>
       </div>
 
-      <div ng-hide="alertForm.hidePage[6]">  
+      <div ng-hide="alertForm.hidePage[7]">  
+        <md-subheader class="md-no-sticky">Date ({{alertForm.progressText}})</md-subheader>
+        <form name="dataForm" class="md-inline-form" novalidate>
+
+          <md-dialog-content>
+            <div class="md-dialog-content" style="padding-left:15px;" >
+
+                <div layout="column" layout-gt-sm="column">
+                    <h5>On Set Date</h5>
+                    <md-datepicker name="onSetDate" ng-model="alertForm.dataAlertForm.onSetDate" md-placeholder="Enter date"
+                    md-min-date="minDate" md-max-date="maxDate" required></md-datepicker>
+                    <div class="msgRequired" ng-messages="dataForm.onSetDate.$error" ng-show="dataForm.onSetDate.$touched" role="alert" >
+                        <div ng-message="required">
+                            <span >On Set date field is required</span>
+                        </div>
+                    </div>
+                
+                    <h4></h4>
+                </div>
+
+            </div>
+          </md-dialog-content>
+        </form>
+      </div>
+
+      <div ng-hide="alertForm.hidePage[8]">  
         <md-subheader class="md-no-sticky">Note ({{alertForm.progressText}})</md-subheader>
-        <form id="dataForm"  name="dataForm" class="md-inline-form" novalidate>
+        <form name="dataForm" class="md-inline-form" novalidate>
 
           <md-dialog-content>
             <div class="md-dialog-content" style="padding-left:15px;" >
 
                 <div layout="column" layout-gt-sm="column">
                     <md-input-container flex>
+                        <label>Headline</label>
+                        <textarea ng-model="alertForm.dataAlertForm.headline" columns="4" md-maxlength="140" rows="5"></textarea>
+                    </md-input-container>
+                    <md-input-container flex>
                         <label>Description</label>
-                        <textarea ng-model="alertForm.dataAlertForm.description" columns="4" md-maxlength="150" rows="5"></textarea>
+                        <textarea ng-model="alertForm.dataAlertForm.description" columns="4" md-maxlength="140" rows="5"></textarea>
                     </md-input-container>
                     <!--<div>{{alertForm.responseDebug}}</div>-->
                     <h4></h4>
+                
                     <h4></h4>
+                </div>
 
+            </div>
+          </md-dialog-content>
+        </form>
+      </div>
+
+      <div ng-hide="alertForm.hidePage[9]">  
+        <md-subheader class="md-no-sticky">Submit ({{alertForm.progressText}})</md-subheader>
+        
+        <md-subheader class="md-no-sticky">Event Types</md-subheader>
+        <md-list-item ng-repeat="dataEventTypeOption in alertForm.dataEventTypeOptions" ng-if="dataEventTypeOption['@value'] == alertForm.dataAlertForm.eventType.id" >
+          <img alt="{{ dataEventTypeOption.$ }}" ng-src="assets/images/disaster/27832-200.png" class="md-avatar" />
+          <p>{{dataEventTypeOption.$}}</p>
+        </md-list-item>
+        <md-divider ></md-divider>
+
+        <md-subheader class="md-no-sticky">Status</md-subheader>
+        <md-list-item ng-repeat="dataStatusOption in alertForm.dataStatusOptions" ng-if="dataStatusOption['@value'] == alertForm.dataAlertForm.status">
+          <p>{{dataStatusOption['@value']}}</p>
+        </md-list-item>
+        <md-divider ></md-divider>
+
+        <md-subheader class="md-no-sticky">Templates</md-subheader>
+        <md-list-item ng-repeat="dataTemplateOption in alertForm.dataTemplateOptions" ng-if="dataTemplateOption['id'] == alertForm.dataAlertForm.template.id">
+          <img alt="{{ dataTemplateOption.template_title }}" ng-src="assets/images/disaster/27832-200.png" class="md-avatar" />
+          <p>{{dataTemplateOption.template_title}}</p>
+        </md-list-item>
+        <md-divider ></md-divider>
+
+        <md-subheader class="md-no-sticky">Location</md-subheader>
+        <md-list-item ng-repeat="dataPredefinedAreaOption in alertForm.dataPredefinedAreaOptions" ng-if="dataPredefinedAreaOption.selected">
+          <p>{{dataPredefinedAreaOption.name}}</p>
+        </md-list-item>
+        <md-divider ></md-divider>
+
+        <md-subheader class="md-no-sticky">Response Type</md-subheader>
+        <md-list-item ng-repeat="dataResponseTypeOption in alertForm.dataResponseTypeOptions" ng-if="dataResponseTypeOption.selected">
+          <p>{{dataResponseTypeOption['@value']}}</p>
+        </md-list-item>
+        <md-divider ></md-divider>
+
+        <md-subheader class="md-no-sticky">Warning Priority</md-subheader>
+        <md-list-item ng-repeat="dataWarningPriority in alertForm.dataWarningPrioritys" ng-if="dataWarningPriority['id'] == alertForm.dataAlertForm.warningPriority">
+          <p>{{dataWarningPriority['name']}}</p>
+        </md-list-item>
+        <md-divider ></md-divider>
+
+        <md-subheader class="md-no-sticky">Scope</md-subheader>
+        <md-list-item ng-repeat="dataScopeOption in alertForm.dataScopeOptions" ng-if="dataScopeOption['@value'] == alertForm.dataAlertForm.scope">
+          <p>{{dataScopeOption['@value']}}</p>
+        </md-list-item>
+        <md-divider ></md-divider>
+
+        <md-subheader class="md-no-sticky">Date</md-subheader>
+        <form class="md-inline-form" novalidate>
+          <md-dialog-content>
+            <div class="md-dialog-content" style="padding-left:15px;" >
+
+                <div layout="column" layout-gt-sm="column">
+                    <h5>On Set Date</h5>
+                    <md-datepicker ng-model="alertForm.dataAlertForm.onSetDate" md-placeholder="Enter date"
+                    md-min-date="minDate" md-max-date="maxDate" disabled></md-datepicker>
+                </div>
+
+            </div>
+          </md-dialog-content>
+        </form>
+        <md-divider ></md-divider>
+
+        <md-subheader class="md-no-sticky">Note</md-subheader>
+        <form name="dataForm" class="md-inline-form" novalidate>
+          <md-dialog-content>
+            <div class="md-dialog-content" style="padding-left:15px;" >
+
+                <div layout="column" layout-gt-sm="column">
+                    <md-input-container flex>
+                        <label>Headline</label>
+                        <textarea ng-model="alertForm.dataAlertForm.headline" columns="4" md-maxlength="140" rows="5" disabled></textarea>
+                    </md-input-container>
+                    <md-input-container flex>
+                        <label>Description</label>
+                        <textarea ng-model="alertForm.dataAlertForm.description" columns="4" md-maxlength="140" rows="5" disabled></textarea>
+                    </md-input-container>
+                </div>
+            </div>
+          </md-dialog-content>
+        </form>
+        <md-divider ></md-divider>
+
+        <form class="md-inline-form" novalidate>
+
+          <md-dialog-content>
+            <div class="md-dialog-content" style="padding-left:15px;" >
+
+                <div layout="column" layout-gt-sm="column">
+                    
+                    <h4></h4>
                     <md-button class="md-raised md-accent" aria-label="Submit"
                                ng-disabled="alertForm.disabledNextBtn()" ng-click="alertForm.submitForm()">
                         Submit
                     </md-button>
-                
                     <h4></h4>
                     <h4></h4>
                 </div>

@@ -9,7 +9,7 @@
     <div ></div>
   </div>
   <!-- ADD FILE BUTTON -->
-  <md-button class="add-file-button md-fab md-warn addTopButton" aria-label="Add file" ng-click="main.addAlert()">
+  <md-button class="add-file-button md-fab md-warn addTopButton" aria-label="Add file" ng-disabled="main.isSync" ng-click="main.addAlert()">
       <ng-md-icon icon="add"></ng-md-icon>
   </md-button>
   <!-- / ADD FILE BUTTON -->
@@ -37,18 +37,38 @@
     <div flex="5"></div>
       <md-whiteframe class="md-whiteframe-3dp" layout="column" flex="90">
 
+        <md-progress-linear md-mode="indeterminate" ng-show="main.isSync"></md-progress-linear>
         <md-list ng-cloak>
-          <md-subheader class="md-no-sticky">Alert List</md-subheader>
-          <md-list-item class="md-3-line" ng-repeat="dataAlert in main.dataAlerts" >
 
-            <ng-md-icon icon="image" class="md-avatar"></ng-md-icon>
-            <div class="md-list-item-text" layout="column">
-              <h3>{{ dataAlert['cap_info.headline'] }}</h3>
-              <h4>{{ dataAlert['cap_area.name'] }}</h4>
-              <p>{{ dataAlert['event_event_type.name']}} - {{ dataAlert.scope }}</p>
+          <md-subheader ng-show="main.isOfflineDataExist" class="md-no-sticky">Offline Alert List</md-subheader>
+          <md-list-item ng-show="!dataAlert.is_send" layout="column" class="md-3-line" ng-repeat="dataAlert in main.dataOfflineAlerts" >
+            
+            <md-progress-linear md-mode="indeterminate" ng-show="dataAlert.is_progress"></md-progress-linear>
+            <div layout="row" layout-align="start start" >
+                <ng-md-icon icon="image" class="md-avatar" flex="10"></ng-md-icon>
+                <div class="md-list-item-text" layout="column" flex="90">
+                  <h3>{{ dataAlert.data_form['$_cap_alert'][0]['$_cap_info'][0]['headline'] }}</h3>
+                  <h4>{{ dataAlert.data_form['$_cap_alert'][0]['$_cap_area'][0]['name'] }}</h4>
+                  <p>{{ dataAlert.data_form['$_cap_alert'][0]['$_cap_info'][0]['event'] }} - {{ dataAlert.data_form['$_cap_alert'][0]['scope']['@value'] }}</p>
+                </div>
             </div>
-
+          
           </md-list-item>
+          <md-divider ng-show="main.isOfflineDataExist" ></md-divider>
+
+          <md-subheader class="md-no-sticky">Alert List</md-subheader>
+          <md-list-item layout="row" layout-align="start start" class="md-3-line" ng-repeat="dataAlert in main.dataAlerts" >
+            
+              <ng-md-icon icon="image" class="md-avatar" flex="10"></ng-md-icon>
+              <div class="md-list-item-text" layout="column" flex="90">
+                <h3>{{ dataAlert['cap_info.headline'] }}</h3>
+                <h4>{{ dataAlert['cap_area.name'] }}</h4>
+                <p>{{ dataAlert['event_event_type.name']}} - {{ dataAlert.scope }}</p>
+              </div>
+            
+            
+          </md-list-item>
+
         </md-list>
 
         <md-divider></md-divider>
