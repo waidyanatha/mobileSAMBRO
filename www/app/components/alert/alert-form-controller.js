@@ -1,10 +1,40 @@
 "use strict";
 
 angular.module("ngapp")
-.controller("AlertFormController", function(shared, $state, $scope,$rootScope, $mdSidenav, $mdComponentRegistry, $http, $cordovaDevice, $cordovaStatusbar,$cordovaGeolocation,$cordovaDialogs,$location,$localStorage,$cordovaSQLite,$filter,$cordovaNetwork){
+.controller("AlertFormController", function(shared, $state, $scope, $compile,$rootScope, $mdSidenav, $mdComponentRegistry, $http, $cordovaDevice, $cordovaStatusbar,$cordovaGeolocation,$cordovaDialogs,$location,$localStorage,$cordovaSQLite,$filter,$timeout,$cordovaNetwork){
     shared.checkUserCached();
 
     var ctrl = this;  
+
+    var posOptions = {timeout: 10000, enableHighAccuracy: false};
+    $cordovaGeolocation
+    .getCurrentPosition(posOptions)
+    .then(function (position) {
+         //$cordovaDialogs.alert('success', 'Message', 'OK');
+         //$cordovaDialogs.alert('Lon = '+position.coords.longitude+" , Lat = "+position.coords.latitude, 'Message', 'OK');
+        console.log('Lon = '+position.coords.longitude+" , Lat = "+position.coords.latitude);
+        ctrl.longitude = position.coords.longitude;
+        ctrl.latitude = position.coords.latitude;
+        map.setView([position.coords.latitude, position.coords.longitude], 16);
+
+    }, function(err) {
+        // error
+    });
+
+    //right side BaseMap
+    ctrl.toggleBaseMap = function () {
+      $mdSidenav("baseMapContent")
+        .toggle()
+        .then(function () {
+          //$log.debug("toggle Right is done");
+        });
+    };
+    ctrl.closeBaseMap = function (){
+      $mdSidenav('baseMapContent').close()
+      .then(function () {
+        //$log.debug("close RIGHT is done");
+      });
+    };  
 
     ctrl.typeNetwork = $cordovaNetwork.getNetwork();
     ctrl.isNetworkOnline = $cordovaNetwork.isOnline();
@@ -94,13 +124,28 @@ angular.module("ngapp")
     };
 
     ctrl.currPage = 1;
-    ctrl.hidePage = [false,true,true,true,true,true,true,true,true,true];
+    ctrl.hidePage = [{'pageName':'event-type','isHide':false},{'pageName':'status','isHide':true},{'pageName':'template','isHide':true},{'pageName':'location','isHide':true},{'pageName':'response-type','isHide':true},{'pageName':'warning-priority','isHide':true},{'pageName':'scope','isHide':true},{'pageName':'date','isHide':true},{'pageName':'note','isHide':true},{'pageName':'submit','isHide':true}];
     ctrl.progress = 100/ctrl.hidePage.length;
     ctrl.progressText = ctrl.currPage.toString()+"/"+ctrl.hidePage.length.toString();
     ctrl.btnBackName = "< Home";
     ctrl.btnNextName = "Next >";
     ctrl.hideNextBtn = false;
 
+    ctrl.checkPageIdx = function(pageName){
+        for(var i=0;i<ctrl.hidePage.length;i++){
+            if(ctrl.hidePage[i].pageName == pageName){
+                return i;
+            }
+        }
+    };
+    ctrl.checkPageShow = function(pageName){
+        for(var i=0;i<ctrl.hidePage.length;i++){
+            if(ctrl.hidePage[i].pageName == pageName){
+                console.log(pageName);
+                return ctrl.hidePage[i].isHide;
+            }
+        }
+    };
     ctrl.changePageView = function(){
 
         if(ctrl.currPage == ctrl.hidePage.length){
@@ -119,6 +164,12 @@ angular.module("ngapp")
         else{
             ctrl.btnBackName = "< Back";
         }
+
+        ctrl.hidePagelocation1 = true;
+        if(ctrl.hidePage[ctrl.currPage-1].pageName == 'location'){
+            ctrl.hidePagelocation1 = false;
+            ctrl.hidePagelocation2 = true;
+        }
     }
 
     ctrl.goBack = function(){
@@ -126,9 +177,9 @@ angular.module("ngapp")
             $location.path("/main");
         }
         else{
-            ctrl.hidePage[ctrl.currPage-1] = true;
+            ctrl.hidePage[ctrl.currPage-1].isHide = true;
             ctrl.currPage -= 1;
-            ctrl.hidePage[ctrl.currPage-1] = false;    
+            ctrl.hidePage[ctrl.currPage-1].isHide = false;    
             ctrl.changePageView();
         }
         
@@ -139,25 +190,25 @@ angular.module("ngapp")
             //ctrl.submitForm();
         }
         else{
-            ctrl.hidePage[ctrl.currPage-1] = true;
+            ctrl.hidePage[ctrl.currPage-1].isHide = true;
             ctrl.currPage += 1;
-            ctrl.hidePage[ctrl.currPage-1] = false;    
+            ctrl.hidePage[ctrl.currPage-1].isHide = false;    
             ctrl.changePageView();    
         }
          
     };
 
     ctrl.disabledNextBtn = function(){
-        if(ctrl.currPage == 1 && ctrl.dataAlertForm.eventType.id != null){
+        if(ctrl.hidePage[ctrl.currPage-1].pageName == 'event-type' && ctrl.dataAlertForm.eventType.id != null){
             return false;
         }
-        if(ctrl.currPage == 2 && ctrl.dataAlertForm.status != null){
+        if(ctrl.hidePage[ctrl.currPage-1].pageName == 'status' && ctrl.dataAlertForm.status != null){
             return false;
         }
-        else if(ctrl.currPage == 3 && ctrl.dataAlertForm.template.id != null){
+        else if(ctrl.hidePage[ctrl.currPage-1].pageName == 'template' && ctrl.dataAlertForm.template.id != null){
             return false;
         }
-        else if(ctrl.currPage == 4){
+        else if(ctrl.hidePage[ctrl.currPage-1].pageName == 'location'){
             for(var i=0;i<ctrl.dataPredefinedAreaOptions.length;i++){
                 if(ctrl.dataPredefinedAreaOptions[i].selected == true){
 
@@ -167,7 +218,7 @@ angular.module("ngapp")
             }
             
         }
-        else if(ctrl.currPage == 5){
+        else if(ctrl.hidePage[ctrl.currPage-1].pageName == 'response-type'){
             for(var i=0;i<ctrl.dataResponseTypeOptions.length;i++){
                 if(ctrl.dataResponseTypeOptions[i].selected == true){
 
@@ -176,31 +227,31 @@ angular.module("ngapp")
                 }
             }
         }
-        else if(ctrl.currPage == 6){
+        else if(ctrl.hidePage[ctrl.currPage-1].pageName == 'warning-priority'){
             if(ctrl.dataAlertForm.urgency != null && ctrl.dataAlertForm.certainty != null && ctrl.dataAlertForm.severity != null){
                 return false;
             }
             
         }
-        else if(ctrl.currPage == 7){
+        else if(ctrl.hidePage[ctrl.currPage-1].pageName == 'scope'){
             if(ctrl.dataAlertForm.scope != null){
                 return false;
             }
             
         }
-        else if(ctrl.currPage == 8){
+        else if(ctrl.hidePage[ctrl.currPage-1].pageName == 'date'){
             if(ctrl.dataAlertForm.expireDate != undefined && ctrl.dataAlertForm.onSetDate != undefined && ctrl.dataAlertForm.effectiveDate != undefined){
                 return false;
             }
             
         }
-        else if(ctrl.currPage == 9){
+        else if(ctrl.hidePage[ctrl.currPage-1].pageName == 'note'){
             if(ctrl.dataAlertForm.description != null && ctrl.dataAlertForm.description != "" && ctrl.dataAlertForm.headline != null && ctrl.dataAlertForm.headline != ""){
                 return false;
             }
             
         }
-        else if(ctrl.currPage == 10){
+        else if(ctrl.hidePage[ctrl.currPage-1].pageName == 'submit'){
             return false;
         }
 
@@ -341,9 +392,9 @@ angular.module("ngapp")
         angular.element( "#event-type-opt_"+eventTypeObj['@value'] ).removeClass('unSelectedList').addClass( "selectedList" );
 
         ctrl.dataAlertForm.eventType = {id:eventTypeObj['@value'],name:eventTypeObj['$']};
-        ctrl.hidePage[ctrl.currPage-1] = true;
+        ctrl.hidePage[ctrl.currPage-1].isHide = true;
         ctrl.currPage ++; //go to status
-        ctrl.hidePage[ctrl.currPage-1] = false;  
+        ctrl.hidePage[ctrl.currPage-1].isHide = false;  
         ctrl.changePageView();
     };
 
@@ -362,9 +413,9 @@ angular.module("ngapp")
         angular.element( "#template-opt_"+templateObj['id'] ).removeClass('unSelectedList').addClass( "selectedList" );
 
         ctrl.dataAlertForm.template = {id:templateObj['id'],name:templateObj.template_title};
-        ctrl.hidePage[ctrl.currPage-1] = true;
+        ctrl.hidePage[ctrl.currPage-1].isHide = true;
         ctrl.currPage ++; //go to location
-        ctrl.hidePage[ctrl.currPage-1] = false;  
+        ctrl.hidePage[ctrl.currPage-1].isHide = false;  
         ctrl.changePageView();
     };
 
@@ -372,6 +423,53 @@ angular.module("ngapp")
         ctrl.dataAlertForm.severity = ctrl.dataWarningPrioritys[idx].severity;
         ctrl.dataAlertForm.certainty = ctrl.dataWarningPrioritys[idx].certainty;
         ctrl.dataAlertForm.urgency = ctrl.dataWarningPrioritys[idx].urgency;
+    };
+
+    //location action
+    ctrl.isInsertedAreaExist = false;
+    ctrl.longitude = 0;
+    ctrl.latitude = 0;
+    ctrl.newArea = {name:"",wkt:"",typeSpatial:""};
+    ctrl.newAreas = new Array();
+    ctrl.hidePagelocation1 = true;
+    ctrl.hidePagelocation2 = true;
+    ctrl.hideAddAreaBtn = true;
+    ctrl.clickAddArea = function(){
+        ctrl.newArea = {name:"",wkt:"",typeSpatial:""};
+        ctrl.hidePagelocation1 = true;
+        ctrl.hidePagelocation2 = false;
+    };
+    ctrl.clickShowMap = function(){
+        ctrl.btnBackName = "";
+        ctrl.btnNextName = "";
+
+        angular.element('#content-alert-form').hide();
+        angular.element('#map').show();
+        map.invalidateSize();
+    };
+    ctrl.clickCancelNewArea = function(){
+        ctrl.hidePagelocation1 = false;
+        ctrl.hidePagelocation2 = true;
+    };
+    ctrl.clickCancelDrawonMap = function(){
+        ctrl.btnBackName = "< Back";
+        ctrl.btnNextName = "Next >";
+
+        angular.element('#content-alert-form').show();
+        angular.element('#map').hide();
+    }
+    ctrl.clickSubmitMap = function(){
+        ctrl.clickCancelDrawonMap();
+    };
+    ctrl.clickSubmitNewArea = function(){
+        if(ctrl.newArea.wkt == ""){
+            ctrl.newArea.wkt = "POINT("+ctrl.longitude+" "+ctrl.latitude+")";
+            ctrl.newArea.typeSpatial = "point";
+        }
+
+        ctrl.newAreas.push(angular.extend({},ctrl.newArea));
+        ctrl.isInsertedAreaExist = true;
+        ctrl.clickCancelNewArea();
     };
 
     ctrl.dataEventTypeOptions = new Array();
@@ -523,6 +621,178 @@ angular.module("ngapp")
             } 
           } 
         },null);
-     };   
+     };  
+
+
+    //=================================== map ===================================================
+    //map
+    var mapOSM;
+    var ggl;
+    var ggls;
+    var map = L.map('map',{
+      maxZoom: 16,
+      minZoom: 2
+    }).setView([-6.1918, 106.8345], 10);
+
+    //map.locate({setView: true, maxZoom: 16});
+
+    mapOSM = new L.TileLayer('http://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png');
+    if(google != undefined){
+        ggl = new L.Google('HYBRID');
+        ggls = new L.Google('ROADMAP');
+    }
+    
+    map.addLayer(mapOSM);
+    ctrl.changeMap = function (obj){
+        if(obj == "gsal"){
+            map.removeLayer(mapOSM);
+            map.removeLayer(ggls);
+            map.addLayer(ggl);
+        }
+        else if(obj == "osm"){
+            map.removeLayer(ggl);
+            map.removeLayer(ggls);
+            map.addLayer(mapOSM);
+        }
+        else if(obj == "gstreet"){
+            map.removeLayer(mapOSM);
+            map.removeLayer(ggl);
+            map.addLayer(ggls);
+        }
+    };
+
+    //layer Change
+    var layerBaseMapToolbar = L.Control.extend({
+        options: {
+            position: 'topright'
+        },
+
+        onAdd: function (map) {
+            // create the control container with a particular class name
+            var contain = L.DomUtil.create('div', 'layerBaseMap');
+            $(contain).addClass('leaflet-bar');
+            $(contain).html('<button id="leaflet_layerBaseMap" class="leaflet-control" '+
+            'style="margin:0px;width: 30px;height: 30px;padding-bottom: 0px;padding-top: 0px;padding-right: 0px;border-left-width: 0px;padding-left: 0px;border-top-width: 0px;border-bottom-width: 0px;border-right-width: 0px;background: white;border-radius: 5px;" >'+
+            '<ng-md-icon icon="map"></ng-md-icon></button>');
+
+            return contain;
+        }
+    });
+    map.addControl(new layerBaseMapToolbar());
+    var content=angular.element('#leaflet_layerBaseMap');
+    var scope=content.scope();
+    $compile(content.contents())(scope);
+    angular.element('#leaflet_layerBaseMap').on('click', function() {
+      ctrl.toggleBaseMap();
+    });
+
+    //Action button
+    var actionButtonToolbar = L.Control.extend({
+        options: {
+            position: 'bottomleft'
+        },
+
+        onAdd: function (map) {
+            // create the control container with a particular class name
+            var contain = L.DomUtil.create('div', 'actionButton');
+            $(contain).html('<div id="actionButtonId" style="width:100%;" layout="row" layout-align="center center">'+
+                            '<md-button class="md-raised md-accent" aria-label="Cancel" ng-click="alertForm.clickCancelDrawonMap()">'+
+                            ' Cancel '+
+                            '</md-button>'+
+                            '<md-button class="md-raised md-accent" aria-label="Submit" ng-disabled="dataFormArea.$invalid || dataFormArea.$pristine" ng-click="alertForm.clickSubmitMap()">'+
+                            ' Submit '+
+                            '</md-button> '+                          
+                            '</div>');
+
+            return contain;
+        }
+    });
+    map.addControl(new actionButtonToolbar());
+    content=angular.element('#actionButtonId');
+    scope=content.scope();
+    $compile(content.contents())(scope);
+
+    //draw
+    var drawControl;
+    var featureGroupDraw;
+    var typeLayerDraw;
+    var idMarkerDrawEdit;
+    var layerTemp = null;
+    featureGroupDraw = L.featureGroup();
+    map.addLayer(featureGroupDraw);
+    drawControl = new L.Control.Draw({
+        position: 'topright',
+        draw: {
+          polyline:false,
+          rectangle: true,
+          circle:false,
+          polygon: {
+                    allowIntersection: false,
+                    showArea: true,
+                    drawError: {
+                        color: '#b00b00',
+                        timeout: 1000
+                    },
+                    shapeOptions: {
+                        color: '#bada55'
+                    }
+                }
+          },
+        edit: {
+          featureGroup: featureGroupDraw,
+          edit: false,
+          remove: true
+        }
+    });
+    map.addControl(drawControl);
+
+    map.on('draw:created', function(e) {
+        var type = e.layerType,
+            layer = e.layer;
+
+
+        if(layerTemp != null){
+            featureGroupDraw.removeLayer(layerTemp);
+        }    
+        featureGroupDraw.addLayer(layer);
+        layerTemp = layer;
+
+        var wkt1 = new Wkt.Wkt();
+        wkt1.fromObject(layer);
+        var strPoint = wkt1.write();
+        console.log(strPoint);
+        ctrl.newArea.wkt = strPoint;
+        ctrl.newArea.typeSpatial = type;
+
+    });
+
+    map.on('draw:deleted', function (e) {
+        ctrl.newArea.wkt = "";
+        ctrl.newArea.typeSpatial = "";
+        layerTemp = null;
+    });
+
+    ctrl.changeWKTLonLat = function (wkt1){
+      for(var i=0;i<wkt1.components[0].length;i++){
+        var y = wkt1.components[0][i].x;
+        var x = wkt1.components[0][i].y;
+        wkt1.components[0][i].x = x;
+        wkt1.components[0][i].y = y;
+      }
+
+      return wkt1;
+    };
+
+
+    map.invalidateSize();
+
+    $timeout(function () { 
+        var bodyHeight = angular.element('body').height();
+        var mainToolbarHeight = angular.element('.mainToolbar').outerHeight();
+        var mapHeight = angular.element('#map').height(bodyHeight-mainToolbarHeight);
+        console.log(mainToolbarHeight.toString());
+        angular.element('#map').css('margin-top',mainToolbarHeight.toString()+'px');
+        map.invalidateSize(); 
+    }, 1000);
 
 });

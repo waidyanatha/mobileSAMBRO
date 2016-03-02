@@ -13,7 +13,6 @@ angular.element(document).ready(function () {
   }
 });
 
-
 angular.module("ngapp", [ "ngTouch", "ui.router", "ngMdIcons", "ngMaterial", "ngCordova", "ngStorage" ,"ngMessages"])
 // ngTouch is No Longer Supported by Angular-Material
 
@@ -37,7 +36,7 @@ angular.module("ngapp", [ "ngTouch", "ui.router", "ngMdIcons", "ngMaterial", "ng
       }
     }, false);*/
 
-  $cordovaStatusbar.overlaysWebView(true); // Always Show Status Bar = false
+  $cordovaStatusbar.overlaysWebView(false); 
   $cordovaStatusbar.styleHex('#E53935'); // Status Bar With Red Color, Using Angular-Material Style
   $cordovaStatusbar.show();
 
