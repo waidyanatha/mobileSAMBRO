@@ -150,7 +150,7 @@ angular.module("ngapp")
     
     //============================================================ Alert ============================================================
     ctrl.dataAlerts = {};
-
+    ctrl.loadDataAlert = true;
     ctrl.insertAlert = function(dataAlert) {
       var query = "insert into t_alert (id, cap_info_headline, cap_area_name, cap_scope,event_event_type_name,sent) values (?,?,?,?,?,?)";
       $cordovaSQLite.execute(dbShared, query, [dataAlert.id, dataAlert['cap_info.headline'],dataAlert['cap_area.name'],dataAlert['scope'],dataAlert['event_event_type.name'],dataAlert['sent']]).then(function(result) {
@@ -172,9 +172,11 @@ angular.module("ngapp")
       });
     };
     ctrl.selectAlert = function() {
+      ctrl.loadDataAlert = true;
       var query = "SELECT * FROM t_alert order by id desc";
       $cordovaSQLite.execute(dbShared,query).then(function(result) {
         if(result.rows.length > 0) {
+          ctrl.loadDataAlert = false;
           ctrl.dataAlerts = new Array();
           for(var i=0;i<result.rows.length;i++){
             var dataAlert = {
@@ -195,9 +197,11 @@ angular.module("ngapp")
     };
 
     ctrl.getDataAlertFromAPI = function(){
+      ctrl.loadDataAlert = true;
       var promiseLoadData = shared.loadDataAlert(shared.apiUrl+'cap/alert.json');
       promiseLoadData.then(function(response) {
         //console.log(response);
+        ctrl.loadDataAlert = false;
         ctrl.deleteAlert();
         ctrl.dataAlerts = new Array();
         for(var i=0;i<response.length;i++){

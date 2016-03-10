@@ -13,10 +13,12 @@ angular.module("ngapp")
          //$cordovaDialogs.alert('success', 'Message', 'OK');
          //$cordovaDialogs.alert('Lon = '+position.coords.longitude+" , Lat = "+position.coords.latitude, 'Message', 'OK');
         console.log('Lon = '+position.coords.longitude+" , Lat = "+position.coords.latitude);
+        ctrl.renderingGeolocation = false;
         ctrl.longitude = position.coords.longitude;
         ctrl.latitude = position.coords.latitude;
         map.setView([position.coords.latitude, position.coords.longitude], 16);
-
+        mapThumbnail.setView([position.coords.latitude, position.coords.longitude], 16);
+        mapThumbnailSummary.setView([position.coords.latitude, position.coords.longitude], 16);
     }, function(err) {
         // error
     });
@@ -120,11 +122,13 @@ angular.module("ngapp")
         severity : null,
         scope : null,
         description : null,
-        headline : null
+        headline : null,
+        restriction: "",
+        addresses:""
     };
 
     ctrl.currPage = 1;
-    ctrl.hidePage = [{'pageName':'event-type','isHide':false},{'pageName':'status','isHide':true},{'pageName':'template','isHide':true},{'pageName':'location','isHide':true},{'pageName':'response-type','isHide':true},{'pageName':'warning-priority','isHide':true},{'pageName':'scope','isHide':true},{'pageName':'date','isHide':true},{'pageName':'note','isHide':true},{'pageName':'submit','isHide':true}];
+    ctrl.hidePage = [{'pageName':'event-type','isHide':false,'loadData':true},{'pageName':'status','isHide':true,'loadData':true},{'pageName':'template','isHide':true,'loadData':true},{'pageName':'location','isHide':true,'loadData':true},{'pageName':'response-type','isHide':true,'loadData':true},{'pageName':'warning-priority','isHide':true,'loadData':true},{'pageName':'scope','isHide':true,'loadData':true},{'pageName':'date','isHide':true,'loadData':true},{'pageName':'note','isHide':true,'loadData':true},{'pageName':'submit','isHide':true,'loadData':true}];
     ctrl.progress = 100/ctrl.hidePage.length;
     ctrl.progressText = ctrl.currPage.toString()+"/"+ctrl.hidePage.length.toString();
     ctrl.btnBackName = "< Home";
@@ -141,7 +145,6 @@ angular.module("ngapp")
     ctrl.checkPageShow = function(pageName){
         for(var i=0;i<ctrl.hidePage.length;i++){
             if(ctrl.hidePage[i].pageName == pageName){
-                console.log(pageName);
                 return ctrl.hidePage[i].isHide;
             }
         }
@@ -165,10 +168,20 @@ angular.module("ngapp")
             ctrl.btnBackName = "< Back";
         }
 
-        ctrl.hidePagelocation1 = true;
+        ctrl.hidePagelocation[0] = true;
         if(ctrl.hidePage[ctrl.currPage-1].pageName == 'location'){
-            ctrl.hidePagelocation1 = false;
-            ctrl.hidePagelocation2 = true;
+            ctrl.hidePagelocation = [false,true,true];
+
+            $timeout(function () { 
+                mapThumbnail.invalidateSize();
+            }, 1000);
+        }
+
+        if(ctrl.hidePage[ctrl.currPage-1].pageName == 'submit'){
+            $timeout(function () { 
+                mapThumbnailSummary.invalidateSize();
+                ctrl.renderPolygonOnThumbnailMap();
+            }, 1000);
         }
     }
 
@@ -209,14 +222,9 @@ angular.module("ngapp")
             return false;
         }
         else if(ctrl.hidePage[ctrl.currPage-1].pageName == 'location'){
-            for(var i=0;i<ctrl.dataPredefinedAreaOptions.length;i++){
-                if(ctrl.dataPredefinedAreaOptions[i].selected == true){
-
-                    return false;
-                    break;
-                }
+            if(ctrl.checkInsertedAreasVal() == false || ctrl.checkPredefinedAreasVal() == false){
+                return false;
             }
-            
         }
         else if(ctrl.hidePage[ctrl.currPage-1].pageName == 'response-type'){
             for(var i=0;i<ctrl.dataResponseTypeOptions.length;i++){
@@ -246,8 +254,17 @@ angular.module("ngapp")
             
         }
         else if(ctrl.hidePage[ctrl.currPage-1].pageName == 'note'){
-            if(ctrl.dataAlertForm.description != null && ctrl.dataAlertForm.description != "" && ctrl.dataAlertForm.headline != null && ctrl.dataAlertForm.headline != ""){
-                return false;
+            if(ctrl.dataAlertForm.description != null && ctrl.dataAlertForm.description != "" && ctrl.dataAlertForm.headline != null && ctrl.dataAlertForm.headline != "" && ctrl.dataAlertForm.addresses != null && ctrl.dataAlertForm.addresses != ""){
+
+                if(ctrl.showRestriction()){
+                    if(ctrl.dataAlertForm.restriction != null && ctrl.dataAlertForm.restriction != ""){
+                        return false;
+                    }
+                }
+                else{
+                    return false;
+                }
+                
             }
             
         }
@@ -258,6 +275,7 @@ angular.module("ngapp")
         return true;
     }
 
+    ctrl.password = "";
     ctrl.submitForm = function(){
         //console.log('click it');
         var capAreasVal = new Array();
@@ -274,6 +292,17 @@ angular.module("ngapp")
                 };
                 capAreasVal.push(areaVal);
             }    
+        }
+        for(var i=0;i<ctrl.newAreas.length;i++){
+            
+            var areaVal = {
+                "name" : ctrl.newAreas[i].name,
+                "is_template" : {
+                    "@value" : "F"
+                }
+            };
+            capAreasVal.push(areaVal);
+            
         }
 
         var responseTypeVal = '';   //sample [\"AllClear\",\"Prepare\"]
@@ -306,10 +335,10 @@ angular.module("ngapp")
                     "@value" : ctrl.dataAlertForm.template.id.toString()
                  },
                  "restriction" : {
-                    "@value" : "n/a"
+                    "@value" : ctrl.dataAlertForm.restriction
                  },
                  "addresses" : {
-                    "@value" : "n/a"
+                    "@value" : ctrl.dataAlertForm.addresses
                  },
                  "$_cap_info" : [ {
                     "sender_name" : $localStorage["username"],
@@ -346,36 +375,44 @@ angular.module("ngapp")
             }]
         };
 
-        if(ctrl.isNetworkOffline){
-            shared.insertDB("t_alert_offline","insert into t_alert_offline (created_time, data_form) values (?,?)",
-            [new Date(),JSON.stringify(submitFormVal)],
-            function(result){
-                console.log('success insert to db');
-                $location.path("/main");
-            },function(error){
-                console.log('error to db');
-                $location.path("/main");
-            });
-        }
-        else{
-            var url = shared.sendAlertApiUrl;
-            var promiseSendDataForm = shared.sendDataForm(url,JSON.stringify(submitFormVal));
-            promiseSendDataForm.then(function(response) {
-                console.log("success Save");
-                console.log(response);
-                ctrl.responseDebug = response;
-                $location.path("/main");
-                //$cordovaDialogs.alert('success', response, 'OK');
-            }, function(reason) {
-                console.log("failed Save");
-                console.log(reason);
-                ctrl.responseDebug = reason;
-                //$cordovaDialogs.alert('failed', reason, 'OK');
-                $location.path("/main");
-            });
-        }
-
-        
+        var passEncrypt = CryptoJS.AES.encrypt(ctrl.password, "Secret Passphrase");
+        shared.sendFormViaDBFnc($localStorage['username'],passEncrypt
+          ,function(result){
+              if(result.rows.length > 0) {
+                    if(ctrl.isNetworkOffline){
+                        shared.insertDB("t_alert_offline","insert into t_alert_offline (created_time, data_form) values (?,?)",
+                        [new Date(),JSON.stringify(submitFormVal)],
+                        function(result){
+                            console.log('success insert to db');
+                            $location.path("/main");
+                        },function(error){
+                            console.log('error to db');
+                            $location.path("/main");
+                        });
+                    }
+                    else{
+                        var url = shared.sendAlertApiUrl;
+                        var promiseSendDataForm = shared.sendDataForm(url,JSON.stringify(submitFormVal));
+                        promiseSendDataForm.then(function(response) {
+                            console.log("success Save");
+                            console.log(response);
+                            ctrl.responseDebug = response;
+                            $location.path("/main");
+                            //$cordovaDialogs.alert('success', response, 'OK');
+                        }, function(reason) {
+                            console.log("failed Save");
+                            console.log(reason);
+                            ctrl.responseDebug = reason;
+                            //$cordovaDialogs.alert('failed', reason, 'OK');
+                            $location.path("/main");
+                        });
+                    }
+              } else {
+                  console.log('failed');
+                  ctrl.hideErrorMessage = false;
+                  $cordovaDialogs.alert('Failed', 'Password wrong', 'OK');
+              }
+        });
     };
 
     ctrl.clickEventTypeOption = function(ev,eventTypeObj){
@@ -425,56 +462,31 @@ angular.module("ngapp")
         ctrl.dataAlertForm.urgency = ctrl.dataWarningPrioritys[idx].urgency;
     };
 
-    //location action
-    ctrl.isInsertedAreaExist = false;
-    ctrl.longitude = 0;
-    ctrl.latitude = 0;
-    ctrl.newArea = {name:"",wkt:"",typeSpatial:""};
-    ctrl.newAreas = new Array();
-    ctrl.hidePagelocation1 = true;
-    ctrl.hidePagelocation2 = true;
-    ctrl.hideAddAreaBtn = true;
-    ctrl.clickAddArea = function(){
-        ctrl.newArea = {name:"",wkt:"",typeSpatial:""};
-        ctrl.hidePagelocation1 = true;
-        ctrl.hidePagelocation2 = false;
-    };
-    ctrl.clickShowMap = function(){
-        ctrl.btnBackName = "";
-        ctrl.btnNextName = "";
-
-        angular.element('#content-alert-form').hide();
-        angular.element('#map').show();
-        map.invalidateSize();
-    };
-    ctrl.clickCancelNewArea = function(){
-        ctrl.hidePagelocation1 = false;
-        ctrl.hidePagelocation2 = true;
-    };
-    ctrl.clickCancelDrawonMap = function(){
-        ctrl.btnBackName = "< Back";
-        ctrl.btnNextName = "Next >";
-
-        angular.element('#content-alert-form').show();
-        angular.element('#map').hide();
-    }
-    ctrl.clickSubmitMap = function(){
-        ctrl.clickCancelDrawonMap();
-    };
-    ctrl.clickSubmitNewArea = function(){
-        if(ctrl.newArea.wkt == ""){
-            ctrl.newArea.wkt = "POINT("+ctrl.longitude+" "+ctrl.latitude+")";
-            ctrl.newArea.typeSpatial = "point";
+    ctrl.showRestriction = function(){
+        if(ctrl.dataAlertForm.scope == "Restricted"){
+            return true;
         }
 
-        ctrl.newAreas.push(angular.extend({},ctrl.newArea));
-        ctrl.isInsertedAreaExist = true;
-        ctrl.clickCancelNewArea();
+        return false;
+    };
+
+    ctrl.summaryClickDetail = function(pageName){
+        for(var i=0;i<ctrl.hidePage.length;i++){
+            if(ctrl.hidePage[i].pageName == pageName){
+                ctrl.hidePage[ctrl.currPage-1].isHide = true;
+                ctrl.currPage = i+1;
+                ctrl.hidePage[ctrl.currPage-1].isHide = false;    
+                ctrl.changePageView();
+            }
+        }
     };
 
     ctrl.dataEventTypeOptions = new Array();
     shared.selectDB("m_event_type","select * from m_event_type",[],function(result){
       if(result.rows.length > 0) {
+
+        ctrl.hidePage[ctrl.checkPageIdx('event-type')].loadData = false;
+
         for(var i=0;i<result.rows.length;i++){
             var dataEventTypeOption = {
                 '@value':result.rows.item(i).id,
@@ -488,6 +500,9 @@ angular.module("ngapp")
     ctrl.dataResponseTypeOptions = new Array();
     shared.selectDB("m_response_type","select * from m_response_type",[],function(result){
       if(result.rows.length > 0) {
+
+        ctrl.hidePage[ctrl.checkPageIdx('response-type')].loadData = false;
+
         for(var i=0;i<result.rows.length;i++){
             var dataResponseTypeOption = {
                 '@value':result.rows.item(i).fvalue,
@@ -502,6 +517,7 @@ angular.module("ngapp")
     ctrl.dataUrgencyOptions = new Array();
     shared.selectDB("m_urgency","select * from m_urgency",[],function(result){
       if(result.rows.length > 0) {
+
         for(var i=0;i<result.rows.length;i++){
             var dataUrgencyOption = {
                 '@value':result.rows.item(i).fvalue,
@@ -541,6 +557,9 @@ angular.module("ngapp")
     ctrl.dataScopeOptions = new Array();
     shared.selectDB("m_scope","select * from m_scope",[],function(result){
       if(result.rows.length > 0) {
+
+        ctrl.hidePage[ctrl.checkPageIdx('scope')].loadData = false;
+
         for(var i=0;i<result.rows.length;i++){
             var dataScopeOption = {
                 '@value':result.rows.item(i).fvalue,
@@ -554,6 +573,9 @@ angular.module("ngapp")
     ctrl.dataStatusOptions = new Array();
     shared.selectDB("m_status","select * from m_status",[],function(result){
       if(result.rows.length > 0) {
+
+        ctrl.hidePage[ctrl.checkPageIdx('status')].loadData = false;
+
         for(var i=0;i<result.rows.length;i++){
             var dataStatusOption = {
                 '@value':result.rows.item(i).fvalue,
@@ -566,9 +588,15 @@ angular.module("ngapp")
 
     ctrl.dataTemplateOptions = new Array();
     ctrl.getTemplateData = function(filter,dataDB){
+
+        ctrl.hidePage[ctrl.checkPageIdx('template')].loadData = true;
+
         var query = "select * from m_template "+filter;
         shared.selectDB("m_template",query,dataDB,function(result){
           if(result.rows.length > 0) {
+
+            ctrl.hidePage[ctrl.checkPageIdx('template')].loadData = false;
+
             for(var i=0;i<result.rows.length;i++){
                 var dataTemplateOption = {
                     'id':result.rows.item(i).id,
@@ -587,6 +615,9 @@ angular.module("ngapp")
     ctrl.dataWarningPrioritys = new Array();
     shared.selectDB("m_warning_priority","select * from m_warning_priority",[],function(result){
       if(result.rows.length > 0) {
+
+        ctrl.hidePage[ctrl.checkPageIdx('warning-priority')].loadData = false;
+
         for(var i=0;i<result.rows.length;i++){
             var dataWarningPriority = {
                 'id':result.rows.item(i).id,
@@ -605,10 +636,16 @@ angular.module("ngapp")
 
     ctrl.dataPredefinedAreaOptions = new Array();
     ctrl.getPredefinedAreaData = function(filter,dataDB){
+
+        ctrl.hidePage[ctrl.checkPageIdx('location')].loadData = true;
+
         var query = "select * from m_predefined_area "+filter;
         shared.selectDB("m_predefined_area",query,dataDB,function(result){
       
           if(result.rows.length > 0) {
+
+            ctrl.hidePage[ctrl.checkPageIdx('location')].loadData = false;
+
             for(var i=0;i<result.rows.length;i++){
                 var dataPredefinedAreaOption = {
                   'id':result.rows.item(i).id,  
@@ -624,15 +661,120 @@ angular.module("ngapp")
      };  
 
 
+    //=================================== location action =================================== 
+    ctrl.longitude = 0;
+    ctrl.latitude = 0;
+    ctrl.newArea = {name:"",wkt:"",typeSpatial:"",edited:false,idxAreas:-1};
+    ctrl.newAreas = new Array();
+    ctrl.hidePagelocation = [true,true,true];
+    ctrl.hideAddAreaBtn = true;
+    ctrl.clickAddArea = function(){
+        ctrl.hidePagelocation = [true,false,true];
+    };
+    ctrl.clickShowMap = function(){
+        ctrl.showMap();        
+        ctrl.newArea = {name:"",wkt:"",typeSpatial:"",edited:false,idxAreas:-1};
+        if(layerTemp != null){
+            featureGroupDraw.removeLayer(layerTemp);
+        }  
+    };
+    ctrl.showMap = function(){
+        ctrl.btnBackName = "";
+        ctrl.btnNextName = "";
+
+        angular.element('#content-alert-form').hide();
+        angular.element('#map').show();
+        map.invalidateSize();
+    };
+    ctrl.clickCancelNewArea = function(){
+        ctrl.hidePagelocation = [false,true,true];
+        
+        $timeout(function () { 
+            mapThumbnail.invalidateSize();
+            ctrl.renderPolygonOnThumbnailMap();
+        }, 1000);
+    };
+    ctrl.clickCancelDrawonMap = function(){
+        ctrl.btnBackName = "< Back";
+        ctrl.btnNextName = "Next >";
+
+        angular.element('#content-alert-form').show();
+        angular.element('#map').hide();
+    }
+    ctrl.clickSubmitMap = function(){
+        ctrl.clickCancelDrawonMap();
+        ctrl.hidePagelocation = [true,true,false];
+    };
+    ctrl.clickSubmitPredefinedArea = function(){
+        ctrl.clickCancelNewArea();
+    };
+    ctrl.clickSubmitNewArea = function(){
+        if(ctrl.newArea.wkt == ""){
+            ctrl.newArea.wkt = "POINT("+ctrl.longitude+" "+ctrl.latitude+")";
+            ctrl.newArea.typeSpatial = "point";
+        }
+
+        if(ctrl.newArea.edited == true){
+            ctrl.newAreas[ctrl.newArea.idxAreas] = angular.extend({},ctrl.newArea);
+        }
+        else{
+            ctrl.newAreas.push(angular.extend({},ctrl.newArea));    
+        }
+        
+        ctrl.clickCancelNewArea();
+    };
+    ctrl.clickDeleteNewArea = function(){
+        ctrl.newAreas.splice(ctrl.newArea.idxAreas, 1);
+        ctrl.clickCancelNewArea();
+    }
+    ctrl.renderingGeolocation = true;
+    ctrl.checkWktVal = function(){
+        if(ctrl.newArea.wkt == ""){
+            return true;
+        }
+        return false;
+    };
+    ctrl.checkPredefinedAreasVal = function(){
+        for(var i=0;i<ctrl.dataPredefinedAreaOptions.length;i++){
+            if(ctrl.dataPredefinedAreaOptions[i].selected == true){
+
+                return false;
+                break;
+            }
+        }
+        return true;
+    };
+    ctrl.checkInsertedAreasVal = function(){
+        if(ctrl.newAreas.length>0){
+            return false;
+        }
+        else{
+            return true;
+        }
+    };
+    ctrl.selectedArea = function(idx){
+        ctrl.showMap();
+
+        ctrl.newArea = angular.extend({},ctrl.newAreas[idx]);
+        ctrl.newArea.edited = true;
+        ctrl.newArea.idxAreas = idx;
+        var wkt1 = new Wkt.Wkt();
+        wkt1.read(ctrl.newArea.wkt);
+        console.log(ctrl.newArea.name);
+
+        var poly = L.polygon(wkt1.toObject()._latlngs,{color: 'green',fillOpacity: 0.3,stroke: false});
+        featureGroupDraw.addLayer(poly);
+        layerTemp = poly;
+    };
+
     //=================================== map ===================================================
-    //map
     var mapOSM;
     var ggl;
     var ggls;
-    var map = L.map('map',{
+    map = L.map('map',{
       maxZoom: 16,
       minZoom: 2
-    }).setView([-6.1918, 106.8345], 10);
+    }).setView([-6.1918, 106.8345], 2);
 
     //map.locate({setView: true, maxZoom: 16});
 
@@ -641,8 +783,24 @@ angular.module("ngapp")
         ggl = new L.Google('HYBRID');
         ggls = new L.Google('ROADMAP');
     }
-    
     map.addLayer(mapOSM);
+
+    var mapOSMThumbnail;
+    mapThumbnail = L.map('mapThumbnail',{
+      maxZoom: 16,
+      minZoom: 2
+    }).setView([-6.1918, 106.8345], 2);
+    mapOSMThumbnail = new L.TileLayer('http://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png');
+    mapThumbnail.addLayer(mapOSMThumbnail);
+
+    var mapOSMThumbnailSummary;
+    mapThumbnailSummary = L.map('mapThumbnailSummary',{
+      maxZoom: 16,
+      minZoom: 2
+    }).setView([-6.1918, 106.8345], 2);
+    mapOSMThumbnailSummary = new L.TileLayer('http://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png');
+    mapThumbnailSummary.addLayer(mapOSMThumbnailSummary);
+
     ctrl.changeMap = function (obj){
         if(obj == "gsal"){
             map.removeLayer(mapOSM);
@@ -658,6 +816,32 @@ angular.module("ngapp")
             map.removeLayer(mapOSM);
             map.removeLayer(ggl);
             map.addLayer(ggls);
+        }
+    };
+
+    var featureGroupPolyThumbnail = null;
+    ctrl.renderPolygonOnThumbnailMap = function(){
+        if(featureGroupPolyThumbnail != null){
+            mapThumbnail.removeLayer(featureGroupPolyThumbnail);
+            mapThumbnailSummary.removeLayer(featureGroupPolyThumbnail);
+        }
+        featureGroupPolyThumbnail = L.featureGroup();
+        mapThumbnail.addLayer(featureGroupPolyThumbnail);
+        mapThumbnailSummary.addLayer(featureGroupPolyThumbnail);
+
+        for(var i=0;i<ctrl.newAreas.length;i++){
+            var wkt1 = new Wkt.Wkt();
+            wkt1.read(ctrl.newAreas[i].wkt);
+
+            var poly = L.polygon(wkt1.toObject()._latlngs,{color: 'green',fillOpacity: 0.3,stroke: false}).bindPopup(ctrl.newAreas[i].name);
+            featureGroupPolyThumbnail.addLayer(poly);
+        }
+
+        mapThumbnail.fitBounds(featureGroupPolyThumbnail.getBounds());
+        mapThumbnailSummary.fitBounds(featureGroupPolyThumbnail.getBounds());
+        //mapThumbnail.setView(featureGroupPolyThumbnail.getCenter(), 13);
+        if(ctrl.renderingGeolocation == true){
+            ctrl.renderingGeolocation = false;
         }
     };
 
@@ -699,7 +883,7 @@ angular.module("ngapp")
                             '<md-button class="md-raised md-accent" aria-label="Cancel" ng-click="alertForm.clickCancelDrawonMap()">'+
                             ' Cancel '+
                             '</md-button>'+
-                            '<md-button class="md-raised md-accent" aria-label="Submit" ng-disabled="dataFormArea.$invalid || dataFormArea.$pristine" ng-click="alertForm.clickSubmitMap()">'+
+                            '<md-button id="submitMapButtonId" class="md-raised md-accent" aria-label="Submit" ng-disabled="alertForm.checkWktVal()" ng-click="alertForm.clickSubmitMap()">'+
                             ' Submit '+
                             '</md-button> '+                          
                             '</div>');
@@ -724,8 +908,9 @@ angular.module("ngapp")
         position: 'topright',
         draw: {
           polyline:false,
-          rectangle: true,
+          rectangle: false,
           circle:false,
+          marker:false,
           polygon: {
                     allowIntersection: false,
                     showArea: true,
@@ -750,7 +935,6 @@ angular.module("ngapp")
         var type = e.layerType,
             layer = e.layer;
 
-
         if(layerTemp != null){
             featureGroupDraw.removeLayer(layerTemp);
         }    
@@ -760,13 +944,15 @@ angular.module("ngapp")
         var wkt1 = new Wkt.Wkt();
         wkt1.fromObject(layer);
         var strPoint = wkt1.write();
-        console.log(strPoint);
+        
         ctrl.newArea.wkt = strPoint;
         ctrl.newArea.typeSpatial = type;
 
+        angular.element(document.getElementById('submitMapButtonId'))[0].disabled = false;
     });
 
     map.on('draw:deleted', function (e) {
+        angular.element(document.getElementById('submitMapButtonId'))[0].disabled = true;
         ctrl.newArea.wkt = "";
         ctrl.newArea.typeSpatial = "";
         layerTemp = null;
@@ -783,7 +969,6 @@ angular.module("ngapp")
       return wkt1;
     };
 
-
     map.invalidateSize();
 
     $timeout(function () { 
@@ -794,5 +979,7 @@ angular.module("ngapp")
         angular.element('#map').css('margin-top',mainToolbarHeight.toString()+'px');
         map.invalidateSize(); 
     }, 1000);
+
+
 
 });

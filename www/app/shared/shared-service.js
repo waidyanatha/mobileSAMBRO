@@ -4,7 +4,7 @@ angular.module("ngapp").service("shared", function($http,$localStorage,$sessionS
 
 	var ctrl = this;
   this.info = {
-      title: "CAP",
+      title: "SAMBRO",
       auth: "Angga Bayu"
   };
 
@@ -25,10 +25,13 @@ angular.module("ngapp").service("shared", function($http,$localStorage,$sessionS
 
   this.loadDataAlert = function(url) {
 
+    var decrypted = CryptoJS.AES.decrypt($localStorage['password'], "Secret Passphrase");
+    decrypted = decrypted.toString(CryptoJS.enc.Utf8);
+
     return $http({
             method: 'GET',
             url: url,
-            headers: ctrl.setHTTPHeaderAuth($localStorage['username'],$localStorage['password'])
+            headers: ctrl.setHTTPHeaderAuth($localStorage['username'],decrypted)
         }).then(
         function (response) {
           return response.data;
@@ -37,11 +40,14 @@ angular.module("ngapp").service("shared", function($http,$localStorage,$sessionS
 
   this.sendDataForm = function(url,dataForm) {
 
+    var decrypted = CryptoJS.AES.decrypt($localStorage['password'], "Secret Passphrase");
+    decrypted = decrypted.toString(CryptoJS.enc.Utf8);
+
     return $http({
             method: 'POST',
             url: url,
             data: dataForm,
-            headers: ctrl.setHTTPHeaderAuth($localStorage['username'],$localStorage['password'])
+            headers: ctrl.setHTTPHeaderAuth($localStorage['username'],decrypted)
         }).then(
         function (response) {
           //alert('response');
@@ -74,8 +80,28 @@ angular.module("ngapp").service("shared", function($http,$localStorage,$sessionS
     $localStorage['username'] = "";
     $localStorage['password'] = "";
     $http.defaults.headers.common.Authorization = 'Basic ';
+    ctrl.updateActiveUser();
+
   	$location.path("/login");
   };
+
+  this.sendFormViaDBFnc = function(email,password,success,failed)
+    {
+      console.log('call this sendform via DB');
+      var query = "SELECT * FROM m_user where email=? and pwd=?";
+      $cordovaSQLite.execute(dbShared,query,[email, password]).then(function(result) {
+          
+          if(success != undefined){
+              success(result);
+          } 
+      
+      }, function(error) {
+          console.error(error);
+          if(failed != undefined){
+              failed(error);
+          } 
+      });
+    };
 
   this.checkUserCached = function(){
     if($localStorage['username'] == ""){
@@ -168,6 +194,17 @@ angular.module("ngapp").service("shared", function($http,$localStorage,$sessionS
       }
     });
   };
+
+  ctrl.updateActiveUser = function(){
+    var query = "update m_user set active_user=?";
+    $cordovaSQLite.execute(dbShared, query, [0]).then(function(result) {
+      console.log("update active user");
+      
+    }, function (err) {
+      //$cordovaDialogs.alert('err', err, 'OK');
+      console.error(err);
+    });
+  }
 
   //
   ctrl.booleanAllDataLoad = [{tblName:"m_event_type",isDataLoad:false},{tblName:"m_urgency",isDataLoad:false},{tblName:"m_certainty",isDataLoad:false},{tblName:"m_severity",isDataLoad:false},{tblName:"m_scope",isDataLoad:false},{tblName:"m_template",isDataLoad:false},{tblName:"m_warning_priority",isDataLoad:false},{tblName:"m_predefined_area",isDataLoad:false}];

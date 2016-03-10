@@ -45,7 +45,7 @@ angular.module("ngapp", [ "ngTouch", "ui.router", "ngMdIcons", "ngMaterial", "ng
   console.log('TEST MOBILE');
 
   dbShared = $cordovaSQLite.openDB({name: "offline_data.db" });
-  $cordovaSQLite.execute(dbShared,"CREATE TABLE IF NOT EXISTS m_user (email text, pwd text)");
+  $cordovaSQLite.execute(dbShared,"CREATE TABLE IF NOT EXISTS m_user (email text, pwd text,expired integer,active_user integer)");
   $cordovaSQLite.execute(dbShared,"CREATE TABLE IF NOT EXISTS t_alert (id integer primary key, cap_info_headline text, cap_area_name text, cap_scope text,event_event_type_name text,sent TEXT)");
   $cordovaSQLite.execute(dbShared,"CREATE TABLE IF NOT EXISTS t_alert_offline (id INTEGER PRIMARY KEY AUTOINCREMENT, created_time text, data_form text);");
   $cordovaSQLite.execute(dbShared,"CREATE TABLE IF NOT EXISTS m_event_type (id integer primary key, name text,icon text)");

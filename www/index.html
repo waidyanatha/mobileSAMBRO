@@ -53,6 +53,9 @@
     <!-- JS Date -->
     <script type="text/javascript" src="assets/lib/jsDate.js"></script>
 
+    <!-- JS Crypt -->
+    <script type="text/javascript" src="assets/lib/aes.js"></script>
+
     <!-- Cordova -->
     <script type="text/javascript" src="assets/lib/ng-cordova.min.js"></script>
     <script src="cordova.js"></script>
@@ -60,6 +63,8 @@
 <script type="text/javascript">
     var dbShared = null;
     var map = null;
+    var mapThumbnail = null;
+    var mapThumbnailSummary = null;
 </script>
 
 
@@ -79,7 +84,7 @@
 
     <link rel="stylesheet" type="text/css" href="assets/css/custom.css">
 
-    <title>CAP on Mobile</title>
+    <title>SAMBRO</title>
   </head>
 
   <body layout="row" ng-cloak>

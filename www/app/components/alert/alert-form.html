@@ -11,11 +11,7 @@
     <md-button ng-disabled="alertForm.disabledNextBtn()" ng-click="alertForm.goNext()"> {{alertForm.btnNextName}} </md-button>
     
   </div>
-  <!-- ADD FILE BUTTON -->
-  <md-button class="add-file-button md-fab md-warn addTopButton" ng-hide="alertForm.hidePagelocation1" aria-label="Add file" ng-click="alertForm.clickAddArea()">
-      <ng-md-icon icon="add"></ng-md-icon>
-  </md-button>
-  <!-- / ADD FILE BUTTON -->
+  
 </md-toolbar>
 
 <md-sidenav style="z-index:1001;" class="md-sidenav-right" md-component-id="baseMapContent">
@@ -59,6 +55,7 @@
       <md-progress-linear md-mode="determinate" value="{{alertForm.progress}}"></md-progress-linear>
       <div ng-hide="alertForm.checkPageShow('event-type')">  
         <md-subheader class="md-no-sticky">Event Types ({{alertForm.progressText}})</md-subheader>
+        <md-progress-linear md-mode="indeterminate" ng-show="alertForm.hidePage[alertForm.checkPageIdx('event-type')].loadData"></md-progress-linear>
         <md-list-item id="event-type-opt_{{dataEventTypeOption['@value']}}" class="event-type-opt unSelectedList" ng-repeat="dataEventTypeOption in alertForm.dataEventTypeOptions" ng-click="alertForm.clickEventTypeOption($event,dataEventTypeOption)">
           <img alt="{{ dataEventTypeOption.$ }}" ng-src="assets/images/disaster/27832-200.png" class="md-avatar" />
           <p>{{dataEventTypeOption.$}}</p>
@@ -67,6 +64,7 @@
 
       <div ng-hide="alertForm.checkPageShow('status')">  
         <md-subheader class="md-no-sticky">Status ({{alertForm.progressText}})</md-subheader>
+        <md-progress-linear md-mode="indeterminate" ng-show="alertForm.hidePage[alertForm.checkPageIdx('status')].loadData"></md-progress-linear>
         <md-radio-group ng-model="alertForm.dataAlertForm.status" >
           <md-list-item ng-repeat="dataStatusOption in alertForm.dataStatusOptions" >
             <md-radio-button flex
@@ -80,6 +78,7 @@
 
       <div ng-hide="alertForm.checkPageShow('template')">  
         <md-subheader class="md-no-sticky">Templates ({{alertForm.progressText}})</md-subheader>
+        <md-progress-linear md-mode="indeterminate" ng-show="alertForm.hidePage[alertForm.checkPageIdx('template')].loadData"></md-progress-linear>
         <md-list-item id="template-opt_{{dataTemplateOption['id']}}" class="template-opt unSelectedList" ng-repeat="dataTemplateOption in alertForm.dataTemplateOptions" ng-click="alertForm.clickTemplateOption($event,dataTemplateOption)">
           <img alt="{{ dataTemplateOption.template_title }}" ng-src="assets/images/disaster/27832-200.png" class="md-avatar" />
           <p>{{dataTemplateOption.template_title}}</p>
@@ -87,22 +86,55 @@
       </div>
 
       <div ng-hide="alertForm.checkPageShow('location')">  
-        <div ng-hide="alertForm.hidePagelocation1">
+        <div ng-hide="alertForm.hidePagelocation[0]" layout="column">
             <md-subheader class="md-no-sticky">Location ({{alertForm.progressText}})</md-subheader>
-            <md-subheader ng-show="alertForm.isInsertedAreaExist" class="md-no-sticky">Inserted Area</md-subheader>
-            <md-list-item ng-show="alertForm.isInsertedAreaExist" ng-repeat="newArea in alertForm.newAreas" >
+            <md-progress-linear md-mode="indeterminate" ng-show="alertForm.renderingGeolocation"></md-progress-linear>
+            <div id="mapThumbnail" style="height:100px;"></div>
+
+            <div layout="row" layout-align="center center">
+                <md-button class="md-raised md-accent" aria-label="Submit" ng-click="alertForm.clickAddArea()">
+                Predefined Area
+                </md-button>
+                <md-button class="md-raised md-accent" aria-label="Submit" ng-click="alertForm.clickShowMap()">
+                Draw on map
+                </md-button>  
+            </div>
+            
+            <md-subheader ng-hide="alertForm.checkInsertedAreasVal()" class="md-no-sticky">New Area</md-subheader>
+            <md-list-item ng-hide="alertForm.checkInsertedAreasVal()" ng-click="alertForm.selectedArea(alertForm.newAreas.indexOf(newArea))" ng-repeat="newArea in alertForm.newAreas" >
               <p>{{newArea.name}}</p>
             </md-list-item>
-            <md-divider ng-show="alertForm.isInsertedAreaExist"></md-divider>
-            <md-subheader class="md-no-sticky">Predefined Area</md-subheader>
+            <md-divider ng-hide="alertForm.checkPredefinedAreasVal()" ></md-divider>
+            <md-subheader ng-hide="alertForm.checkPredefinedAreasVal()" class="md-no-sticky">Predefined Area</md-subheader>
+            <md-list-item ng-hide="alertForm.checkPredefinedAreasVal()" ng-repeat="dataPredefinedAreaOption in alertForm.dataPredefinedAreaOptions" ng-click="alertForm.clickAddArea()" ng-if="dataPredefinedAreaOption.selected">
+              <p>{{dataPredefinedAreaOption.name}}</p>
+            </md-list-item>
+        </div>
+
+        <div ng-hide="alertForm.hidePagelocation[1]">  
+            <md-subheader class="md-no-sticky">Predefined Area ({{alertForm.progressText}})</md-subheader>
+            <md-progress-linear md-mode="indeterminate" ng-show="alertForm.hidePage[alertForm.checkPageIdx('location')].loadData"></md-progress-linear>
+            <div layout="row" layout-align="center center">
+                <md-button class="md-raised md-accent" aria-label="Cancel"
+                           ng-click="alertForm.clickCancelNewArea()">
+                    Cancel
+                </md-button>
+
+                <md-button class="md-raised md-accent" aria-label="Submit" ng-click="alertForm.clickSubmitPredefinedArea()">
+                    Submit
+                </md-button>                          
+            </div>
             <md-list-item ng-repeat="dataPredefinedAreaOption in alertForm.dataPredefinedAreaOptions" >
               <p>{{dataPredefinedAreaOption.name}}</p>
               <md-checkbox class="md-secondary" ng-model="dataPredefinedAreaOption.selected" ></md-checkbox>
             </md-list-item>
+
+            
         </div>
 
-        <div ng-hide="alertForm.hidePagelocation2">  
-            <md-subheader class="md-no-sticky">New Location ({{alertForm.progressText}})</md-subheader>
+        <div ng-hide="alertForm.hidePagelocation[2]">  
+            <md-subheader class="md-no-sticky">Submit Area ({{alertForm.progressText}})</md-subheader>
+            
             <form name="dataFormArea" class="md-inline-form" novalidate>
               <md-dialog-content>
                 <div class="md-dialog-content" style="padding-left:15px;" >
@@ -118,12 +150,12 @@
                                 </div>
                             </div>
                         </md-input-container>
-                        
-                        <md-button class="md-raised md-accent" aria-label="Submit"
-                                   ng-disabled="dataFormArea.$invalid || dataFormArea.$pristine" ng-click="alertForm.clickShowMap()">
-                            Draw on map
-                        </md-button>
 
+                        <md-button class="md-raised md-warn" ng-show="alertForm.newArea.edited" aria-label="Cancel"
+                                   ng-click="alertForm.clickDeleteNewArea()">
+                            Delete
+                        </md-button>
+                        
                         <div layout="row" layout-align="center center">
                             <md-button class="md-raised md-accent" aria-label="Cancel"
                                        ng-click="alertForm.clickCancelNewArea()">
@@ -143,10 +175,12 @@
               </md-dialog-content>
             </form>
         </div>
+        
       </div>
 
       <div ng-hide="alertForm.checkPageShow('response-type')">  
         <md-subheader class="md-no-sticky">Response Type ({{alertForm.progressText}})</md-subheader>
+        <md-progress-linear md-mode="indeterminate" ng-show="alertForm.hidePage[alertForm.checkPageIdx('response-type')].loadData"></md-progress-linear>
         <md-list-item ng-repeat="dataResponseTypeOption in alertForm.dataResponseTypeOptions" >
           <p>{{dataResponseTypeOption['@value']}}</p>
           <md-checkbox class="md-secondary" ng-model="dataResponseTypeOption.selected" ></md-checkbox>
@@ -155,6 +189,7 @@
 
       <div ng-hide="alertForm.checkPageShow('warning-priority')">  
         <md-subheader class="md-no-sticky">Warning Priority ({{alertForm.progressText}})</md-subheader>
+        <md-progress-linear md-mode="indeterminate" ng-show="alertForm.hidePage[alertForm.checkPageIdx('warning-priority')].loadData"></md-progress-linear>
         <md-radio-group ng-model="alertForm.dataAlertForm.warningPriority" >
           <md-list-item ng-repeat="dataWarningPriority in alertForm.dataWarningPrioritys" >
             <md-radio-button flex
@@ -169,6 +204,7 @@
 
       <div ng-hide="alertForm.checkPageShow('scope')">  
         <md-subheader class="md-no-sticky">Scope ({{alertForm.progressText}})</md-subheader>
+        <md-progress-linear md-mode="indeterminate" ng-show="alertForm.hidePage[alertForm.checkPageIdx('scope')].loadData"></md-progress-linear>
         <md-radio-group ng-model="alertForm.dataAlertForm.scope" >
           <md-list-item ng-repeat="dataScopeOption in alertForm.dataScopeOptions" >
             <md-radio-button flex
@@ -213,18 +249,25 @@
             <div class="md-dialog-content" style="padding-left:15px;" >
 
                 <div layout="column" layout-gt-sm="column">
+                    <md-input-container class="md-block" ng-show="alertForm.showRestriction()">
+                        <input type="text" name="restriction" ng-model="alertForm.dataAlertForm.restriction" placeholder="Restriction">
+                    </md-input-container>
+
+                    <md-input-container class="md-block">
+                        <input type="text" name="addresses" ng-model="alertForm.dataAlertForm.addresses" placeholder="Recipients">
+                    </md-input-container>
+
                     <md-input-container flex>
                         <label>Headline</label>
                         <textarea ng-model="alertForm.dataAlertForm.headline" columns="4" md-maxlength="140" rows="5"></textarea>
                     </md-input-container>
+                
                     <md-input-container flex>
                         <label>Description</label>
                         <textarea ng-model="alertForm.dataAlertForm.description" columns="4" md-maxlength="140" rows="5"></textarea>
                     </md-input-container>
                     <!--<div>{{alertForm.responseDebug}}</div>-->
-                    <h4></h4>
-                
-                    <h4></h4>
+                                 
                 </div>
 
             </div>
@@ -235,51 +278,55 @@
       <div ng-hide="alertForm.checkPageShow('submit')">  
         <md-subheader class="md-no-sticky">Submit ({{alertForm.progressText}})</md-subheader>
         
-        <md-subheader class="md-no-sticky">Event Types</md-subheader>
-        <md-list-item ng-repeat="dataEventTypeOption in alertForm.dataEventTypeOptions" ng-if="dataEventTypeOption['@value'] == alertForm.dataAlertForm.eventType.id" >
+        <md-subheader ng-click="alertForm.summaryClickDetail('event-type')" class="md-no-sticky">Event Types</md-subheader>
+        <md-list-item ng-click="alertForm.summaryClickDetail('event-type')" ng-repeat="dataEventTypeOption in alertForm.dataEventTypeOptions" ng-if="dataEventTypeOption['@value'] == alertForm.dataAlertForm.eventType.id" >
           <img alt="{{ dataEventTypeOption.$ }}" ng-src="assets/images/disaster/27832-200.png" class="md-avatar" />
           <p>{{dataEventTypeOption.$}}</p>
         </md-list-item>
         <md-divider ></md-divider>
 
-        <md-subheader class="md-no-sticky">Status</md-subheader>
-        <md-list-item ng-repeat="dataStatusOption in alertForm.dataStatusOptions" ng-if="dataStatusOption['@value'] == alertForm.dataAlertForm.status">
+        <md-subheader ng-click="alertForm.summaryClickDetail('status')" class="md-no-sticky">Status</md-subheader>
+        <md-list-item ng-click="alertForm.summaryClickDetail('status')" ng-repeat="dataStatusOption in alertForm.dataStatusOptions" ng-if="dataStatusOption['@value'] == alertForm.dataAlertForm.status">
           <p>{{dataStatusOption['@value']}}</p>
         </md-list-item>
         <md-divider ></md-divider>
 
-        <md-subheader class="md-no-sticky">Templates</md-subheader>
-        <md-list-item ng-repeat="dataTemplateOption in alertForm.dataTemplateOptions" ng-if="dataTemplateOption['id'] == alertForm.dataAlertForm.template.id">
+        <md-subheader ng-click="alertForm.summaryClickDetail('template')" class="md-no-sticky">Templates</md-subheader>
+        <md-list-item ng-click="alertForm.summaryClickDetail('template')" ng-repeat="dataTemplateOption in alertForm.dataTemplateOptions" ng-if="dataTemplateOption['id'] == alertForm.dataAlertForm.template.id">
           <img alt="{{ dataTemplateOption.template_title }}" ng-src="assets/images/disaster/27832-200.png" class="md-avatar" />
           <p>{{dataTemplateOption.template_title}}</p>
         </md-list-item>
         <md-divider ></md-divider>
 
-        <md-subheader class="md-no-sticky">Location</md-subheader>
-        <md-list-item ng-repeat="dataPredefinedAreaOption in alertForm.dataPredefinedAreaOptions" ng-if="dataPredefinedAreaOption.selected">
+        <md-subheader ng-click="alertForm.summaryClickDetail('location')" class="md-no-sticky">Location</md-subheader>
+        <div id="mapThumbnailSummary" style="height:100px;"></div>
+        <md-list-item ng-hide="alertForm.checkInsertedAreasVal()" ng-click="alertForm.summaryClickDetail('location')" ng-repeat="newArea in alertForm.newAreas" >
+          <p>{{newArea.name}}</p>
+        </md-list-item>
+        <md-list-item ng-click="alertForm.summaryClickDetail('location')" ng-repeat="dataPredefinedAreaOption in alertForm.dataPredefinedAreaOptions" ng-if="dataPredefinedAreaOption.selected">
           <p>{{dataPredefinedAreaOption.name}}</p>
         </md-list-item>
         <md-divider ></md-divider>
 
-        <md-subheader class="md-no-sticky">Response Type</md-subheader>
-        <md-list-item ng-repeat="dataResponseTypeOption in alertForm.dataResponseTypeOptions" ng-if="dataResponseTypeOption.selected">
+        <md-subheader ng-click="alertForm.summaryClickDetail('response-type')" class="md-no-sticky">Response Type</md-subheader>
+        <md-list-item ng-click="alertForm.summaryClickDetail('response-type')" ng-repeat="dataResponseTypeOption in alertForm.dataResponseTypeOptions" ng-if="dataResponseTypeOption.selected">
           <p>{{dataResponseTypeOption['@value']}}</p>
         </md-list-item>
         <md-divider ></md-divider>
 
-        <md-subheader class="md-no-sticky">Warning Priority</md-subheader>
-        <md-list-item ng-repeat="dataWarningPriority in alertForm.dataWarningPrioritys" ng-if="dataWarningPriority['id'] == alertForm.dataAlertForm.warningPriority">
+        <md-subheader ng-click="alertForm.summaryClickDetail('warning-priority')" class="md-no-sticky">Warning Priority</md-subheader>
+        <md-list-item ng-click="alertForm.summaryClickDetail('warning-priority')" ng-repeat="dataWarningPriority in alertForm.dataWarningPrioritys" ng-if="dataWarningPriority['id'] == alertForm.dataAlertForm.warningPriority">
           <p>{{dataWarningPriority['name']}}</p>
         </md-list-item>
         <md-divider ></md-divider>
 
-        <md-subheader class="md-no-sticky">Scope</md-subheader>
-        <md-list-item ng-repeat="dataScopeOption in alertForm.dataScopeOptions" ng-if="dataScopeOption['@value'] == alertForm.dataAlertForm.scope">
+        <md-subheader ng-click="alertForm.summaryClickDetail('scope')" class="md-no-sticky">Scope</md-subheader>
+        <md-list-item ng-click="alertForm.summaryClickDetail('scope')" ng-repeat="dataScopeOption in alertForm.dataScopeOptions" ng-if="dataScopeOption['@value'] == alertForm.dataAlertForm.scope">
           <p>{{dataScopeOption['@value']}}</p>
         </md-list-item>
         <md-divider ></md-divider>
 
-        <md-subheader class="md-no-sticky">Date</md-subheader>
+        <md-subheader ng-click="alertForm.summaryClickDetail('date')" class="md-no-sticky">Date</md-subheader>
         <form class="md-inline-form" novalidate>
           <md-dialog-content>
             <div class="md-dialog-content" style="padding-left:15px;" >
@@ -295,7 +342,7 @@
         </form>
         <md-divider ></md-divider>
 
-        <md-subheader class="md-no-sticky">Note</md-subheader>
+        <md-subheader ng-click="alertForm.summaryClickDetail('note')" class="md-no-sticky">Note</md-subheader>
         <form name="dataForm" class="md-inline-form" novalidate>
           <md-dialog-content>
             <div class="md-dialog-content" style="padding-left:15px;" >
@@ -315,7 +362,7 @@
         </form>
         <md-divider ></md-divider>
 
-        <form class="md-inline-form" novalidate>
+        <form name="alertFormSbmt" class="md-inline-form" novalidate>
 
           <md-dialog-content>
             <div class="md-dialog-content" style="padding-left:15px;" >
@@ -323,8 +370,17 @@
                 <div layout="column" layout-gt-sm="column">
                     
                     <h4></h4>
+                    <md-input-container class="md-block">
+                        <input type="password" name="password" ng-model="alertForm.password" placeholder="Password"
+                               required>
+                        <div ng-messages="alertFormSbmt.password.$error" ng-show="alertFormSbmt.password.$touched" role="alert">
+                            <div ng-message="required">
+                                <span >Password field is required</span>
+                            </div>
+                        </div>
+                    </md-input-container>
                     <md-button class="md-raised md-accent" aria-label="Submit"
-                               ng-disabled="alertForm.disabledNextBtn()" ng-click="alertForm.submitForm()">
+                               ng-disabled="alertFormSbmt.$invalid || alertFormSbmt.$pristine" ng-click="alertForm.submitForm()">
                         Submit
                     </md-button>
                     <h4></h4>
