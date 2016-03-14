@@ -35,8 +35,6 @@ import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.util.Log;
 
-import java.util.Locale;
-
 public class NetworkManager extends CordovaPlugin {
 
     public static int NOT_REACHABLE = 0;
@@ -233,35 +231,30 @@ public class NetworkManager extends CordovaPlugin {
      */
     private String getType(NetworkInfo info) {
         if (info != null) {
-            String type = info.getTypeName().toLowerCase(Locale.US);
+            String type = info.getTypeName();
 
-            Log.d("CordovaNetworkManager", "toLower : " + type.toLowerCase());
-            Log.d("CordovaNetworkManager", "wifi : " + WIFI);
-            if (type.equals(WIFI)) {
+            if (type.toLowerCase().equals(WIFI)) {
                 return TYPE_WIFI;
             }
-            else if (type.toLowerCase().equals(TYPE_ETHERNET)) { 
-                return TYPE_ETHERNET;
-            }
-            else if (type.equals(MOBILE) || type.equals(CELLULAR)) {
-                type = info.getSubtypeName().toLowerCase(Locale.US);
-                if (type.equals(GSM) ||
-                        type.equals(GPRS) ||
-                        type.equals(EDGE)) {
+            else if (type.toLowerCase().equals(MOBILE) || type.toLowerCase().equals(CELLULAR)) {
+                type = info.getSubtypeName();
+                if (type.toLowerCase().equals(GSM) ||
+                        type.toLowerCase().equals(GPRS) ||
+                        type.toLowerCase().equals(EDGE)) {
                     return TYPE_2G;
                 }
-                else if (type.startsWith(CDMA) ||
-                        type.equals(UMTS) ||
-                        type.equals(ONEXRTT) ||
-                        type.equals(EHRPD) ||
-                        type.equals(HSUPA) ||
-                        type.equals(HSDPA) ||
-                        type.equals(HSPA)) {
+                else if (type.toLowerCase().startsWith(CDMA) ||
+                        type.toLowerCase().equals(UMTS) ||
+                        type.toLowerCase().equals(ONEXRTT) ||
+                        type.toLowerCase().equals(EHRPD) ||
+                        type.toLowerCase().equals(HSUPA) ||
+                        type.toLowerCase().equals(HSDPA) ||
+                        type.toLowerCase().equals(HSPA)) {
                     return TYPE_3G;
                 }
-                else if (type.equals(LTE) ||
-                        type.equals(UMB) ||
-                        type.equals(HSPA_PLUS)) {
+                else if (type.toLowerCase().equals(LTE) ||
+                        type.toLowerCase().equals(UMB) ||
+                        type.toLowerCase().equals(HSPA_PLUS)) {
                     return TYPE_4G;
                 }
             }

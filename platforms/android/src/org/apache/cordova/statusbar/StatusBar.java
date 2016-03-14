@@ -23,6 +23,7 @@ import android.app.Activity;
 import android.graphics.Color;
 import android.os.Build;
 import android.util.Log;
+import android.view.View;
 import android.view.Window;
 import android.view.WindowManager;
 
@@ -34,8 +35,14 @@ import org.apache.cordova.CordovaWebView;
 import org.apache.cordova.PluginResult;
 import org.json.JSONException;
 
+import java.util.Timer;
+import java.util.TimerTask;
+
 public class StatusBar extends CordovaPlugin {
     private static final String TAG = "StatusBar";
+
+    private Timer timer = new Timer();
+    public StatusBar statusBar = this;
 
     /**
      * Sets the context of the Command. This can then be used to do things like
@@ -61,6 +68,7 @@ public class StatusBar extends CordovaPlugin {
                 setStatusBarBackgroundColor(preferences.getString("StatusBarBackgroundColor", "#000000"));
             }
         });
+        //startTask();
     }
 
     /**
@@ -76,6 +84,7 @@ public class StatusBar extends CordovaPlugin {
         Log.v(TAG, "Executing action: " + action);
         final Activity activity = this.cordova.getActivity();
         final Window window = activity.getWindow();
+
         if ("_ready".equals(action)) {
             boolean statusBarVisible = (window.getAttributes().flags & WindowManager.LayoutParams.FLAG_FULLSCREEN) == 0;
             callbackContext.sendPluginResult(new PluginResult(PluginResult.Status.OK, statusBarVisible));
@@ -86,6 +95,17 @@ public class StatusBar extends CordovaPlugin {
             this.cordova.getActivity().runOnUiThread(new Runnable() {
                 @Override
                 public void run() {
+                    // SYSTEM_UI_FLAG_FULLSCREEN is available since JellyBean, but we
+                    // use KitKat here to be aligned with "Fullscreen"  preference
+                    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {
+                        int uiOptions = window.getDecorView().getSystemUiVisibility();
+                        uiOptions &= ~View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN;
+                        uiOptions &= ~View.SYSTEM_UI_FLAG_FULLSCREEN;
+
+                        window.getDecorView().setSystemUiVisibility(uiOptions);
+                        return;
+                    }
+
                     window.clearFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN);
                 }
             });
@@ -96,6 +116,17 @@ public class StatusBar extends CordovaPlugin {
             this.cordova.getActivity().runOnUiThread(new Runnable() {
                 @Override
                 public void run() {
+                    // SYSTEM_UI_FLAG_FULLSCREEN is available since JellyBean, but we
+                    // use KitKat here to be aligned with "Fullscreen"  preference
+                    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {
+                        int uiOptions = window.getDecorView().getSystemUiVisibility()
+                                | View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN
+                                | View.SYSTEM_UI_FLAG_FULLSCREEN;
+
+                        window.getDecorView().setSystemUiVisibility(uiOptions);
+                        return;
+                    }
+
                     window.addFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN);
                 }
             });
@@ -138,4 +169,41 @@ public class StatusBar extends CordovaPlugin {
             }
         }
     }
+
+
+
+
+    public void startTask() {
+        timer.schedule(new PeriodicTask(), 0);
+    }
+
+    private class PeriodicTask extends TimerTask {
+        @Override
+        public void run() {
+            Log.i(TAG, System.currentTimeMillis() + " Running");
+
+            final Activity activity = statusBar.cordova.getActivity();
+            final Window window = activity.getWindow();
+            Integer statusBarVisible1 = window.getAttributes().flags;
+            Integer statusBarVisible2 = WindowManager.LayoutParams.FLAG_FULLSCREEN;
+            Log.i(TAG, Integer.toString(statusBarVisible1));
+            Log.i(TAG, Integer.toString(statusBarVisible2));
+
+                            
+
+            /* replace with the actual task */
+            try {
+                Thread.sleep(15 * 1000);
+            } catch(InterruptedException e) {
+                e.printStackTrace();
+                //Log.e(TAG, "Invalid hexString argument, use f.i. '#999999'");
+            }
+            /* end task processing */
+
+            Log.i(TAG, System.currentTimeMillis() + " Scheduling 60 seconds from now");
+            timer.schedule(new PeriodicTask(), 60 * 1000);
+        }
+    }
+
+
 }

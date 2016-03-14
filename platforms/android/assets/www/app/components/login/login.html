@@ -6,37 +6,62 @@
     <div flex="5"></div>
       <div layout="column" flex="90">
         <div layout="row" layout-align="space-around center" flex="20">
-            <img src="cap.jpg">
+            <img src="cap.png">
         </div>
         <form style="margin:1em auto;" name="loginForm" novalidate flex="80">
-          <md-input-container class="md-block" md-no-float>
-              <input type="email" name="email" ng-model="login.loginForm.email" placeholder="Email"
-                     ng-pattern="/^.+@.+\..+$/" required>
-              <div ng-messages="loginForm.email.$error" ng-show="loginForm.email.$touched" role="alert" multiple>
-                  <div ng-message="required">
-                      <span >Email field is required</span>
-                  </div>
-                  <div ng-message="pattern">
-                      <span >Email must be a valid e-mail address</span>
-                  </div>
-              </div>
-          </md-input-container>
 
-          <md-input-container class="md-block" md-no-float>
-              <input type="password" name="password" ng-model="login.loginForm.password" placeholder="Password"
-                     required>
-              <div ng-messages="loginForm.password.$error" ng-show="loginForm.password.$touched" role="alert">
-                  <div ng-message="required">
-                      <span >Password field is required</span>
+          <div ng-show="login.loginFormContainer">
+              <md-input-container class="md-block" md-no-float>
+                  <input type="email" name="email" ng-model="login.loginForm.email" placeholder="Email"
+                         ng-pattern="/^.+@.+\..+$/" required>
+                  <div ng-messages="loginForm.email.$error" ng-show="loginForm.email.$touched" role="alert" multiple>
+                      <div ng-message="required">
+                          <span >Email field is required</span>
+                      </div>
+                      <div ng-message="pattern">
+                          <span >Email must be a valid e-mail address</span>
+                      </div>
                   </div>
-              </div>
-          </md-input-container>
-          
-            <md-button type="submit" class="md-raised md-accent" aria-label="LOG IN"
-                       ng-disabled="loginForm.$invalid || loginForm.$pristine" ng-click="login.sendForm();">
-                LOG IN
-            </md-button>
-            <div ng-hide="login.hideErrorMessage" class="msg-wrong-pass md-warn-fg text-center">Username or Password is Wrong</div>
+              </md-input-container>
+
+              <md-input-container class="md-block" md-no-float>
+                  <input type="password" name="password" ng-model="login.loginForm.password" placeholder="Password"
+                         required>
+                  <div ng-messages="loginForm.password.$error" ng-show="loginForm.password.$touched" role="alert">
+                      <div ng-message="required">
+                          <span >Password field is required</span>
+                      </div>
+                  </div>
+              </md-input-container>
+              
+                <md-button type="submit" class="md-raised md-accent" aria-label="LOG IN" style="width:90%;"
+                           ng-disabled="loginForm.$invalid || loginForm.$pristine" ng-click="login.sendForm();">
+                    LOG IN
+                </md-button>
+                <div ng-hide="login.hideErrorMessage" class="msg-wrong-pass md-warn-fg text-center">Username or Password is Wrong</div>    
+          </div>
+          <div ng-show="login.directLoginContainer">
+              <md-button class="md-raised md-accent" aria-label="{{login.userName}}" style="width:90%;"
+                           ng-click="login.clickDirectLogin()">
+                    {{login.userName}}
+                </md-button>
+                <h4></h4>
+              <div class="md-accent-fg text-center" ng-click="login.clickSelectLogin()">Not your account name?</div>   
+          </div>
+          <div ng-show="login.selectLoginContainer">
+              <div ng-repeat="dataUser in login.dataUsers" layout="row">
+                <md-button class="md-raised md-accent" aria-label="{{login.userName}}" style="width:90%;"
+                           ng-click="login.clickDirectLoginUsers(login.dataUsers.indexOf(dataUser))">
+                    {{dataUser.email}}
+                </md-button>
+                <md-button ng-click="login.clickDeleteUser(login.dataUsers.indexOf(dataUser))" class="md-icon-button" aria-label="Delete">
+                  <ng-md-icon icon="delete"></ng-md-icon>
+                </md-button>
+              </div>  
+              
+                <h4></h4>
+              <div class="md-accent-fg text-center" ng-click="login.clickToLoginForm()">Different account?</div>   
+          </div>
 
           
         </form>

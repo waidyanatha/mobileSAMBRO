@@ -1,6 +1,6 @@
 {
   "name": "cordova-plugin-network-information",
-  "version": "1.2.1-dev",
+  "version": "1.0.1",
   "description": "Cordova Network Information Plugin",
   "cordova": {
     "id": "cordova-plugin-network-information",
@@ -42,5 +42,5 @@
     "cordova-browser"
   ],
   "author": "Apache Software Foundation",
-  "license": "Apache-2.0"
+  "license": "Apache 2.0"
 }

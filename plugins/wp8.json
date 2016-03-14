@@ -7,14 +7,63 @@
         "files": {
             "Properties/WMAppManifest.xml": {
                 "parents": {
-                    "/Deployment/App/Capabilities": []
+                    "/Deployment/App/Capabilities": [
+                        {
+                            "xml": "<Capability Name=\"ID_CAP_LOCATION\" />",
+                            "count": 1
+                        },
+                        {
+                            "xml": "<Capability Name=\"ID_CAP_NETWORKING\" />",
+                            "count": 1
+                        },
+                        {
+                            "xml": "<Capability Name=\"ID_CAP_MEDIALIB_AUDIO\" />",
+                            "count": 1
+                        },
+                        {
+                            "xml": "<Capability Name=\"ID_CAP_MEDIALIB_PLAYBACK\" />",
+                            "count": 1
+                        },
+                        {
+                            "xml": "<Capability Name=\"ID_CAP_MICROPHONE\" />",
+                            "count": 1
+                        },
+                        {
+                            "xml": "<Capability Name=\"ID_CAP_PUSH_NOTIFICATION\" />",
+                            "count": 1
+                        }
+                    ]
                 }
             },
             "config.xml": {
                 "parents": {
                     "/*": [
                         {
+                            "xml": "<feature name=\"Notification\"><param name=\"wp-package\" value=\"Notification\" /></feature>",
+                            "count": 1
+                        },
+                        {
                             "xml": "<feature name=\"StatusBar\"><param name=\"wp-package\" value=\"StatusBar\" /></feature>",
+                            "count": 1
+                        },
+                        {
+                            "xml": "<feature name=\"SQLitePlugin\"><param name=\"wp-package\" value=\"SQLitePlugin\" /></feature>",
+                            "count": 1
+                        },
+                        {
+                            "xml": "<feature name=\"NetworkStatus\"><param name=\"wp-package\" value=\"NetworkStatus\" /></feature>",
+                            "count": 1
+                        },
+                        {
+                            "xml": "<feature name=\"File\"><param name=\"wp-package\" value=\"File\" /></feature>",
+                            "count": 1
+                        },
+                        {
+                            "xml": "<feature name=\"Media\"><param name=\"wp-package\" value=\"Media\" /></feature>",
+                            "count": 1
+                        },
+                        {
+                            "xml": "<feature name=\"PushPlugin\"><param name=\"wp-package\" value=\"PushPlugin\" /></feature>",
                             "count": 1
                         }
                     ]
@@ -26,12 +75,37 @@
         "cordova-plugin-whitelist": {
             "PACKAGE_NAME": "{0d8f1fb0-61fa-11e5-82ab-8de24a0a18b8}"
         },
+        "org.apache.cordova.dialogs": {
+            "PACKAGE_NAME": "{0d8f1fb0-61fa-11e5-82ab-8de24a0a18b8}"
+        },
+        "cordova-plugin-geolocation": {
+            "PACKAGE_NAME": "{0d8f1fb0-61fa-11e5-82ab-8de24a0a18b8}"
+        },
         "cordova-plugin-statusbar": {
             "PACKAGE_NAME": "{0d8f1fb0-61fa-11e5-82ab-8de24a0a18b8}"
         },
-        "com.phonegap.plugins.OrientationLock": {
+        "io.litehelpers.cordova.sqlite": {
+            "PACKAGE_NAME": "{0d8f1fb0-61fa-11e5-82ab-8de24a0a18b8}"
+        },
+        "cordova-plugin-network-information": {
+            "PACKAGE_NAME": "{0d8f1fb0-61fa-11e5-82ab-8de24a0a18b8}"
+        },
+        "cordova-plugin-file": {
+            "PACKAGE_NAME": "{0d8f1fb0-61fa-11e5-82ab-8de24a0a18b8}"
+        },
+        "cordova-plugin-media": {
+            "PACKAGE_NAME": "{0d8f1fb0-61fa-11e5-82ab-8de24a0a18b8}"
+        },
+        "com.phonegap.plugins.PushPlugin": {
+            "PACKAGE_NAME": "{0d8f1fb0-61fa-11e5-82ab-8de24a0a18b8}"
+        },
+        "com.red_folder.phonegap.plugin.backgroundservice.sample": {
             "PACKAGE_NAME": "{0d8f1fb0-61fa-11e5-82ab-8de24a0a18b8}"
         }
     },
-    "dependent_plugins": {}
+    "dependent_plugins": {
+        "com.red_folder.phonegap.plugin.backgroundservice": {
+            "PACKAGE_NAME": "{0d8f1fb0-61fa-11e5-82ab-8de24a0a18b8}"
+        }
+    }
 }

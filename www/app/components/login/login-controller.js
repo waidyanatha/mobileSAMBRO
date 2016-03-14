@@ -50,6 +50,7 @@ angular.module("ngapp")
     ctrl.dataUsers = new Array();
     ctrl.selectAllUser = function() {
       ctrl.dataUsers = new Array();
+      console.log('select all user');
       var query = "SELECT * FROM m_user";
       $cordovaSQLite.execute(dbShared,query).then(function(result) {
           if(result.rows.length > 0) {
@@ -57,8 +58,12 @@ angular.module("ngapp")
                 var dataUser = {
                   'email' : result.rows.item(i).email,
                   'pwd': result.rows.item(i).pwd,
-                  'active_user': parseInt(result.rows.item(i).active_user)
+                  'active_user': parseInt(result.rows.item(i).active_user),
+                  'device_token_id': result.rows.item(i).device_token_id,
                 };
+
+                console.log(dataUser.email);
+                console.log(dataUser.pwd);
 
                 if(dataUser.active_user == 1){
                     $localStorage['username'] = dataUser.email;
@@ -90,7 +95,7 @@ angular.module("ngapp")
     ctrl.clickDirectLoginUsers = function(idx){
       $localStorage['username'] = ctrl.dataUsers[idx].email;
       $localStorage['password'] = ctrl.dataUsers[idx].pwd;
-      ctrl.updateUser(ctrl.dataUsers[idx].email,ctrl.dataUsers[idx].pwd);
+      ctrl.updateUser(ctrl.dataUsers[idx].email,ctrl.dataUsers[idx].pwd,ctrl.dataUsers[idx].device_token_id);
       $location.path("/main");
     };
     ctrl.clickToLoginForm = function(){
@@ -100,10 +105,14 @@ angular.module("ngapp")
     };
 
     ctrl.selectUser = function(email,pwd) {
-      var query = "SELECT * FROM m_user";
-      $cordovaSQLite.execute(dbShared,query).then(function(result) {
+      var query = "SELECT * FROM m_user where email=?";
+      $cordovaSQLite.execute(dbShared,query, [email]).then(function(result) {
           if(result.rows.length > 0) {
-              ctrl.updateUser(email,pwd);
+              var deviceTokenId = result.rows.item(i).device_token_id;
+              if($localStorage['deviceTokenId'] != '' && $localStorage['deviceTokenId'] != result.rows.item(i).device_token_id){
+                deviceTokenId = $localStorage['deviceTokenId'];
+              }
+              ctrl.updateUser(email,pwd,deviceTokenId);
           } else {
               ctrl.insertUser(email,pwd);
           }
@@ -112,10 +121,10 @@ angular.module("ngapp")
       });
     };
 
-    ctrl.updateUser = function(email,pwd) {
+    ctrl.updateUser = function(email,pwd,deviceTokenId) {
       shared.updateActiveUser();
-      var query = "update m_user set email=?,pwd=?,active_user=?";
-      $cordovaSQLite.execute(dbShared, query, [email, pwd,1]).then(function(result) {
+      var query = "update m_user set pwd=?,active_user=?,device_token_id=? where email=?";
+      $cordovaSQLite.execute(dbShared, query, [pwd,1,deviceTokenId,email]).then(function(result) {
         console.log("update user");
         
       }, function (err) {
@@ -126,8 +135,8 @@ angular.module("ngapp")
 
     ctrl.insertUser = function(email,pwd) {
       shared.updateActiveUser();
-      var query = "insert into m_user (email,pwd,active_user) values (?,?,?)";
-      $cordovaSQLite.execute(dbShared, query, [email, pwd,1]).then(function(result) {
+      var query = "insert into m_user (email,pwd,active_user,device_token_id) values (?,?,?,?)";
+      $cordovaSQLite.execute(dbShared, query, [email, pwd,1,$localStorage['deviceTokenId']]).then(function(result) {
         console.log("insert user");
         
       }, function (err) {
@@ -135,6 +144,19 @@ angular.module("ngapp")
         console.error(err);
       });
     };
+
+    ctrl.clickDeleteUser = function(idx){
+        var email = ctrl.dataUsers[idx].email;
+        var query = "delete from m_user where email=?";
+        $cordovaSQLite.execute(dbShared, query, [email]).then(function(result) {
+          console.log("delete user " + email);
+          ctrl.dataUsers.splice(idx, 1);
+          
+        }, function (err) {
+          //$cordovaDialogs.alert('err', err, 'OK');
+          console.error(err);
+        });
+    }
 
     ctrl.sendFormFnc = function()
     {
@@ -145,10 +167,13 @@ angular.module("ngapp")
         console.log('success');
         console.log(response);  
 
-        var passEncrypt = CryptoJS.AES.encrypt(ctrl.loginForm.password, "Secret Passphrase");
+        var passEncrypt = CryptoJS.AES.encrypt(ctrl.loginForm.password, "Secret Passphrase").toString();
 
         $localStorage['username'] = ctrl.loginForm.email;
         $localStorage['password'] = passEncrypt;
+
+        //grab the user id and save it to the database
+
         ctrl.selectUser(ctrl.loginForm.email,passEncrypt);
 
         $location.path("/main");
@@ -164,7 +189,7 @@ angular.module("ngapp")
     {
       var ctrlDetail = this;
       ctrlDetail.email = email;
-      ctrlDetail.passEncrypt = CryptoJS.AES.encrypt(password, "Secret Passphrase");
+      ctrlDetail.passEncrypt = CryptoJS.AES.encrypt(password, "Secret Passphrase").toString();
 
       shared.sendFormViaDBFnc(email,ctrlDetail.passEncrypt
       ,function(result){

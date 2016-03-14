@@ -93,7 +93,8 @@ angular.module("ngapp")
       alert('You swiped down!!');
     };
 
-    ctrl.todayDate = new Date();
+    ctrl.currentDateTime = new Date();
+    ctrl.todayDate = new Date(ctrl.currentDateTime.getFullYear(), ctrl.currentDateTime.getMonth(), ctrl.currentDateTime.getDate(), ctrl.currentDateTime.getHours(), ctrl.currentDateTime.getMinutes(), 0);
     $scope.minDate = new Date(
         ctrl.todayDate.getFullYear(),
         ctrl.todayDate.getMonth() - 2,
@@ -180,7 +181,7 @@ angular.module("ngapp")
         if(ctrl.hidePage[ctrl.currPage-1].pageName == 'submit'){
             $timeout(function () { 
                 mapThumbnailSummary.invalidateSize();
-                ctrl.renderPolygonOnThumbnailMap();
+                ctrl.renderPolygonOnThumbnailSummMap();
             }, 1000);
         }
     }
@@ -375,44 +376,42 @@ angular.module("ngapp")
             }]
         };
 
-        var passEncrypt = CryptoJS.AES.encrypt(ctrl.password, "Secret Passphrase");
-        shared.sendFormViaDBFnc($localStorage['username'],passEncrypt
-          ,function(result){
-              if(result.rows.length > 0) {
-                    if(ctrl.isNetworkOffline){
-                        shared.insertDB("t_alert_offline","insert into t_alert_offline (created_time, data_form) values (?,?)",
-                        [new Date(),JSON.stringify(submitFormVal)],
-                        function(result){
-                            console.log('success insert to db');
-                            $location.path("/main");
-                        },function(error){
-                            console.log('error to db');
-                            $location.path("/main");
-                        });
-                    }
-                    else{
-                        var url = shared.sendAlertApiUrl;
-                        var promiseSendDataForm = shared.sendDataForm(url,JSON.stringify(submitFormVal));
-                        promiseSendDataForm.then(function(response) {
-                            console.log("success Save");
-                            console.log(response);
-                            ctrl.responseDebug = response;
-                            $location.path("/main");
-                            //$cordovaDialogs.alert('success', response, 'OK');
-                        }, function(reason) {
-                            console.log("failed Save");
-                            console.log(reason);
-                            ctrl.responseDebug = reason;
-                            //$cordovaDialogs.alert('failed', reason, 'OK');
-                            $location.path("/main");
-                        });
-                    }
-              } else {
-                  console.log('failed');
-                  ctrl.hideErrorMessage = false;
-                  $cordovaDialogs.alert('Failed', 'Password wrong', 'OK');
-              }
-        });
+        console.log($localStorage['password']);
+        if(CryptoJS.AES.decrypt($localStorage['password'], "Secret Passphrase").toString(CryptoJS.enc.Utf8) == ctrl.password){
+            if(ctrl.isNetworkOffline){
+                shared.insertDB("t_alert_offline","insert into t_alert_offline (created_time, data_form) values (?,?)",
+                [new Date(),JSON.stringify(submitFormVal)],
+                function(result){
+                    console.log('success insert to db');
+                    $location.path("/main");
+                },function(error){
+                    console.log('error to db');
+                    $location.path("/main");
+                });
+            }
+            else{
+                var url = shared.sendAlertApiUrl;
+                var promiseSendDataForm = shared.sendDataForm(url,JSON.stringify(submitFormVal));
+                promiseSendDataForm.then(function(response) {
+                    console.log("success Save");
+                    console.log(response);
+                    ctrl.responseDebug = response;
+                    $location.path("/main");
+                    //$cordovaDialogs.alert('success', response, 'OK');
+                }, function(reason) {
+                    console.log("failed Save");
+                    console.log(reason);
+                    ctrl.responseDebug = reason;
+                    //$cordovaDialogs.alert('failed', reason, 'OK');
+                    $location.path("/main");
+                });
+            }
+        }
+        else{
+            console.log('failed');
+            ctrl.hideErrorMessage = false;
+            $cordovaDialogs.alert('Failed', 'Password wrong', 'OK');
+        }
     };
 
     ctrl.clickEventTypeOption = function(ev,eventTypeObj){
@@ -482,7 +481,11 @@ angular.module("ngapp")
     };
 
     ctrl.dataEventTypeOptions = new Array();
-    shared.selectDB("m_event_type","select * from m_event_type",[],function(result){
+
+
+    //SELECT met.* FROM m_event_type met INNER JOIN m_template mt ON met.id = mt.event_event_type_id
+    //select * from m_event_type
+    shared.selectDB("m_event_type","SELECT distinct met.* FROM m_event_type met INNER JOIN m_template mt ON met.id = mt.event_event_type_id",[],function(result){
       if(result.rows.length > 0) {
 
         ctrl.hidePage[ctrl.checkPageIdx('event-type')].loadData = false;
@@ -823,12 +826,10 @@ angular.module("ngapp")
     ctrl.renderPolygonOnThumbnailMap = function(){
         if(featureGroupPolyThumbnail != null){
             mapThumbnail.removeLayer(featureGroupPolyThumbnail);
-            mapThumbnailSummary.removeLayer(featureGroupPolyThumbnail);
         }
         featureGroupPolyThumbnail = L.featureGroup();
         mapThumbnail.addLayer(featureGroupPolyThumbnail);
-        mapThumbnailSummary.addLayer(featureGroupPolyThumbnail);
-
+       
         for(var i=0;i<ctrl.newAreas.length;i++){
             var wkt1 = new Wkt.Wkt();
             wkt1.read(ctrl.newAreas[i].wkt);
@@ -838,11 +839,29 @@ angular.module("ngapp")
         }
 
         mapThumbnail.fitBounds(featureGroupPolyThumbnail.getBounds());
-        mapThumbnailSummary.fitBounds(featureGroupPolyThumbnail.getBounds());
-        //mapThumbnail.setView(featureGroupPolyThumbnail.getCenter(), 13);
+        
         if(ctrl.renderingGeolocation == true){
             ctrl.renderingGeolocation = false;
         }
+    };
+
+    var featureGroupPolyThumbnailSumm = null;
+    ctrl.renderPolygonOnThumbnailSummMap = function(){
+        if(featureGroupPolyThumbnailSumm != null){
+            mapThumbnailSummary.removeLayer(featureGroupPolyThumbnailSumm);
+        }
+        featureGroupPolyThumbnailSumm = L.featureGroup();
+        mapThumbnailSummary.addLayer(featureGroupPolyThumbnailSumm);
+
+        for(var i=0;i<ctrl.newAreas.length;i++){
+            var wkt1 = new Wkt.Wkt();
+            wkt1.read(ctrl.newAreas[i].wkt);
+
+            var poly = L.polygon(wkt1.toObject()._latlngs,{color: 'green',fillOpacity: 0.3,stroke: false}).bindPopup(ctrl.newAreas[i].name);
+            featureGroupPolyThumbnailSumm.addLayer(poly);
+        }
+
+        mapThumbnailSummary.fitBounds(featureGroupPolyThumbnailSumm.getBounds());
     };
 
     //layer Change

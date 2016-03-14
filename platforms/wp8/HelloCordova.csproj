@@ -147,6 +147,10 @@
             <DependentUpon>MainPage.xaml</DependentUpon>
         </Compile>
         <Compile Include="Properties\AssemblyInfo.cs" />
+        <Page Include="Plugins\org.apache.cordova.dialogs\NotificationBox.xaml">
+            <SubType>Designer</SubType>
+            <Generator>MSBuild:Compile</Generator>
+        </Page>
     </ItemGroup>
     <ItemGroup>
         <ApplicationDefinition Include="App.xaml">
@@ -217,9 +221,299 @@
         <PostBuildEvent>
         </PostBuildEvent>
     </PropertyGroup>
+    <ItemGroup />
+    <ItemGroup />
+    <ItemGroup>
+        <Compile Include="Plugins\org.apache.cordova.dialogs\Notification.cs" />
+    </ItemGroup>
+    <ItemGroup>
+        <Compile Include="Plugins\org.apache.cordova.dialogs\NotificationBox.xaml.cs">
+            <DependentUpon>NotificationBox.xaml</DependentUpon>
+        </Compile>
+    </ItemGroup>
+    <ItemGroup />
+    <ItemGroup>
+        <Content Include="Plugins\org.apache.cordova.dialogs\notification-beep.wav" />
+    </ItemGroup>
+    <ItemGroup>
+        <Compile Include="Plugins\cordova-plugin-geolocation\Geolocation.cs" />
+    </ItemGroup>
     <ItemGroup>
         <Compile Include="Plugins\cordova-plugin-statusbar\StatusBar.cs" />
     </ItemGroup>
-    <ItemGroup />
-    <ItemGroup />
+    <ItemGroup>
+        <Compile Include="Plugins\io.litehelpers.cordova.sqlite\SQLitePlugin.cs" />
+    </ItemGroup>
+    <ItemGroup>
+        <Compile Include="Plugins\io.litehelpers.cordova.sqlite\SQLite.cs" />
+    </ItemGroup>
+    <ItemGroup>
+        <Compile Include="Plugins\io.litehelpers.cordova.sqlite\_Custom.cs" />
+    </ItemGroup>
+    <ItemGroup>
+        <Compile Include="Plugins\io.litehelpers.cordova.sqlite\BtreeInt_h.cs" />
+    </ItemGroup>
+    <ItemGroup>
+        <Compile Include="Plugins\io.litehelpers.cordova.sqlite\Btree_h.cs" />
+    </ItemGroup>
+    <ItemGroup>
+        <Compile Include="Plugins\io.litehelpers.cordova.sqlite\Delegates.cs" />
+    </ItemGroup>
+    <ItemGroup>
+        <Compile Include="Plugins\io.litehelpers.cordova.sqlite\Hash_h.cs" />
+    </ItemGroup>
+    <ItemGroup>
+        <Compile Include="Plugins\io.litehelpers.cordova.sqlite\VdbeInt_h.cs" />
+    </ItemGroup>
+    <ItemGroup>
+        <Compile Include="Plugins\io.litehelpers.cordova.sqlite\Vdbe_h.cs" />
+    </ItemGroup>
+    <ItemGroup>
+        <Compile Include="Plugins\io.litehelpers.cordova.sqlite\alter_c.cs" />
+    </ItemGroup>
+    <ItemGroup>
+        <Compile Include="Plugins\io.litehelpers.cordova.sqlite\analyze_c.cs" />
+    </ItemGroup>
+    <ItemGroup>
+        <Compile Include="Plugins\io.litehelpers.cordova.sqlite\attach_c.cs" />
+    </ItemGroup>
+    <ItemGroup>
+        <Compile Include="Plugins\io.litehelpers.cordova.sqlite\auth_c.cs" />
+    </ItemGroup>
+    <ItemGroup>
+        <Compile Include="Plugins\io.litehelpers.cordova.sqlite\backup_c.cs" />
+    </ItemGroup>
+    <ItemGroup>
+        <Compile Include="Plugins\io.litehelpers.cordova.sqlite\bitvec_c.cs" />
+    </ItemGroup>
+    <ItemGroup>
+        <Compile Include="Plugins\io.litehelpers.cordova.sqlite\btmutex_c.cs" />
+    </ItemGroup>
+    <ItemGroup>
+        <Compile Include="Plugins\io.litehelpers.cordova.sqlite\btree_c.cs" />
+    </ItemGroup>
+    <ItemGroup>
+        <Compile Include="Plugins\io.litehelpers.cordova.sqlite\build_c.cs" />
+    </ItemGroup>
+    <ItemGroup>
+        <Compile Include="Plugins\io.litehelpers.cordova.sqlite\callback_c.cs" />
+    </ItemGroup>
+    <ItemGroup>
+        <Compile Include="Plugins\io.litehelpers.cordova.sqlite\complete_c.cs" />
+    </ItemGroup>
+    <ItemGroup>
+        <Compile Include="Plugins\io.litehelpers.cordova.sqlite\crypto.cs" />
+    </ItemGroup>
+    <ItemGroup>
+        <Compile Include="Plugins\io.litehelpers.cordova.sqlite\ctime_c.cs" />
+    </ItemGroup>
+    <ItemGroup>
+        <Compile Include="Plugins\io.litehelpers.cordova.sqlite\date_c.cs" />
+    </ItemGroup>
+    <ItemGroup>
+        <Compile Include="Plugins\io.litehelpers.cordova.sqlite\delete_c.cs" />
+    </ItemGroup>
+    <ItemGroup>
+        <Compile Include="Plugins\io.litehelpers.cordova.sqlite\expr_c.cs" />
+    </ItemGroup>
+    <ItemGroup>
+        <Compile Include="Plugins\io.litehelpers.cordova.sqlite\fault_c.cs" />
+    </ItemGroup>
+    <ItemGroup>
+        <Compile Include="Plugins\io.litehelpers.cordova.sqlite\fkey_c.cs" />
+    </ItemGroup>
+    <ItemGroup>
+        <Compile Include="Plugins\io.litehelpers.cordova.sqlite\func_c.cs" />
+    </ItemGroup>
+    <ItemGroup>
+        <Compile Include="Plugins\io.litehelpers.cordova.sqlite\global_c.cs" />
+    </ItemGroup>
+    <ItemGroup>
+        <Compile Include="Plugins\io.litehelpers.cordova.sqlite\hash_c.cs" />
+    </ItemGroup>
+    <ItemGroup>
+        <Compile Include="Plugins\io.litehelpers.cordova.sqlite\hwtime_c.cs" />
+    </ItemGroup>
+    <ItemGroup>
+        <Compile Include="Plugins\io.litehelpers.cordova.sqlite\insert_c.cs" />
+    </ItemGroup>
+    <ItemGroup>
+        <Compile Include="Plugins\io.litehelpers.cordova.sqlite\journal_c.cs" />
+    </ItemGroup>
+    <ItemGroup>
+        <Compile Include="Plugins\io.litehelpers.cordova.sqlite\keywordhash_h.cs" />
+    </ItemGroup>
+    <ItemGroup>
+        <Compile Include="Plugins\io.litehelpers.cordova.sqlite\legacy_c.cs" />
+    </ItemGroup>
+    <ItemGroup>
+        <Compile Include="Plugins\io.litehelpers.cordova.sqlite\loadext_c.cs" />
+    </ItemGroup>
+    <ItemGroup>
+        <Compile Include="Plugins\io.litehelpers.cordova.sqlite\main_c.cs" />
+    </ItemGroup>
+    <ItemGroup>
+        <Compile Include="Plugins\io.litehelpers.cordova.sqlite\malloc_c.cs" />
+    </ItemGroup>
+    <ItemGroup>
+        <Compile Include="Plugins\io.litehelpers.cordova.sqlite\mem_Pool.cs" />
+    </ItemGroup>
+    <ItemGroup>
+        <Compile Include="Plugins\io.litehelpers.cordova.sqlite\memjournal_c.cs" />
+    </ItemGroup>
+    <ItemGroup>
+        <Compile Include="Plugins\io.litehelpers.cordova.sqlite\mutex_h.cs" />
+    </ItemGroup>
+    <ItemGroup>
+        <Compile Include="Plugins\io.litehelpers.cordova.sqlite\mutex_noop_c.cs" />
+    </ItemGroup>
+    <ItemGroup>
+        <Compile Include="Plugins\io.litehelpers.cordova.sqlite\notify_c.cs" />
+    </ItemGroup>
+    <ItemGroup>
+        <Compile Include="Plugins\io.litehelpers.cordova.sqlite\opcodes_c.cs" />
+    </ItemGroup>
+    <ItemGroup>
+        <Compile Include="Plugins\io.litehelpers.cordova.sqlite\opcodes_h.cs" />
+    </ItemGroup>
+    <ItemGroup>
+        <Compile Include="Plugins\io.litehelpers.cordova.sqlite\os_c.cs" />
+    </ItemGroup>
+    <ItemGroup>
+        <Compile Include="Plugins\io.litehelpers.cordova.sqlite\os_common_h.cs" />
+    </ItemGroup>
+    <ItemGroup>
+        <Compile Include="Plugins\io.litehelpers.cordova.sqlite\os_h.cs" />
+    </ItemGroup>
+    <ItemGroup>
+        <Compile Include="Plugins\io.litehelpers.cordova.sqlite\os_win_c.cs" />
+    </ItemGroup>
+    <ItemGroup>
+        <Compile Include="Plugins\io.litehelpers.cordova.sqlite\pager_c.cs" />
+    </ItemGroup>
+    <ItemGroup>
+        <Compile Include="Plugins\io.litehelpers.cordova.sqlite\pager_h.cs" />
+    </ItemGroup>
+    <ItemGroup>
+        <Compile Include="Plugins\io.litehelpers.cordova.sqlite\parse_c.cs" />
+    </ItemGroup>
+    <ItemGroup>
+        <Compile Include="Plugins\io.litehelpers.cordova.sqlite\parse_h.cs" />
+    </ItemGroup>
+    <ItemGroup>
+        <Compile Include="Plugins\io.litehelpers.cordova.sqlite\pcache1_c.cs" />
+    </ItemGroup>
+    <ItemGroup>
+        <Compile Include="Plugins\io.litehelpers.cordova.sqlite\pcache_c.cs" />
+    </ItemGroup>
+    <ItemGroup>
+        <Compile Include="Plugins\io.litehelpers.cordova.sqlite\pcache_h.cs" />
+    </ItemGroup>
+    <ItemGroup>
+        <Compile Include="Plugins\io.litehelpers.cordova.sqlite\pragma_c.cs" />
+    </ItemGroup>
+    <ItemGroup>
+        <Compile Include="Plugins\io.litehelpers.cordova.sqlite\prepare_c.cs" />
+    </ItemGroup>
+    <ItemGroup>
+        <Compile Include="Plugins\io.litehelpers.cordova.sqlite\printf_c.cs" />
+    </ItemGroup>
+    <ItemGroup>
+        <Compile Include="Plugins\io.litehelpers.cordova.sqlite\random_c.cs" />
+    </ItemGroup>
+    <ItemGroup>
+        <Compile Include="Plugins\io.litehelpers.cordova.sqlite\resolve_c.cs" />
+    </ItemGroup>
+    <ItemGroup>
+        <Compile Include="Plugins\io.litehelpers.cordova.sqlite\rowset_c.cs" />
+    </ItemGroup>
+    <ItemGroup>
+        <Compile Include="Plugins\io.litehelpers.cordova.sqlite\select_c.cs" />
+    </ItemGroup>
+    <ItemGroup>
+        <Compile Include="Plugins\io.litehelpers.cordova.sqlite\sqlite3_h.cs" />
+    </ItemGroup>
+    <ItemGroup>
+        <Compile Include="Plugins\io.litehelpers.cordova.sqlite\sqliteInt_h.cs" />
+    </ItemGroup>
+    <ItemGroup>
+        <Compile Include="Plugins\io.litehelpers.cordova.sqlite\sqliteLimit_h.cs" />
+    </ItemGroup>
+    <ItemGroup>
+        <Compile Include="Plugins\io.litehelpers.cordova.sqlite\status_c.cs" />
+    </ItemGroup>
+    <ItemGroup>
+        <Compile Include="Plugins\io.litehelpers.cordova.sqlite\table_c.cs" />
+    </ItemGroup>
+    <ItemGroup>
+        <Compile Include="Plugins\io.litehelpers.cordova.sqlite\tokenize_c.cs" />
+    </ItemGroup>
+    <ItemGroup>
+        <Compile Include="Plugins\io.litehelpers.cordova.sqlite\trigger_c.cs" />
+    </ItemGroup>
+    <ItemGroup>
+        <Compile Include="Plugins\io.litehelpers.cordova.sqlite\update_c.cs" />
+    </ItemGroup>
+    <ItemGroup>
+        <Compile Include="Plugins\io.litehelpers.cordova.sqlite\utf_c.cs" />
+    </ItemGroup>
+    <ItemGroup>
+        <Compile Include="Plugins\io.litehelpers.cordova.sqlite\util_c.cs" />
+    </ItemGroup>
+    <ItemGroup>
+        <Compile Include="Plugins\io.litehelpers.cordova.sqlite\vacuum_c.cs" />
+    </ItemGroup>
+    <ItemGroup>
+        <Compile Include="Plugins\io.litehelpers.cordova.sqlite\vdbe_c.cs" />
+    </ItemGroup>
+    <ItemGroup>
+        <Compile Include="Plugins\io.litehelpers.cordova.sqlite\vdbeapi_c.cs" />
+    </ItemGroup>
+    <ItemGroup>
+        <Compile Include="Plugins\io.litehelpers.cordova.sqlite\vdbeaux_c.cs" />
+    </ItemGroup>
+    <ItemGroup>
+        <Compile Include="Plugins\io.litehelpers.cordova.sqlite\vdbeblob_c.cs" />
+    </ItemGroup>
+    <ItemGroup>
+        <Compile Include="Plugins\io.litehelpers.cordova.sqlite\vdbemem_c.cs" />
+    </ItemGroup>
+    <ItemGroup>
+        <Compile Include="Plugins\io.litehelpers.cordova.sqlite\vdbetrace_c.cs" />
+    </ItemGroup>
+    <ItemGroup>
+        <Compile Include="Plugins\io.litehelpers.cordova.sqlite\vtab_c.cs" />
+    </ItemGroup>
+    <ItemGroup>
+        <Compile Include="Plugins\io.litehelpers.cordova.sqlite\wal_c.cs" />
+    </ItemGroup>
+    <ItemGroup>
+        <Compile Include="Plugins\io.litehelpers.cordova.sqlite\wal_h.cs" />
+    </ItemGroup>
+    <ItemGroup>
+        <Compile Include="Plugins\io.litehelpers.cordova.sqlite\walker_c.cs" />
+    </ItemGroup>
+    <ItemGroup>
+        <Compile Include="Plugins\io.litehelpers.cordova.sqlite\where_c.cs" />
+    </ItemGroup>
+    <ItemGroup>
+        <Compile Include="Plugins\cordova-plugin-network-information\NetworkStatus.cs" />
+    </ItemGroup>
+    <ItemGroup>
+        <Compile Include="Plugins\cordova-plugin-file\File.cs" />
+    </ItemGroup>
+    <ItemGroup>
+        <Compile Include="Plugins\cordova-plugin-media\Media.cs" />
+    </ItemGroup>
+    <ItemGroup>
+        <Compile Include="Plugins\cordova-plugin-media\AudioPlayer.cs" />
+    </ItemGroup>
+    <ItemGroup>
+        <Compile Include="Plugins\com.phonegap.plugins.PushPlugin\PushPlugin.cs" />
+    </ItemGroup>
+    <ItemGroup>
+        <Reference Include="Newtonsoft.Json">
+            <HintPath>plugins/com.phonegap.plugins.PushPlugin/Newtonsoft.Json.dll</HintPath>
+        </Reference>
+    </ItemGroup>
 </Project>

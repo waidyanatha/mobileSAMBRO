@@ -65,6 +65,31 @@
     var map = null;
     var mapThumbnail = null;
     var mapThumbnailSummary = null;
+    var mediaSound = null;
+
+    var myService; //background service always running
+    function getStatus() {
+        myService.getStatus(function(r){startService(r)}, function(e){handleError(e)});
+    };
+    function startService(data) {
+       if (data.ServiceRunning) {
+          enableTimer(data);
+       } else {
+          myService.startService(function(r){enableTimer(r)}, function(e){handleError(e)});
+       }
+    }
+    function enableTimer(data) {
+       if (data.TimerEnabled) {
+          allDone();
+       } else {
+          myService.enableTimer(60000, function(r){allDone(r)}, function(e){handleError(e)});
+       }
+    }
+    function allDone() {
+       console.log("Service now running");
+    }
+
+    
 </script>
 
 

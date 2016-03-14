@@ -173,7 +173,7 @@ angular.module("ngapp")
     };
     ctrl.selectAlert = function() {
       ctrl.loadDataAlert = true;
-      var query = "SELECT * FROM t_alert order by id desc";
+      var query = "SELECT * FROM t_alert order by datetime(sent) desc";
       $cordovaSQLite.execute(dbShared,query).then(function(result) {
         if(result.rows.length > 0) {
           ctrl.loadDataAlert = false;
@@ -219,9 +219,9 @@ angular.module("ngapp")
             'sent': response[i]['sent']
           };
 
-          ctrl.dataAlerts.push(dataAlert);
           ctrl.insertAlert(dataAlert);
         }
+        ctrl.selectAlert();
         //ctrl.dataAlerts = response;
       }, function(reason) {
         console.log('Failed: ' + reason);

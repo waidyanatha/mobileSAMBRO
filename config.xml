@@ -16,18 +16,19 @@
     <content src="index.html" />
     <icon src="www/cap.png" />
 
+    <preference name='phonegap-version' value='cli-5.2.0' />
     <preference name="permissions" value="none" />
     <preference name="orientation" value="default" />
     <preference name="target-device" value="universal" />
-    <preference name="fullscreen" value="true" />
+    <!--<preference name="fullscreen" value="true" />-->
     <preference name="webviewbounce" value="true" />
     <preference name="prerendered-icon" value="true" />
     <preference name="stay-in-webview" value="false" />
-    <preference name="ios-statusbarstyle" value="black-opaque" />
+    <!--<preference name="ios-statusbarstyle" value="black-opaque" />-->
     <preference name="detect-data-types" value="true" />
     <preference name="exit-on-suspend" value="false" />
-    <preference name="show-splash-screen-spinner" value="true" />
-    <preference name="auto-hide-splash-screen" value="true" />
+    <!--<preference name="show-splash-screen-spinner" value="true" />-->
+    <!--<preference name="auto-hide-splash-screen" value="true" />-->
     <preference name="disable-cursor" value="false" />
     <preference name="android-minSdkVersion" value="14" />
     <preference name="android-installLocation" value="auto" />
@@ -41,12 +42,14 @@
     <feature name="http://api.phonegap.com/1.0/network"/>
     <feature name="http://api.phonegap.com/1.0/notification"/>
 
-    <plugin name="cordova-plugin-whitelist" />
-    <plugin name="org.apache.cordova.dialogs" source="pgb" />
-    <plugin name="cordova-plugin-geolocation" source="pgb" />
-    <gap:plugin name="cordova-plugin-statusbar" source="npm" />
+    <plugin name="cordova-plugin-whitelist" spec="1.2.1" source="npm" />
+    <plugin name="org.apache.cordova.dialogs" spec="0.3.0" source="pgb" />
+    <plugin name="cordova-plugin-geolocation" spec="1.0.1" source="pgb" />
+    <gap:plugin name="cordova-plugin-statusbar" spec="2.1.1" source="npm" />
     <plugin name="io.litehelpers.cordova.sqlite" spec="0.7.10" source="pgb" />
     <plugin name="cordova-plugin-network-information" spec="1.0.1" source="pgb" />
+    <plugin name="com.phonegap.plugins.PushPlugin" spec="2.5.0" source="pgb" />
+    <plugin name="cordova-plugin-media" spec="2.2.0" source="npm" />
 
     <access origin="*" />
     <allow-intent href="http://*/*" />
@@ -57,9 +60,5 @@
     <allow-intent href="geo:*" />
     <platform name="android">
         <allow-intent href="market:*" />
-    </platform>
-    <platform name="ios">
-        <allow-intent href="itms:*" />
-        <allow-intent href="itms-apps:*" />
     </platform>
 </widget>

@@ -49,12 +49,14 @@
               <div class="md-accent-fg text-center" ng-click="login.clickSelectLogin()">Not your account name?</div>   
           </div>
           <div ng-show="login.selectLoginContainer">
-              <div ng-repeat="dataUser in login.dataUsers">
+              <div ng-repeat="dataUser in login.dataUsers" layout="row">
                 <md-button class="md-raised md-accent" aria-label="{{login.userName}}" style="width:90%;"
                            ng-click="login.clickDirectLoginUsers(login.dataUsers.indexOf(dataUser))">
                     {{dataUser.email}}
                 </md-button>
-
+                <md-button ng-click="login.clickDeleteUser(login.dataUsers.indexOf(dataUser))" class="md-icon-button" aria-label="Delete">
+                  <ng-md-icon icon="delete"></ng-md-icon>
+                </md-button>
               </div>  
               
                 <h4></h4>

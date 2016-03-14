@@ -120,7 +120,7 @@
                     Cancel
                 </md-button>
 
-                <md-button class="md-raised md-accent" aria-label="Submit" ng-click="alertForm.clickSubmitPredefinedArea()">
+                <md-button class="md-raised md-accent" aria-label="Submit" ng-disabled="alertForm.checkPredefinedAreasVal()" ng-click="alertForm.clickSubmitPredefinedArea()">
                     Submit
                 </md-button>                          
             </div>
@@ -225,14 +225,17 @@
 
                 <div layout="column" layout-gt-sm="column">
                     <h5>On Set Date</h5>
-                    <md-datepicker name="onSetDate" ng-model="alertForm.dataAlertForm.onSetDate" md-placeholder="Enter date"
-                    md-min-date="minDate" md-max-date="maxDate" required></md-datepicker>
-                    <div class="msgRequired" ng-messages="dataForm.onSetDate.$error" ng-show="dataForm.onSetDate.$touched" role="alert" >
-                        <div ng-message="required">
-                            <span >On Set date field is required</span>
-                        </div>
+                    <div layout="row">
+                      <md-datepicker name="onSetDate" ng-model="alertForm.dataAlertForm.onSetDate" md-placeholder="Enter date"
+                      md-min-date="minDate" md-max-date="maxDate" required></md-datepicker>
+                      <div class="msgRequired" ng-messages="dataForm.onSetDate.$error" ng-show="dataForm.onSetDate.$touched" role="alert" >
+                          <div ng-message="required">
+                              <span >On Set date field is required</span>
+                          </div>
+                      </div>
+                      <small><input type="time" style="width:83px;margin-top:25px;" name="effectiveTime" ng-model="alertForm.dataAlertForm.effectiveDate"
+                        placeholder="HH:mm:ss" /></small>
                     </div>
-                
                     <h4></h4>
                 </div>
 
