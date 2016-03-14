@@ -335,9 +335,8 @@
             <div class="md-dialog-content" style="padding-left:15px;" >
 
                 <div layout="column" layout-gt-sm="column">
-                    <h5>On Set Date</h5>
-                    <md-datepicker ng-model="alertForm.dataAlertForm.onSetDate" md-placeholder="Enter date"
-                    md-min-date="minDate" md-max-date="maxDate" disabled></md-datepicker>
+                    <strong>On Set Date</strong>
+                    <p>{{alertForm.dataAlertForm.onSetDate | date:'medium'}}</p>
                 </div>
 
             </div>
@@ -351,14 +350,14 @@
             <div class="md-dialog-content" style="padding-left:15px;" >
 
                 <div layout="column" layout-gt-sm="column">
-                    <md-input-container flex>
-                        <label>Headline</label>
-                        <textarea ng-model="alertForm.dataAlertForm.headline" columns="4" md-maxlength="140" rows="5" disabled></textarea>
-                    </md-input-container>
-                    <md-input-container flex>
-                        <label>Description</label>
-                        <textarea ng-model="alertForm.dataAlertForm.description" columns="4" md-maxlength="140" rows="5" disabled></textarea>
-                    </md-input-container>
+                  <strong ng-show="alertForm.showRestriction()">Restriction</strong>
+                  <p ng-show="alertForm.showRestriction()">{{alertForm.dataAlertForm.restriction}}</p>
+                  <strong>Recipients</strong>
+                  <p>{{alertForm.dataAlertForm.addresses}}</p>  
+                  <strong>Headline</strong>
+                  <p>{{alertForm.dataAlertForm.headline}}</p>
+                  <strong>Description</strong>
+                  <p>{{alertForm.dataAlertForm.description}}</p>
                 </div>
             </div>
           </md-dialog-content>
@@ -382,10 +381,17 @@
                             </div>
                         </div>
                     </md-input-container>
-                    <md-button class="md-raised md-accent" aria-label="Submit"
+                    <div layout="row" layout-align="center center">
+                      <md-button class="md-raised md-accent" aria-label="Cancel"
+                               ng-click="alertForm.goHome()">
+                        Cancel
+                      </md-button>  
+                      <md-button class="md-raised md-accent" aria-label="Submit"
                                ng-disabled="alertFormSbmt.$invalid || alertFormSbmt.$pristine" ng-click="alertForm.submitForm()">
                         Submit
-                    </md-button>
+                      </md-button>  
+                    </div>
+                    
                     <h4></h4>
                     <h4></h4>
                 </div>

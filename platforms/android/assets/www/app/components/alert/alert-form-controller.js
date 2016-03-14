@@ -188,7 +188,7 @@ angular.module("ngapp")
 
     ctrl.goBack = function(){
         if(ctrl.currPage == 1){
-            $location.path("/main");
+            ctrl.goHome();
         }
         else{
             ctrl.hidePage[ctrl.currPage-1].isHide = true;
@@ -198,6 +198,10 @@ angular.module("ngapp")
         }
         
     };
+
+    ctrl.goHome = function(){
+        $location.path("/main");
+    }
 
     ctrl.goNext = function(){    
         if(ctrl.currPage == ctrl.hidePage.length){
@@ -776,7 +780,8 @@ angular.module("ngapp")
     var ggls;
     map = L.map('map',{
       maxZoom: 16,
-      minZoom: 2
+      minZoom: 2,
+      attributionControl:false
     }).setView([-6.1918, 106.8345], 2);
 
     //map.locate({setView: true, maxZoom: 16});
@@ -787,23 +792,25 @@ angular.module("ngapp")
         ggls = new L.Google('ROADMAP');
     }
     map.addLayer(mapOSM);
-
+    
     var mapOSMThumbnail;
     mapThumbnail = L.map('mapThumbnail',{
       maxZoom: 16,
-      minZoom: 2
+      minZoom: 2,
+      attributionControl:false
     }).setView([-6.1918, 106.8345], 2);
     mapOSMThumbnail = new L.TileLayer('http://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png');
     mapThumbnail.addLayer(mapOSMThumbnail);
-
+    
     var mapOSMThumbnailSummary;
     mapThumbnailSummary = L.map('mapThumbnailSummary',{
       maxZoom: 16,
-      minZoom: 2
+      minZoom: 2,
+      attributionControl:false
     }).setView([-6.1918, 106.8345], 2);
     mapOSMThumbnailSummary = new L.TileLayer('http://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png');
     mapThumbnailSummary.addLayer(mapOSMThumbnailSummary);
-
+    
     ctrl.changeMap = function (obj){
         if(obj == "gsal"){
             map.removeLayer(mapOSM);

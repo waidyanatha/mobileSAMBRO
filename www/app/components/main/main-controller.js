@@ -62,6 +62,27 @@ angular.module("ngapp")
         });
     };
 
+    ctrl.showAlertListPage = true;
+    ctrl.showAlertDetailPage = false;
+    ctrl.showProfilePage = false;
+    ctrl.showSettingPage = false;
+
+    ctrl.clickBackBtn = function(){
+      ctrl.showAlertListPage = true;
+      ctrl.showAlertDetailPage = false;
+      ctrl.showProfilePage = false;
+      ctrl.showSettingPage = false;
+    };
+
+    ctrl.clickAlertDetail = function(idx){
+      ctrl.showAlertListPage = false;
+      ctrl.showAlertDetailPage = true;
+      ctrl.showProfilePage = false;
+      ctrl.showSettingPage = false;
+
+      ctrl.dataAlert = ctrl.dataAlerts[idx];
+    };
+
     //============================================================ Data Alert Offline ===============================================
     ctrl.sendAlertToServerProgress = false;
     ctrl.sendAlertsToServer = function(){
@@ -150,10 +171,11 @@ angular.module("ngapp")
     
     //============================================================ Alert ============================================================
     ctrl.dataAlerts = {};
+    ctrl.dataAlert = {};
     ctrl.loadDataAlert = true;
     ctrl.insertAlert = function(dataAlert) {
       var query = "insert into t_alert (id, cap_info_headline, cap_area_name, cap_scope,event_event_type_name,sent) values (?,?,?,?,?,?)";
-      $cordovaSQLite.execute(dbShared, query, [dataAlert.id, dataAlert['cap_info.headline'],dataAlert['cap_area.name'],dataAlert['scope'],dataAlert['event_event_type.name'],dataAlert['sent']]).then(function(result) {
+      $cordovaSQLite.execute(dbShared, query, [dataAlert.id, JSON.stringify(dataAlert['cap_info.headline']),JSON.stringify(dataAlert['cap_area.name']),dataAlert['scope'],JSON.stringify(dataAlert['event_event_type.name']),dataAlert['sent']]).then(function(result) {
         console.log("insert alert");
         
       }, function (err) {
@@ -181,10 +203,10 @@ angular.module("ngapp")
           for(var i=0;i<result.rows.length;i++){
             var dataAlert = {
               'id' : result.rows.item(i).id,
-              'cap_info.headline': result.rows.item(i).cap_info_headline,
-              'cap_area.name': result.rows.item(i).cap_area_name,
+              'cap_info.headline': JSON.parse(result.rows.item(i).cap_info_headline),
+              'cap_area.name': JSON.parse(result.rows.item(i).cap_area_name),
               'scope': result.rows.item(i).cap_scope,
-              'event_event_type.name': result.rows.item(i).event_event_type_name,
+              'event_event_type.name': JSON.parse(result.rows.item(i).event_event_type_name),
               'sent': result.rows.item(i).sent
             };
 
@@ -212,10 +234,10 @@ angular.module("ngapp")
           }
           var dataAlert = {
             'id' : response[i]['id'],
-            'cap_info.headline': angular.isArray(response[i]['cap_info.headline']) ? response[i]['cap_info.headline'][0] : response[i]['cap_info.headline'],
-            'cap_area.name':angular.isArray(response[i]['cap_area.name']) ? response[i]['cap_area.name'][0] : response[i]['cap_area.name'],
+            'cap_info.headline': angular.isArray(response[i]['cap_info.headline']) ? response[i]['cap_info.headline'] : [response[i]['cap_info.headline']],
+            'cap_area.name':angular.isArray(response[i]['cap_area.name']) ? response[i]['cap_area.name'] : [response[i]['cap_area.name']],
             'scope':response[i].scope,
-            'event_event_type.name':angular.isArray(response[i]['event_event_type.name']) ? response[i]['event_event_type.name'][0] : response[i]['event_event_type.name'],
+            'event_event_type.name':angular.isArray(response[i]['event_event_type.name']) ? response[i]['event_event_type.name'] : [response[i]['event_event_type.name']],
             'sent': response[i]['sent']
           };
 
