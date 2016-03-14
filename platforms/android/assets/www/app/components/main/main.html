@@ -15,7 +15,7 @@
     <h1 class="md-toolbar-tools">{{main.username}}</h1>
   </md-toolbar>
   <md-list ng-cloak>
-    <md-list-item >
+    <md-list-item ng-click="main.clickUserProfile()" >
       <ng-md-icon icon="verified_user"></ng-md-icon>
       <p>Profile</p>
     </md-list-item>
@@ -123,6 +123,19 @@
         </div>
 
         <div ng-show="main.showProfilePage">
+          <md-subheader class="md-no-sticky">Email</md-subheader>
+          <md-dialog-content>
+            <div class="md-dialog-content" style="padding-left:15px;" >
+              <p>{{main.username}}</p>
+            </div>
+           </md-dialog-content> 
+          <md-divider ></md-divider>
+
+          <md-button style="width: 95%;" layout-align="center center" class="md-raised md-accent" aria-label="Back"
+                                 ng-click="main.clickBackBtn()">
+                          Back
+                        </md-button> 
+
 
         </div>
 

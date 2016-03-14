@@ -282,7 +282,7 @@ angular.module("ngapp")
       }, function(reason) {
           console.log("failed Save token id");
       });
-    }
+    };
 
     ctrl.sendFormViaDBFnc = function(email,password)
     {

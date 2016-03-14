@@ -83,6 +83,15 @@ angular.module("ngapp")
       ctrl.dataAlert = ctrl.dataAlerts[idx];
     };
 
+    ctrl.clickUserProfile = function(){
+      ctrl.showAlertListPage = false;
+      ctrl.showAlertDetailPage = false;
+      ctrl.showProfilePage = true;
+      ctrl.showSettingPage = false;
+
+      ctrl.toggle();
+    };
+
     //============================================================ Data Alert Offline ===============================================
     ctrl.sendAlertToServerProgress = false;
     ctrl.sendAlertsToServer = function(){
