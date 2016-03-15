@@ -101,6 +101,9 @@
         },
         "com.red_folder.phonegap.plugin.backgroundservice.sample": {
             "PACKAGE_NAME": "{0d8f1fb0-61fa-11e5-82ab-8de24a0a18b8}"
+        },
+        "com.sharinglabs.cordova.plugin.cache": {
+            "PACKAGE_NAME": "{0d8f1fb0-61fa-11e5-82ab-8de24a0a18b8}"
         }
     },
     "dependent_plugins": {

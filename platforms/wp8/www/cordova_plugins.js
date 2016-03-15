@@ -194,6 +194,13 @@ module.exports = [
         "clobbers": [
             "PushNotification"
         ]
+    },
+    {
+        "file": "plugins/com.sharinglabs.cordova.plugin.cache/www/Cache.js",
+        "id": "com.sharinglabs.cordova.plugin.cache.Cache",
+        "clobbers": [
+            "cache"
+        ]
     }
 ];
 module.exports.metadata = 
@@ -209,6 +216,7 @@ module.exports.metadata =
     "cordova-plugin-media": "2.2.0",
     "com.phonegap.plugins.PushPlugin": "2.5.0",
     "com.red_folder.phonegap.plugin.backgroundservice.sample": "2.0.0",
+    "com.sharinglabs.cordova.plugin.cache": "1.0.0",
     "com.red_folder.phonegap.plugin.backgroundservice": "2.0.0"
 }
 // BOTTOM OF METADATA

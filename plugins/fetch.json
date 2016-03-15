@@ -58,5 +58,13 @@
         },
         "is_top_level": false,
         "variables": {}
+    },
+    "com.sharinglabs.cordova.plugin.cache": {
+        "source": {
+            "type": "local",
+            "path": "/Users/anggabayu/Downloads/cordova-plugin-cache"
+        },
+        "is_top_level": true,
+        "variables": {}
     }
 }

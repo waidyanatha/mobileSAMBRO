@@ -43,6 +43,10 @@
                         {
                             "xml": "<feature name=\"BackgroundServicePlugin\"><param name=\"android-package\" value=\"com.red_folder.phonegap.plugin.backgroundservice.BackgroundServicePlugin\" /></feature>",
                             "count": 1
+                        },
+                        {
+                            "xml": "<feature name=\"Cache\"><param name=\"android-package\" value=\"com.sharinglabs.cordova.plugin.cache.Cache\" /></feature>",
+                            "count": 1
                         }
                     ]
                 }
@@ -168,6 +172,9 @@
             "PACKAGE_NAME": "com.gic.cap"
         },
         "com.red_folder.phonegap.plugin.backgroundservice.sample": {
+            "PACKAGE_NAME": "com.gic.cap"
+        },
+        "com.sharinglabs.cordova.plugin.cache": {
             "PACKAGE_NAME": "com.gic.cap"
         }
     },

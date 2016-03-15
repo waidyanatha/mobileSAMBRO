@@ -177,6 +177,8 @@ angular.module("ngapp")
     {
       console.log('call this sendform');
 
+      shared.clearCache();
+
       var promiseLoadData = shared.loadDataLogin(shared.apiUrl+'default/index/user_info',ctrl.loginForm.email,ctrl.loginForm.password);
       promiseLoadData.then(function(response) {
         console.log('success');
@@ -193,9 +195,19 @@ angular.module("ngapp")
 
         //grab the user id and save it to the database
 
-        ctrl.selectUser(ctrl.loginForm.email,passEncrypt);
+        ctrl.getAllUserData(function(){
+          console.log("success get id from url = "+ctrl.userId.toString());
+          ctrl.selectUser(ctrl.loginForm.email,passEncrypt);
 
-        $location.path("/main");
+          $location.path("/main");
+        },function(){
+          console.log("failed get id from url");
+          ctrl.selectUser(ctrl.loginForm.email,passEncrypt);
+
+          $location.path("/main");
+        });
+
+        
       }, function(reason) {
         console.log('failed');
        //$localStorage.$reset();
@@ -304,6 +316,38 @@ angular.module("ngapp")
               console.log('failed');
               ctrl.hideErrorMessage = false;
           }
+      });
+    };
+
+    ctrl.getAllUserData = function(success,failed){
+      var promiseLoadData = shared.loadDataAlert(shared.apiUrl+'pr/person.s3json');
+      promiseLoadData.then(function(response) {
+        console.log('get all data profile');
+        var urlContentId = "";
+        var getUserId = "0";
+        for(var i=0;i<response['$_pr_person'].length;i++){
+          if(response['$_pr_person'][i]['$_pr_email_contact'] != undefined){
+            if(response['$_pr_person'][i]['$_pr_email_contact'][0].value['@value'] == ctrl.loginForm.email){
+              urlContentId = response['$_pr_person'][i]['$_pr_email_contact'][0]['@url'];
+              var resArr = urlContentId.split("/person/");
+              if(resArr.length>1){
+                resArr = resArr[1].split("/");
+                getUserId = resArr[0];
+                break;
+              }
+              
+            }  
+          }
+        }
+
+        if(getUserId != "0"){
+          ctrl.userId = parseInt(getUserId);
+        }
+
+        success();
+      }, function(reason) {
+        console.log('Failed: ' + reason);
+        failed();
       });
     };
 

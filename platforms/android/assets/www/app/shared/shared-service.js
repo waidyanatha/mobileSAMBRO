@@ -82,7 +82,17 @@ angular.module("ngapp").service("shared", function($http,$localStorage,$sessionS
     $http.defaults.headers.common.Authorization = 'Basic ';
     ctrl.updateActiveUser();
 
+    ctrl.clearCache();
+
   	$location.path("/login");
+  };
+
+  this.clearCache = function(){
+    window.cache.clear( function(){
+      console.log('success cache clear');
+    }, function(){
+      console.log('error cache clear');
+    } );
   };
 
   this.sendFormViaDBFnc = function(email,password,success,failed)
