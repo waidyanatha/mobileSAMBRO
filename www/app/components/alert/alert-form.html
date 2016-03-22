@@ -216,6 +216,15 @@
         </md-radio-group>
       </div>
 
+      <div ng-hide="alertForm.checkPageShow('addresses')">  
+        <md-subheader class="md-no-sticky">Recipients ({{alertForm.progressText}})</md-subheader>
+        <md-progress-linear md-mode="indeterminate" ng-show="alertForm.hidePage[alertForm.checkPageIdx('addresses')].loadData"></md-progress-linear>
+        <md-list-item ng-repeat="dataGroupUser in alertForm.dataGroupUsers" >
+          <p>{{dataGroupUser.name}}</p>
+          <md-checkbox class="md-secondary" ng-model="dataGroupUser.selected" ></md-checkbox>
+        </md-list-item>
+      </div>
+
       <div ng-hide="alertForm.checkPageShow('date')">  
         <md-subheader class="md-no-sticky">Date ({{alertForm.progressText}})</md-subheader>
         <form name="dataForm" class="md-inline-form" novalidate>
@@ -254,10 +263,6 @@
                 <div layout="column" layout-gt-sm="column">
                     <md-input-container class="md-block" ng-show="alertForm.showRestriction()">
                         <input type="text" name="restriction" ng-model="alertForm.dataAlertForm.restriction" placeholder="Restriction">
-                    </md-input-container>
-
-                    <md-input-container class="md-block">
-                        <input type="text" name="addresses" ng-model="alertForm.dataAlertForm.addresses" placeholder="Recipients">
                     </md-input-container>
 
                     <md-input-container flex>
@@ -329,6 +334,12 @@
         </md-list-item>
         <md-divider ></md-divider>
 
+        <md-subheader ng-hide="alertForm.checkGroupUsersVal()" ng-click="alertForm.summaryClickDetail('addresses')" class="md-no-sticky">Recipients</md-subheader>
+        <md-list-item ng-hide="alertForm.checkGroupUsersVal()" ng-click="alertForm.summaryClickDetail('addresses')" ng-repeat="dataGroupUser in alertForm.dataGroupUsers" ng-if="dataGroupUser.selected">
+          <p>{{dataGroupUser.name}}</p>
+        </md-list-item>
+        <md-divider ng-hide="alertForm.checkGroupUsersVal()" ></md-divider>
+
         <md-subheader ng-click="alertForm.summaryClickDetail('date')" class="md-no-sticky">Date</md-subheader>
         <form class="md-inline-form" novalidate>
           <md-dialog-content>
@@ -352,8 +363,6 @@
                 <div layout="column" layout-gt-sm="column">
                   <strong ng-show="alertForm.showRestriction()">Restriction</strong>
                   <p ng-show="alertForm.showRestriction()">{{alertForm.dataAlertForm.restriction}}</p>
-                  <strong>Recipients</strong>
-                  <p>{{alertForm.dataAlertForm.addresses}}</p>  
                   <strong>Headline</strong>
                   <p>{{alertForm.dataAlertForm.headline}}</p>
                   <strong>Description</strong>

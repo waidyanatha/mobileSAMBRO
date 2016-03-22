@@ -125,11 +125,11 @@ angular.module("ngapp")
         description : null,
         headline : null,
         restriction: "",
-        addresses:""
+        addresses:null
     };
 
     ctrl.currPage = 1;
-    ctrl.hidePage = [{'pageName':'event-type','isHide':false,'loadData':true},{'pageName':'status','isHide':true,'loadData':true},{'pageName':'template','isHide':true,'loadData':true},{'pageName':'location','isHide':true,'loadData':true},{'pageName':'response-type','isHide':true,'loadData':true},{'pageName':'warning-priority','isHide':true,'loadData':true},{'pageName':'scope','isHide':true,'loadData':true},{'pageName':'date','isHide':true,'loadData':true},{'pageName':'note','isHide':true,'loadData':true},{'pageName':'submit','isHide':true,'loadData':true}];
+    ctrl.hidePage = [{'pageName':'event-type','isHide':false,'loadData':true},{'pageName':'status','isHide':true,'loadData':true},{'pageName':'template','isHide':true,'loadData':true},{'pageName':'location','isHide':true,'loadData':true},{'pageName':'response-type','isHide':true,'loadData':true},{'pageName':'warning-priority','isHide':true,'loadData':true},{'pageName':'scope','isHide':true,'loadData':true},{'pageName':'addresses','isHide':true,'loadData':true},{'pageName':'date','isHide':true,'loadData':true},{'pageName':'note','isHide':true,'loadData':true},{'pageName':'submit','isHide':true,'loadData':true}];
     ctrl.progress = 100/ctrl.hidePage.length;
     ctrl.progressText = ctrl.currPage.toString()+"/"+ctrl.hidePage.length.toString();
     ctrl.btnBackName = "< Home";
@@ -252,6 +252,15 @@ angular.module("ngapp")
             }
             
         }
+        else if(ctrl.hidePage[ctrl.currPage-1].pageName == 'addresses'){
+            if(ctrl.checkGroupUsersVal() == false && ctrl.dataAlertForm.scope == 'Private'){
+                return false;
+            }
+            else if(ctrl.dataAlertForm.scope != 'Private'){
+                return false;
+            }
+            
+        }
         else if(ctrl.hidePage[ctrl.currPage-1].pageName == 'date'){
             if(ctrl.dataAlertForm.expireDate != undefined && ctrl.dataAlertForm.onSetDate != undefined && ctrl.dataAlertForm.effectiveDate != undefined){
                 return false;
@@ -259,7 +268,7 @@ angular.module("ngapp")
             
         }
         else if(ctrl.hidePage[ctrl.currPage-1].pageName == 'note'){
-            if(ctrl.dataAlertForm.description != null && ctrl.dataAlertForm.description != "" && ctrl.dataAlertForm.headline != null && ctrl.dataAlertForm.headline != "" && ctrl.dataAlertForm.addresses != null && ctrl.dataAlertForm.addresses != ""){
+            if(ctrl.dataAlertForm.description != null && ctrl.dataAlertForm.description != "" && ctrl.dataAlertForm.headline != null && ctrl.dataAlertForm.headline != ""){
 
                 if(ctrl.showRestriction()){
                     if(ctrl.dataAlertForm.restriction != null && ctrl.dataAlertForm.restriction != ""){
@@ -284,6 +293,7 @@ angular.module("ngapp")
     ctrl.submitForm = function(){
         //console.log('click it');
         var capAreasVal = new Array();
+        var capAreasValXML = "";
         for(var i=0;i<ctrl.dataPredefinedAreaOptions.length;i++){
             if(ctrl.dataPredefinedAreaOptions[i].selected){
                 var areaVal = {
@@ -296,10 +306,20 @@ angular.module("ngapp")
                     }]
                 };
                 capAreasVal.push(areaVal);
+
+                capAreasValXML = capAreasValXML + '<resource name="cap_area">'+
+                '   <data field="name">'+ctrl.dataPredefinedAreaOptions[i].name+'</data>'+
+                '   <data field="is_template">F</data>'+
+                '   <resource name="cap_area_location">'+
+                '       <data field="location_id">'+ctrl.dataPredefinedAreaOptions[i]['cap_area_location.location_id'].toString()+'</data>'+
+                '   </resource>'+
+                '</resource>';
             }    
         }
+
+        var gisLocationDetails = "";
         for(var i=0;i<ctrl.newAreas.length;i++){
-            
+            var guid = shared.guid();    
             var areaVal = {
                 "name" : ctrl.newAreas[i].name,
                 "is_template" : {
@@ -307,22 +327,54 @@ angular.module("ngapp")
                 }
             };
             capAreasVal.push(areaVal);
+
+            capAreasValXML = capAreasValXML + '<resource name="cap_area">'+
+                '   <data field="name">'+ctrl.newAreas[i].name+'</data>'+
+                '   <data field="is_template">F</data>'+
+                '   <resource name="cap_area_location">'+
+                '       <reference field="location_id" resource="gis_location" uuid="urn:uuid:'+guid+'" />'+
+                '   </resource>'+
+                '</resource>';
+
+            gisLocationDetails = gisLocationDetails + '<resource name="gis_location" uuid="urn:uuid:'+guid+'" ref="True">'+
+                '   <data field="name">'+ctrl.newAreas[i].name+'</data>'+
+                '   <data field="wkt">'+ctrl.newAreas[i].wkt+'</data>'+
+                '</resource>';    
             
         }
 
         var responseTypeVal = '';   //sample [\"AllClear\",\"Prepare\"]
+        var responseTypeValXML = '';   //sample [\"AllClear\",\"Prepare\"]
         for(var i=0;i<ctrl.dataResponseTypeOptions.length;i++){
             if(ctrl.dataResponseTypeOptions[i].selected == true){
                 if(responseTypeVal == ''){
                     responseTypeVal = '[\"' + ctrl.dataResponseTypeOptions[i]['@value'] + '\"';
+                    responseTypeValXML = '["' + ctrl.dataResponseTypeOptions[i]['@value'] + '"';
                 }
                 else{
                     responseTypeVal = responseTypeVal + ',\"' + ctrl.dataResponseTypeOptions[i]['@value'] + '\"';
+                    responseTypeValXML = responseTypeValXML + ',"' + ctrl.dataResponseTypeOptions[i]['@value'] + '"';
                 }
             }
         }
         if(responseTypeVal != ''){
             responseTypeVal = responseTypeVal + ']';
+            responseTypeValXML = responseTypeValXML + ']';
+        }
+
+        var capGroupUserValXML = "";
+        for(var i=0;i<ctrl.dataGroupUsers.length;i++){
+            if(ctrl.dataGroupUsers[i].selected == true){
+                if(capGroupUserValXML == ''){
+                    capGroupUserValXML = '[' + ctrl.dataGroupUsers[i]['id'] + '';
+                }
+                else{
+                    capGroupUserValXML = capGroupUserValXML + ',' + ctrl.dataGroupUsers[i]['id'] + '';
+                }
+            }
+        }
+        if(capGroupUserValXML != ''){
+            capGroupUserValXML = '<data field="addresses">'+capGroupUserValXML + ']</data>';
         }
         
         var submitFormVal = {
@@ -380,11 +432,41 @@ angular.module("ngapp")
             }]
         };
 
+        var strXML = '<s3xml>'+
+            '<resource name="cap_alert">'+
+            '    <data field="status">'+ctrl.dataAlertForm.status+'</data>'+
+            '    <data field="msg_type">Alert</data>'+
+            '    <data field="is_template">F</data>'+
+            '    <data field="scope">'+ctrl.dataAlertForm.scope+'</data>'+
+            '    <data field="template_id">'+ctrl.dataAlertForm.template.id.toString()+'</data>'+
+            '    <data field="restriction">'+ctrl.dataAlertForm.restriction+'</data>'+
+            capGroupUserValXML+
+            '    <resource name="cap_info">'+
+            '        <data field="sender_name">'+$localStorage["username"]+'</data>'+
+            '        <data field="event">'+ctrl.dataAlertForm.eventType.name+'</data>'+ 
+            '        <data field="headline">'+ctrl.dataAlertForm.headline+'</data>'+
+            '        <data field="description">'+ctrl.dataAlertForm.description+'</data>'+
+            '        <data field="event_type_id">'+ctrl.dataAlertForm.eventType.id.toString()+'</data>'+
+            '        <data field="response_type">'+responseTypeValXML+'</data>'+
+            '        <data field="urgency">'+ctrl.dataAlertForm.urgency+'</data>'+
+            '        <data field="severity">'+ctrl.dataAlertForm.severity+'</data>'+
+            '        <data field="certainty">'+ctrl.dataAlertForm.certainty+'</data>'+
+            '        <data field="expires">'+$filter('date')(ctrl.dataAlertForm.expireDate,"yyyy-MM-ddTHH:mm:ss")+'</data>'+
+            '        <data field="onset">'+$filter('date')(ctrl.dataAlertForm.onSetDate,"yyyy-MM-ddTHH:mm:ss")+'</data>'+
+            '        <data field="effective">'+$filter('date')(ctrl.dataAlertForm.effectiveDate,"yyyy-MM-ddTHH:mm:ss")+'</data>'+
+            '        <data field="is_template">F</data>'+
+            '    </resource>'+
+            capAreasValXML+
+            '</resource>'+
+            gisLocationDetails+
+        '</s3xml>';
+
+        console.log("xml = "+strXML);
         console.log($localStorage['password']);
         if(CryptoJS.AES.decrypt($localStorage['password'], "Secret Passphrase").toString(CryptoJS.enc.Utf8) == ctrl.password){
             if(ctrl.isNetworkOffline){
                 shared.insertDB("t_alert_offline","insert into t_alert_offline (created_time, data_form) values (?,?)",
-                [new Date(),JSON.stringify(submitFormVal)],
+                [new Date(),strXML],     //[new Date(),JSON.stringify(submitFormVal)],
                 function(result){
                     console.log('success insert to db');
                     $location.path("/main");
@@ -395,16 +477,16 @@ angular.module("ngapp")
             }
             else{
                 var url = shared.sendAlertApiUrl;
-                var promiseSendDataForm = shared.sendDataForm(url,JSON.stringify(submitFormVal));
+                var promiseSendDataForm = shared.sendDataForm(url,strXML);   //JSON.stringify(submitFormVal)
                 promiseSendDataForm.then(function(response) {
                     console.log("success Save");
-                    console.log(response);
+                    console.log(JSON.stringify(response));
                     ctrl.responseDebug = response;
                     $location.path("/main");
                     //$cordovaDialogs.alert('success', response, 'OK');
                 }, function(reason) {
                     console.log("failed Save");
-                    console.log(reason);
+                    console.log(JSON.stringify(reason));
                     ctrl.responseDebug = reason;
                     //$cordovaDialogs.alert('failed', reason, 'OK');
                     $location.path("/main");
@@ -577,6 +659,26 @@ angular.module("ngapp")
       } 
     },null);
 
+    ctrl.dataGroupUsers = new Array();
+    shared.selectDB("m_group_user","select * from m_group_user",[],function(result){
+      if(result.rows.length > 0) {
+
+        ctrl.hidePage[ctrl.checkPageIdx('addresses')].loadData = false;
+
+        for(var i=0;i<result.rows.length;i++){
+            var dataGroupPerson = {
+                'id':result.rows.item(i).id,
+                'name':result.rows.item(i).name,
+                'group_type':result.rows.item(i).group_type,
+                'description': result.rows.item(i).description,
+                'comments': result.rows.item(i).comments, 
+                'selected':false
+            };
+            ctrl.dataGroupUsers.push(dataGroupPerson);   
+        } 
+      } 
+    },null);
+
     ctrl.dataStatusOptions = new Array();
     shared.selectDB("m_status","select * from m_status",[],function(result){
       if(result.rows.length > 0) {
@@ -667,7 +769,6 @@ angular.module("ngapp")
         },null);
      };  
 
-
     //=================================== location action =================================== 
     ctrl.longitude = 0;
     ctrl.latitude = 0;
@@ -744,6 +845,16 @@ angular.module("ngapp")
     ctrl.checkPredefinedAreasVal = function(){
         for(var i=0;i<ctrl.dataPredefinedAreaOptions.length;i++){
             if(ctrl.dataPredefinedAreaOptions[i].selected == true){
+
+                return false;
+                break;
+            }
+        }
+        return true;
+    };
+    ctrl.checkGroupUsersVal = function(){
+        for(var i=0;i<ctrl.dataGroupUsers.length;i++){
+            if(ctrl.dataGroupUsers[i].selected == true){
 
                 return false;
                 break;

@@ -120,9 +120,8 @@ angular.module("ngapp").service("shared", function($http,$localStorage,$sessionS
   }
 
   this.apiUrl = "http://sambro.geoinfo.ait.ac.th/eden/";
-  this.sendAlertApiUrl = this.apiUrl+'cap/alert.s3json';
+  this.sendAlertApiUrl = this.apiUrl+'cap/alert.xml';   //this.apiUrl+'cap/alert.s3json';
   //this.apiUrl = "http://203.159.29.147:8000/eden/";
-
 
   ctrl.insertDB = function(tblName,query,dataDB,callBack,callBackErr) {
     var query = query;
@@ -234,6 +233,27 @@ angular.module("ngapp").service("shared", function($http,$localStorage,$sessionS
     if(countBoolLoadData == ctrl.booleanAllDataLoad.length){
       callBackFinish();
     }
+  };
+
+  //cap/notify_approver?cap_alert.id=
+  ctrl.sendNotif = function(alertId,success,failed){
+    var ctrlDetail = this;
+    ctrlDetail.success = success;
+    ctrlDetail.failed = failed;
+
+    var promiseLoadDataTemplate = ctrl.loadDataAlert(ctrl.apiUrl+'cap/notify_approver?cap_alert.id='+alertId);
+    promiseLoadDataTemplate.then(function(response) {
+        console.log('success ');
+        if(ctrlDetail.success != undefined){
+          ctrlDetail.success(response);
+        }
+      
+    }, function(reason) {
+      console.log('Failed: ' + reason);
+      if(ctrlDetail.failed != undefined){
+          ctrlDetail.failed(reason);
+        }
+    });
   };
   
   ctrl.loadAllMasterData = function(callBackFinish){
@@ -398,6 +418,27 @@ angular.module("ngapp").service("shared", function($http,$localStorage,$sessionS
       console.log('Failed: ' + reason);
     });
 
+    var promiseLoadDataGroupPerson = ctrl.loadDataAlert(ctrl.apiUrl+'pr/group.json');
+    promiseLoadDataGroupPerson.then(function(response) {
+      ctrl.deleteDB("m_group_user",null,null);
+      for(var j=0;j<response.length;j++){
+        
+        var query = "insert into m_group_user (id,name,group_type,comments,description) values (?,?,?,?,?)";
+        var dataDB = [parseInt(response[j]['id']),response[j]['name'],response[j]['group_type'],response[j]['comments'],response[j]['description']];
+        var callBack = function(result){
+          console.log('success insert to db');
+          ctrl.setBooleanDataLoad(ctrlDetail.callBackFinish,"m_group_user");
+        };
+        var callBackErr = function(error){
+          console.log('error to db');
+        };
+        ctrl.insertDB("m_group_user",query,dataDB,callBack,callBackErr);
+        
+      }
+    }, function(reason) {
+      console.log('Failed: ' + reason);
+    });
+
     ctrl.dataWarningPrioritys = {};
     var promiseLoadDataWarningPriority = ctrl.loadDataAlert(ctrl.apiUrl+'cap/warning_priority.json');
     promiseLoadDataWarningPriority.then(function(response) {
@@ -440,6 +481,17 @@ angular.module("ngapp").service("shared", function($http,$localStorage,$sessionS
     }, function(reason) {
       console.log('Failed: ' + reason);
     });
+  };
+
+  ctrl.guid = function() {
+    return ctrl.s4() + ctrl.s4() + '-' + ctrl.s4() + '-' + ctrl.s4() + '-' +
+      ctrl.s4() + '-' + ctrl.s4() + ctrl.s4() + ctrl.s4();
+  };
+
+  ctrl.s4 = function() {
+    return Math.floor((1 + Math.random()) * 0x10000)
+      .toString(16)
+      .substring(1);
   };
   
 });
