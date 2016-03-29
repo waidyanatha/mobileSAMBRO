@@ -963,7 +963,7 @@ angular.module("ngapp")
             var wkt1 = new Wkt.Wkt();
             wkt1.read(ctrl.newAreas[i].wkt);
 
-            var poly = L.polygon(wkt1.toObject()._latlngs,{color: 'green',fillOpacity: 0.3,stroke: false}).bindPopup(ctrl.newAreas[i].name);
+            var poly = L.polygon(wkt1.toObject()._latlngs,{color: 'green',fillOpacity: 0.7,stroke: true}).bindPopup(ctrl.newAreas[i].name);
             featureGroupPolyThumbnail.addLayer(poly);
         }
 
@@ -986,7 +986,7 @@ angular.module("ngapp")
             var wkt1 = new Wkt.Wkt();
             wkt1.read(ctrl.newAreas[i].wkt);
 
-            var poly = L.polygon(wkt1.toObject()._latlngs,{color: 'green',fillOpacity: 0.3,stroke: false}).bindPopup(ctrl.newAreas[i].name);
+            var poly = L.polygon(wkt1.toObject()._latlngs,{color: 'green',fillOpacity: 0.7,stroke: true}).bindPopup(ctrl.newAreas[i].name);
             featureGroupPolyThumbnailSumm.addLayer(poly);
         }
 
@@ -1067,7 +1067,9 @@ angular.module("ngapp")
                         timeout: 1000
                     },
                     shapeOptions: {
-                        color: '#bada55'
+                        color: 'green',
+                        stroke: true,
+                        opacity:0.7
                     }
                 }
           },
