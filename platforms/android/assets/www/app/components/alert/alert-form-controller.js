@@ -465,8 +465,8 @@ angular.module("ngapp")
         console.log($localStorage['password']);
         if(CryptoJS.AES.decrypt($localStorage['password'], "Secret Passphrase").toString(CryptoJS.enc.Utf8) == ctrl.password){
             if(ctrl.isNetworkOffline){
-                shared.insertDB("t_alert_offline","insert into t_alert_offline (created_time, data_form) values (?,?)",
-                [new Date(),strXML],     //[new Date(),JSON.stringify(submitFormVal)],
+                shared.insertDB("t_alert_offline","insert into t_alert_offline (created_time, data_form,data_form_json) values (?,?,?)",
+                [new Date(),strXML,JSON.stringify(submitFormVal)],     //[new Date(),JSON.stringify(submitFormVal)],
                 function(result){
                     console.log('success insert to db');
                     $location.path("/main");
@@ -530,6 +530,9 @@ angular.module("ngapp")
                 ctrl.dataResponseTypeOptions[i].selected = true;
             }
         }
+
+        ctrl.dataAlertForm.headline = templateObj['cap_info.headline'][0];
+        ctrl.dataAlertForm.description = templateObj['cap_info.description'][0];
 
         angular.element( ".template-opt" ).removeClass('selectedList').addClass( "unSelectedList" );
         angular.element( "#template-opt_"+templateObj['id'] ).removeClass('unSelectedList').addClass( "selectedList" );
@@ -713,8 +716,13 @@ angular.module("ngapp")
                     'scope':result.rows.item(i).cap_scope,
                     'cap_info.category':JSON.parse(result.rows.item(i).cap_info_category),
                     'cap_info.response_type':JSON.parse(result.rows.item(i).cap_info_response_type),
-                    'cap_info.event_type_id':result.rows.item(i).event_event_type_id
+                    'cap_info.event_type_id':result.rows.item(i).event_event_type_id,
+                    'cap_info.description':JSON.parse(result.rows.item(i).cap_info_description),
+                    'cap_info.headline':JSON.parse(result.rows.item(i).cap_info_headline)
                 };
+                dataTemplateOption['cap_info.description'] = angular.isArray(dataTemplateOption['cap_info.description']) ? dataTemplateOption['cap_info.description'] : [dataTemplateOption['cap_info.description']];
+                dataTemplateOption['cap_info.headline'] = angular.isArray(dataTemplateOption['cap_info.headline']) ? dataTemplateOption['cap_info.headline'] : [dataTemplateOption['cap_info.headline']];
+
                 ctrl.dataTemplateOptions.push(dataTemplateOption);   
             } 
           } 
@@ -766,6 +774,9 @@ angular.module("ngapp")
                 ctrl.dataPredefinedAreaOptions.push(dataPredefinedAreaOption);   
             } 
           } 
+          else{
+            ctrl.hidePage[ctrl.checkPageIdx('location')].loadData = false;
+          }
         },null);
      };  
 

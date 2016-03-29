@@ -14,7 +14,7 @@
                         },
                         {
                             "xml": "<Capability Name=\"ID_CAP_NETWORKING\" />",
-                            "count": 1
+                            "count": 3
                         },
                         {
                             "xml": "<Capability Name=\"ID_CAP_MEDIALIB_AUDIO\" />",
@@ -65,6 +65,10 @@
                         {
                             "xml": "<feature name=\"PushPlugin\"><param name=\"wp-package\" value=\"PushPlugin\" /></feature>",
                             "count": 1
+                        },
+                        {
+                            "xml": "<feature name=\"InAppBrowser\"><param name=\"wp-package\" value=\"InAppBrowser\" /></feature>",
+                            "count": 1
                         }
                     ]
                 }
@@ -103,6 +107,9 @@
             "PACKAGE_NAME": "{0d8f1fb0-61fa-11e5-82ab-8de24a0a18b8}"
         },
         "com.sharinglabs.cordova.plugin.cache": {
+            "PACKAGE_NAME": "{0d8f1fb0-61fa-11e5-82ab-8de24a0a18b8}"
+        },
+        "cordova-plugin-inappbrowser": {
             "PACKAGE_NAME": "{0d8f1fb0-61fa-11e5-82ab-8de24a0a18b8}"
         }
     },

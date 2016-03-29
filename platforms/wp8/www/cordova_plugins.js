@@ -201,6 +201,14 @@ module.exports = [
         "clobbers": [
             "cache"
         ]
+    },
+    {
+        "file": "plugins/cordova-plugin-inappbrowser/www/inappbrowser.js",
+        "id": "cordova-plugin-inappbrowser.inappbrowser",
+        "clobbers": [
+            "cordova.InAppBrowser.open",
+            "window.open"
+        ]
     }
 ];
 module.exports.metadata = 
@@ -217,6 +225,7 @@ module.exports.metadata =
     "com.phonegap.plugins.PushPlugin": "2.5.0",
     "com.red_folder.phonegap.plugin.backgroundservice.sample": "2.0.0",
     "com.sharinglabs.cordova.plugin.cache": "1.0.0",
+    "cordova-plugin-inappbrowser": "1.3.1-dev",
     "com.red_folder.phonegap.plugin.backgroundservice": "2.0.0"
 }
 // BOTTOM OF METADATA

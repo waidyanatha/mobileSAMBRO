@@ -47,6 +47,10 @@
                         {
                             "xml": "<feature name=\"Cache\"><param name=\"android-package\" value=\"com.sharinglabs.cordova.plugin.cache.Cache\" /></feature>",
                             "count": 1
+                        },
+                        {
+                            "xml": "<feature name=\"InAppBrowser\"><param name=\"android-package\" value=\"org.apache.cordova.inappbrowser.InAppBrowser\" /></feature>",
+                            "count": 1
                         }
                     ]
                 }
@@ -175,6 +179,9 @@
             "PACKAGE_NAME": "com.gic.cap"
         },
         "com.sharinglabs.cordova.plugin.cache": {
+            "PACKAGE_NAME": "com.gic.cap"
+        },
+        "cordova-plugin-inappbrowser": {
             "PACKAGE_NAME": "com.gic.cap"
         }
     },

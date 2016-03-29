@@ -516,4 +516,7 @@
             <HintPath>plugins/com.phonegap.plugins.PushPlugin/Newtonsoft.Json.dll</HintPath>
         </Reference>
     </ItemGroup>
+    <ItemGroup>
+        <Compile Include="Plugins\cordova-plugin-inappbrowser\InAppBrowser.cs" />
+    </ItemGroup>
 </Project>

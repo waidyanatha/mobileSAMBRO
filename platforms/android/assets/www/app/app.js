@@ -24,7 +24,7 @@ angular.element(document).ready(function () {
 angular.module("ngapp", [ "ngTouch", "ui.router", "ngMdIcons", "ngMaterial", "ngCordova", "ngStorage" ,"ngMessages"])
 // ngTouch is No Longer Supported by Angular-Material
 
-.run(function(shared,$localStorage,$sessionStorage,$location,$cordovaSQLite,$cordovaDialogs, $cordovaDevice,$cordovaStatusbar,$cordovaPush,$rootScope,$cordovaMedia){
+.run(function(shared,$localStorage,$sessionStorage,$location,$cordovaSQLite,$cordovaDialogs, $cordovaDevice,$cordovaStatusbar,$cordovaPush,$rootScope,$cordovaMedia,$cordovaNetwork){
   // $localStorage['username'] = ctrl.loginForm.email;
   // $localStorage['password'] = ctrl.loginForm.password;
 
@@ -53,9 +53,9 @@ angular.module("ngapp", [ "ngTouch", "ui.router", "ngMdIcons", "ngMaterial", "ng
   console.log('TEST MOBILE');
 
   dbShared = $cordovaSQLite.openDB({name: "offline_data.db" });
-  $cordovaSQLite.execute(dbShared,"CREATE TABLE IF NOT EXISTS m_user (email text, pwd text,expired integer,active_user integer,device_token_id text,user_id integer,profile_json text)");
+  $cordovaSQLite.execute(dbShared,"CREATE TABLE IF NOT EXISTS m_user (email text, pwd text,expired integer,active_user integer,device_token_id text,user_id integer,profile_json text,user_role text)");
   $cordovaSQLite.execute(dbShared,"CREATE TABLE IF NOT EXISTS t_alert (id integer primary key, cap_info_headline text, cap_area_name text, cap_scope text,event_event_type_name text,sent TEXT)");
-  $cordovaSQLite.execute(dbShared,"CREATE TABLE IF NOT EXISTS t_alert_offline (id INTEGER PRIMARY KEY AUTOINCREMENT, created_time text, data_form text);");
+  $cordovaSQLite.execute(dbShared,"CREATE TABLE IF NOT EXISTS t_alert_offline (id INTEGER PRIMARY KEY AUTOINCREMENT, created_time text, data_form text, data_form_json text);");
   $cordovaSQLite.execute(dbShared,"CREATE TABLE IF NOT EXISTS m_event_type (id integer primary key, name text,icon text)");
   $cordovaSQLite.execute(dbShared,"CREATE TABLE IF NOT EXISTS m_response_type (fvalue text, name text)");
   $cordovaSQLite.execute(dbShared,"CREATE TABLE IF NOT EXISTS m_urgency (fvalue text, name text)");
@@ -65,7 +65,7 @@ angular.module("ngapp", [ "ngTouch", "ui.router", "ngMdIcons", "ngMaterial", "ng
   $cordovaSQLite.execute(dbShared,"CREATE TABLE IF NOT EXISTS m_group_user (id integer, name text , group_type text,comments text, description text)");
   $cordovaSQLite.execute(dbShared,"CREATE TABLE IF NOT EXISTS m_status (fvalue text, name text)");
   $cordovaSQLite.execute(dbShared,"CREATE TABLE IF NOT EXISTS m_warning_priority (id integer primary key, name text,priority_rank text, color_code text, severity text, certainty text, urgency text, event_type_id integer)");
-  $cordovaSQLite.execute(dbShared,"CREATE TABLE IF NOT EXISTS m_template (id integer primary key, template_title text, cap_scope text, cap_info_category text, cap_info_response_type text, event_event_type_id integer)");
+  $cordovaSQLite.execute(dbShared,"CREATE TABLE IF NOT EXISTS m_template (id integer primary key, template_title text, cap_scope text, cap_info_category text, cap_info_response_type text, event_event_type_id integer,cap_info_description text,cap_info_headline text)");
   $cordovaSQLite.execute(dbShared,"CREATE TABLE IF NOT EXISTS m_predefined_area (id integer primary key, name text, event_type_id integer,location_id integer)");
   $cordovaSQLite.execute(dbShared,"CREATE TABLE IF NOT EXISTS sync_data_master (periodic_sync integer, time_sync text)"); 
 
@@ -73,7 +73,9 @@ angular.module("ngapp", [ "ngTouch", "ui.router", "ngMdIcons", "ngMaterial", "ng
     "senderID": "70029886742",
   };
 
-  $cordovaPush.register(androidConfig).then(function(result) {
+  var isNetworkOnline = $cordovaNetwork.isOnline();
+  if(isNetworkOnline){
+    $cordovaPush.register(androidConfig).then(function(result) {
       // Success
       console.log('success cordovaPush');
       console.log(result);
@@ -82,6 +84,8 @@ angular.module("ngapp", [ "ngTouch", "ui.router", "ngMdIcons", "ngMaterial", "ng
       console.log(err);
       // Error
     });
+  }
+    
 
     $localStorage['deviceTokenId'] = "";
     $rootScope.$on('$cordovaPush:notificationReceived', function(event, notification) {

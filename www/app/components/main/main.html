@@ -35,7 +35,7 @@
         <div ng-show="main.showAlertListPage">
           <md-progress-linear md-mode="indeterminate" ng-show="main.isSync"></md-progress-linear>
           <md-list ng-cloak layout-align="center center">
-            <md-button class="md-raised md-accent" style="width:95%;" aria-label="Submit" ng-disabled="main.isSync" ng-click="main.addAlert()">
+            <md-button class="md-raised md-accent" style="width:95%;" aria-label="Submit" ng-hide="main.hideAddAlert" ng-disabled="main.isSync" ng-click="main.addAlert()">
             Issue new Alert
             </md-button>  
 
@@ -111,6 +111,14 @@
                   <strong>On Set Date</strong>
                   <p>{{main.dataAlert.sent | date:'medium'}}</p>
               </div>
+            </div>
+           </md-dialog-content> 
+          <md-divider ></md-divider>
+
+          <md-subheader class="md-no-sticky">Link</md-subheader>
+          <md-dialog-content>
+            <div class="md-dialog-content" style="padding-left:15px;" >
+              <p ng-click="main.clickHyperlinkAlert(main.dataAlert.id)">Go to link</p>
             </div>
            </md-dialog-content> 
           <md-divider ></md-divider>

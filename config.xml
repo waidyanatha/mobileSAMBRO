@@ -6,9 +6,9 @@
     xmlns:cdv="http://cordova.apache.org/ns/1.0"
     xmlns:android="http://schemas.android.com/apk/res/android" 
     xmlns:gap="http://phonegap.com/ns/1.0">
-    <name>CAP on Mobile</name>
+    <name>SAMBRO</name>
     <description>
-        CAP on Mobile.
+        SAMBRO
     </description>
     <author email="angga.bayu.marthafifsa@gmail.com">
         Angga Bayu
@@ -51,6 +51,7 @@
     <plugin name="com.phonegap.plugins.PushPlugin" spec="2.5.0" source="pgb" />
     <plugin name="cordova-plugin-media" spec="2.2.0" source="npm" />
     <plugin name="com.sharinglabs.cordova.plugin.cache" spec="1.0.0" source="pgb" />
+    <plugin name="cordova-plugin-inappbrowser" spec="1.0.1" source="pgb" />
 
     <access origin="*" />
     <allow-intent href="http://*/*" />

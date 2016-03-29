@@ -42,6 +42,7 @@ angular.module("ngapp")
     $localStorage['username'] = "";
     $localStorage['password'] = "";
     $localStorage['userId'] = 0;
+    $localStorage['userRole'] = "";
 
     ctrl.loginFormContainer = true;
     ctrl.directLoginContainer = false;
@@ -63,7 +64,8 @@ angular.module("ngapp")
                   'active_user': parseInt(result.rows.item(i).active_user),
                   'device_token_id': result.rows.item(i).device_token_id,
                   'user_id' : parseInt(result.rows.item(i).user_id),
-                  'profile_json' : JSON.parse(result.rows.item(i).profile_json)
+                  'profile_json' : JSON.parse(result.rows.item(i).profile_json),
+                  'user_role' : result.rows.item(i).user_role
                 };
 
                 console.log(dataUser.email);
@@ -73,6 +75,8 @@ angular.module("ngapp")
                     $localStorage['username'] = dataUser.email;
                     $localStorage['password'] = dataUser.pwd;
                     $localStorage['userId'] = dataUser.user_id;
+                    $localStorage['userRole'] = dataUser.user_role;
+                    ctrl.userRole = dataUser.user_role;
                     ctrl.userId = dataUser.user_id;
 
                     ctrl.updateUser(dataUser.email,dataUser.pwd,dataUser.device_token_id);
@@ -104,8 +108,10 @@ angular.module("ngapp")
       $localStorage['username'] = ctrl.dataUsers[idx].email;
       $localStorage['password'] = ctrl.dataUsers[idx].pwd;
       $localStorage['userId'] = ctrl.dataUsers[idx].user_id;
+      $localStorage['userRole'] = ctrl.dataUsers[idx].user_role;
 
       ctrl.userId = ctrl.dataUsers[idx].user_id;
+      ctrl.userRole = ctrl.dataUsers[idx].user_role;
       ctrl.updateUser(ctrl.dataUsers[idx].email,ctrl.dataUsers[idx].pwd,ctrl.dataUsers[idx].device_token_id);
       $location.path("/main");
     };
@@ -115,11 +121,13 @@ angular.module("ngapp")
       ctrl.selectLoginContainer = false;
     };
 
+    ctrl.userRole = "";
     ctrl.selectUser = function(email,pwd) {
       var query = "SELECT * FROM m_user where email=?";
       $cordovaSQLite.execute(dbShared,query, [email]).then(function(result) {
           if(result.rows.length > 0) {
               var deviceTokenId = result.rows.item(0).device_token_id;
+              ctrl.userRole = result.rows.item(0).user_role;
               if($localStorage['deviceTokenId'] != '' && $localStorage['deviceTokenId'] != result.rows.item(0).device_token_id){
                 deviceTokenId = $localStorage['deviceTokenId'];
               }
@@ -135,8 +143,8 @@ angular.module("ngapp")
 
     ctrl.updateUser = function(email,pwd,deviceTokenId) {
       shared.updateActiveUser();
-      var query = "update m_user set pwd=?,active_user=?,device_token_id=? where email=?";
-      $cordovaSQLite.execute(dbShared, query, [pwd,1,deviceTokenId,email]).then(function(result) {
+      var query = "update m_user set pwd=?,active_user=?,device_token_id=?,user_role=? where email=?";
+      $cordovaSQLite.execute(dbShared, query, [pwd,1,deviceTokenId,ctrl.userRole,email]).then(function(result) {
         console.log("update user");
         
         ctrl.getUserProfile(email,ctrl.userId);
@@ -149,8 +157,8 @@ angular.module("ngapp")
 
     ctrl.insertUser = function(email,pwd) {
       shared.updateActiveUser();
-      var query = "insert into m_user (email,pwd,active_user,device_token_id,user_id) values (?,?,?,?,?)";
-      $cordovaSQLite.execute(dbShared, query, [email, pwd,1,$localStorage['deviceTokenId'],ctrl.userId]).then(function(result) {
+      var query = "insert into m_user (email,pwd,active_user,device_token_id,user_id,user_role) values (?,?,?,?,?,?)";
+      $cordovaSQLite.execute(dbShared, query, [email, pwd,1,$localStorage['deviceTokenId'],ctrl.userId,ctrl.userRole]).then(function(result) {
         console.log("insert user");
         
         ctrl.getUserProfile(email,ctrl.userId);
@@ -186,12 +194,14 @@ angular.module("ngapp")
 
         //ctrl.userId = response.userId;
         ctrl.userId = 34;
+        ctrl.userRole = response.r[0];
 
         var passEncrypt = CryptoJS.AES.encrypt(ctrl.loginForm.password, "Secret Passphrase").toString();
 
         $localStorage['username'] = ctrl.loginForm.email;
         $localStorage['password'] = passEncrypt;
         $localStorage['userId'] = ctrl.userId;
+        $localStorage['userRole'] = ctrl.userRole;
 
         //grab the user id and save it to the database
 
@@ -310,6 +320,7 @@ angular.module("ngapp")
               $localStorage['username'] = ctrlDetail.email;
               $localStorage['password'] = ctrlDetail.passEncrypt;
               $localStorage['userId'] = ctrl.userId;
+              $localStorage['userRole'] = result.rows.item(0).user_role;
               
               $location.path("/main");
           } else {

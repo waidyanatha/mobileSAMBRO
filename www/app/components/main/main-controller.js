@@ -1,7 +1,7 @@
 "use strict";
 
 angular.module("ngapp")
-.controller("MainController", function(shared, $state, $scope,$rootScope, $mdSidenav, $mdComponentRegistry, $http, $cordovaDevice, $cordovaStatusbar,$cordovaGeolocation,$cordovaDialogs,$location,$localStorage,$cordovaSQLite,$cordovaNetwork){
+.controller("MainController", function(shared, $state, $scope,$rootScope, $mdSidenav, $mdComponentRegistry, $http, $cordovaDevice, $cordovaStatusbar,$cordovaGeolocation,$cordovaDialogs,$location,$localStorage,$cordovaSQLite,$cordovaNetwork,$cordovaInAppBrowser){
     var ctrl = this;
 
     ctrl.typeNetwork = $cordovaNetwork.getNetwork();
@@ -74,6 +74,10 @@ angular.module("ngapp")
       ctrl.showSettingPage = false;
     };
 
+    ctrl.clickHyperlinkAlert = function(idAlert){
+      navigator.app.loadUrl("http://sambro.geoinfo.ait.ac.th/eden/cap/alert/"+idAlert.toString()+"/profile", {openExternal : true});
+    }
+
     ctrl.clickAlertDetail = function(idx){
       ctrl.showAlertListPage = false;
       ctrl.showAlertDetailPage = true;
@@ -81,6 +85,7 @@ angular.module("ngapp")
       ctrl.showSettingPage = false;
 
       ctrl.dataAlert = ctrl.dataAlerts[idx];
+
     };
 
     ctrl.clickUserProfile = function(){
@@ -136,10 +141,11 @@ angular.module("ngapp")
         if(result.rows.length > 0) {
           ctrl.isOfflineDataExist = true;
           for(var i=0;i<result.rows.length;i++){
+            console.log("json = "+result.rows.item(i).data_form_json);
               var dataOfflineAlert = {
                   'id':result.rows.item(i).id,
                   'created_time':new Date(result.rows.item(i).created_time),
-                  'data_form':JSON.parse(result.rows.item(i).data_form),
+                  'data_form':JSON.parse(result.rows.item(i).data_form_json),
                   'data_form_str':result.rows.item(i).data_form,
                   'is_send':false,
                   'is_progress':false
@@ -204,7 +210,7 @@ angular.module("ngapp")
     };
     ctrl.selectAlert = function() {
       ctrl.loadDataAlert = true;
-      var query = "SELECT * FROM t_alert order by datetime(sent) desc";
+      var query = "SELECT distinct * FROM t_alert order by datetime(sent) desc";
       $cordovaSQLite.execute(dbShared,query).then(function(result) {
         if(result.rows.length > 0) {
           ctrl.loadDataAlert = false;
@@ -259,6 +265,11 @@ angular.module("ngapp")
       });
     };
 
+    ctrl.hideAddAlert = false;
+    if($localStorage['userRole'] != "a" && $localStorage['userRole'] != "e"){
+      ctrl.hideAddAlert = true;
+    }
+
     //logic sync data master
     ctrl.isSync = true;
     shared.selectDB("sync_data_master","select * from sync_data_master",[],function(result){
@@ -307,13 +318,13 @@ angular.module("ngapp")
 
     // listen for Online event
     $rootScope.$on('$cordovaNetwork:online', function(event, networkState){
-      console.log('online listener');
+      console.log('online listener alert list');
       var onlineState = networkState;
       console.log(onlineState);
       
-      //if(ctrl.sendAlertToServerProgress == false){
-      //  ctrl.sendAlertsToServer();
-      //}
+      if(ctrl.sendAlertToServerProgress == false){
+        ctrl.sendAlertsToServer();
+      }
 
       ctrl.isNetworkOffline = false;
       ctrl.isNetworkOnline = true;
@@ -321,7 +332,7 @@ angular.module("ngapp")
 
     // listen for Offline event
     $rootScope.$on('$cordovaNetwork:offline', function(event, networkState){
-      console.log('offline listener');
+      console.log('offline listener alert list');
       var offlineState = networkState;
       console.log(offlineState);
       

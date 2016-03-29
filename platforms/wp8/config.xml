@@ -36,4 +36,7 @@
     <feature name="PushPlugin">
         <param name="wp-package" value="PushPlugin" />
     </feature>
+    <feature name="InAppBrowser">
+        <param name="wp-package" value="InAppBrowser" />
+    </feature>
 </widget>

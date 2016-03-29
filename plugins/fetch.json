@@ -66,5 +66,13 @@
         },
         "is_top_level": true,
         "variables": {}
+    },
+    "cordova-plugin-inappbrowser": {
+        "source": {
+            "type": "local",
+            "path": "/Users/anggabayu/Downloads/cordova-plugin-inappbrowser-master"
+        },
+        "is_top_level": true,
+        "variables": {}
     }
 }
