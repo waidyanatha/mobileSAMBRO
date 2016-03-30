@@ -101,13 +101,17 @@
             </div>
             
             <md-subheader ng-hide="alertForm.checkInsertedAreasVal()" class="md-no-sticky">New Area</md-subheader>
-            <md-list-item ng-hide="alertForm.checkInsertedAreasVal()" ng-click="alertForm.selectedArea(alertForm.newAreas.indexOf(newArea))" ng-repeat="newArea in alertForm.newAreas" >
+            <md-list-item ng-hide="alertForm.checkInsertedAreasVal()" ng-repeat="newArea in alertForm.newAreas" >
               <p>{{newArea.name}}</p>
+              <ng-md-icon icon="edit" ng-click="alertForm.selectedArea(alertForm.newAreas.indexOf(newArea))"></ng-md-icon>
+              <ng-md-icon icon="delete" ng-click="alertForm.clickDeleteNewArea(alertForm.newAreas.indexOf(newArea))"></ng-md-icon>
             </md-list-item>
             <md-divider ng-hide="alertForm.checkPredefinedAreasVal()" ></md-divider>
             <md-subheader ng-hide="alertForm.checkPredefinedAreasVal()" class="md-no-sticky">Predefined Area</md-subheader>
-            <md-list-item ng-hide="alertForm.checkPredefinedAreasVal()" ng-repeat="dataPredefinedAreaOption in alertForm.dataPredefinedAreaOptions" ng-click="alertForm.clickAddArea()" ng-if="dataPredefinedAreaOption.selected">
+            <md-list-item ng-hide="alertForm.checkPredefinedAreasVal()" ng-repeat="dataPredefinedAreaOption in alertForm.dataPredefinedAreaOptions" ng-if="dataPredefinedAreaOption.selected">
               <p>{{dataPredefinedAreaOption.name}}</p>
+              <ng-md-icon icon="edit" ng-click="alertForm.clickAddArea()"></ng-md-icon>
+              <ng-md-icon icon="delete" ng-click="alertForm.clickDeletePredefinedArea(alertForm.dataPredefinedAreaOptions.indexOf(dataPredefinedAreaOption))"></ng-md-icon>
             </md-list-item>
         </div>
 
@@ -128,8 +132,6 @@
               <p>{{dataPredefinedAreaOption.name}}</p>
               <md-checkbox class="md-secondary" ng-model="dataPredefinedAreaOption.selected" ></md-checkbox>
             </md-list-item>
-
-            
         </div>
 
         <div ng-hide="alertForm.hidePagelocation[2]">  
@@ -150,11 +152,6 @@
                                 </div>
                             </div>
                         </md-input-container>
-
-                        <md-button class="md-raised md-warn" ng-show="alertForm.newArea.edited" aria-label="Cancel"
-                                   ng-click="alertForm.clickDeleteNewArea()">
-                            Delete
-                        </md-button>
                         
                         <div layout="row" layout-align="center center">
                             <md-button class="md-raised md-accent" aria-label="Cancel"
@@ -373,14 +370,18 @@
         </form>
         <md-divider ></md-divider>
 
+        <md-subheader class="md-no-sticky">You're login as</md-subheader>
+        <md-list-item >
+          <p>{{alertForm.username}}</p>
+        </md-list-item>
+        
         <form name="alertFormSbmt" class="md-inline-form" novalidate>
 
           <md-dialog-content>
             <div class="md-dialog-content" style="padding-left:15px;" >
 
                 <div layout="column" layout-gt-sm="column">
-                    
-                    <h4></h4>
+
                     <md-input-container class="md-block">
                         <input type="password" name="password" ng-model="alertForm.password" placeholder="Password"
                                required>

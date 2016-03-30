@@ -468,9 +468,12 @@ angular.module("ngapp")
                 shared.insertDB("t_alert_offline","insert into t_alert_offline (created_time, data_form,data_form_json) values (?,?,?)",
                 [new Date(),strXML,JSON.stringify(submitFormVal)],     //[new Date(),JSON.stringify(submitFormVal)],
                 function(result){
+                    $cordovaDialogs.alert('The alert could not be sent to the server because you are offline at the moment.\nPlease check your network settings.\nThe alert will be sent as soon you are online again.','Stored alert in local', 'OK');
+                    
                     console.log('success insert to db');
                     $location.path("/main");
                 },function(error){
+                    
                     console.log('error to db');
                     $location.path("/main");
                 });
@@ -479,6 +482,7 @@ angular.module("ngapp")
                 var url = shared.sendAlertApiUrl;
                 var promiseSendDataForm = shared.sendDataForm(url,strXML);   //JSON.stringify(submitFormVal)
                 promiseSendDataForm.then(function(response) {
+                    $cordovaDialogs.alert('Success send alert to server','Success', 'OK');
                     console.log("success Save");
                     console.log(JSON.stringify(response));
                     ctrl.responseDebug = response;
@@ -842,10 +846,30 @@ angular.module("ngapp")
         
         ctrl.clickCancelNewArea();
     };
-    ctrl.clickDeleteNewArea = function(){
-        ctrl.newAreas.splice(ctrl.newArea.idxAreas, 1);
-        ctrl.clickCancelNewArea();
-    }
+    ctrl.clickDeleteNewArea = function(idx){
+        $cordovaDialogs.confirm('Are you sure want to remove \n'+ctrl.newAreas[idx].name, 'Delete', ['Ok','Cancel'])
+        .then(function(buttonIndex) {
+            // no button = 0, 'OK' = 1, 'Cancel' = 2
+            var btnIndex = buttonIndex;
+            if(btnIndex == 1){
+                ctrl.newAreas.splice(ctrl.newAreas[idx].idxAreas, 1);
+                ctrl.clickCancelNewArea();
+            }
+            
+        });
+    };
+    ctrl.clickDeletePredefinedArea = function(idx){
+        $cordovaDialogs.confirm('Are you sure want to remove \n'+ctrl.dataPredefinedAreaOptions[idx].name, 'Delete', ['Ok','Cancel'])
+        .then(function(buttonIndex) {
+            // no button = 0, 'OK' = 1, 'Cancel' = 2
+            var btnIndex = buttonIndex;
+            if(btnIndex == 1){
+                ctrl.dataPredefinedAreaOptions[idx].selected = false;
+            } 
+        });
+    };
+
+
     ctrl.renderingGeolocation = true;
     ctrl.checkWktVal = function(){
         if(ctrl.newArea.wkt == ""){

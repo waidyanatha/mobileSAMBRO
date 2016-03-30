@@ -12,7 +12,7 @@
 
 <md-sidenav class="md-sidenav-left" md-component-id="left">
   <md-toolbar class="sideLeftNavTopBar">
-    <h1 class="md-toolbar-tools">{{main.username}}</h1>
+    <h1 class="md-toolbar-tools" >{{main.username}}</h1>
   </md-toolbar>
   <md-list ng-cloak>
     <md-list-item ng-click="main.clickUserProfile()" >
@@ -33,6 +33,11 @@
       <md-whiteframe class="md-whiteframe-3dp" layout="column" flex="90">
 
         <div ng-show="main.showAlertListPage">
+
+          <div layout="row" layout-align="center center">
+            <h3 class="md-title" >{{main.username}}</h3>
+          </div>
+
           <md-progress-linear md-mode="indeterminate" ng-show="main.isSync"></md-progress-linear>
           <md-list ng-cloak layout-align="center center">
             <md-button class="md-raised md-accent" style="width:95%;" aria-label="Submit" ng-hide="main.hideAddAlert" ng-disabled="main.isSync" ng-click="main.addAlert()">

@@ -1,4 +1,4 @@
-  .mainToolbar{position: fixed; padding-top:0px;}
+  .mainToolbar{position: fixed; padding-top:0px;z-index:999999;}
   .addTopButton{position:absolute;right:5px;top:80px;}
   .sideLeftNavTopBar{padding-top:0px;}
   .spaceTop{height:80px;}
