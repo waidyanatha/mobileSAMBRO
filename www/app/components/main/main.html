@@ -20,7 +20,7 @@
       <p>Profile</p>
     </md-list-item>
     <md-list-item ng-click="main.logout()">
-      <ng-md-icon icon="verified_user"></ng-md-icon>
+      <ng-md-icon icon="logout"></ng-md-icon>
       <p>Logout</p>
     </md-list-item>
   </md-list>
@@ -49,7 +49,7 @@
               
               <md-progress-linear md-mode="indeterminate" ng-show="dataAlert.is_progress"></md-progress-linear>
               <div layout="row" layout-align="start start" >
-                  <ng-md-icon icon="image" class="md-avatar" flex="10"></ng-md-icon>
+                  <img alt="{{ dataAlert.data_form['$_cap_alert'][0]['$_cap_info'][0]['event'] }}" ng-src="{{main.evenTypeIcon(dataAlert.data_form['$_cap_alert'][0]['$_cap_info'][0]['event'])}}" class="md-avatar" />
                   <div class="md-list-item-text" style="width:50%;" layout="column" flex="90">
                     <h4 class="text-truncate" style="width:90%;">{{ dataAlert.data_form['$_cap_alert'][0]['$_cap_area'][0]['name'] }}</h4>
                     <p class="text-truncate" style="width:90%;">{{ dataAlert.data_form['$_cap_alert'][0]['$_cap_info'][0]['event'] }} - {{ dataAlert.data_form['$_cap_alert'][0]['scope']['@value'] }}</p>
@@ -63,7 +63,7 @@
             <md-progress-linear md-mode="indeterminate" ng-show="main.loadDataAlert"></md-progress-linear>
             <md-list-item layout="row" layout-align="start start" class="md-3-line" ng-click="main.clickAlertDetail(main.dataAlerts.indexOf(dataAlert))" ng-repeat="dataAlert in main.dataAlerts" >
               
-                <ng-md-icon icon="image" class="md-avatar" flex="10"></ng-md-icon>
+                <img alt="{{ dataAlert['event_event_type.name'][0] }}" ng-src="{{main.evenTypeIcon(dataAlert['event_event_type.name'][0])}}" class="md-avatar" />
                 <div class="md-list-item-text" style="width:50%;" layout="column" flex="90">
                   <h3 class="text-truncate" style="width:90%;">{{ dataAlert['cap_info.headline'][0] }}</h3>
                   <h4 class="text-truncate" style="width:90%;">{{ dataAlert['cap_area.name'][0] }}</h4>

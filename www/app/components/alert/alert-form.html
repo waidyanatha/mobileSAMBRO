@@ -57,7 +57,7 @@
         <md-subheader class="md-no-sticky">Event Types ({{alertForm.progressText}})</md-subheader>
         <md-progress-linear md-mode="indeterminate" ng-show="alertForm.hidePage[alertForm.checkPageIdx('event-type')].loadData"></md-progress-linear>
         <md-list-item id="event-type-opt_{{dataEventTypeOption['@value']}}" class="event-type-opt unSelectedList" ng-repeat="dataEventTypeOption in alertForm.dataEventTypeOptions" ng-click="alertForm.clickEventTypeOption($event,dataEventTypeOption)">
-          <img alt="{{ dataEventTypeOption.$ }}" ng-src="assets/images/disaster/27832-200.png" class="md-avatar" />
+          <img alt="{{ dataEventTypeOption.$ }}" ng-src="{{alertForm.evenTypeIcon(dataEventTypeOption.$)}}" class="md-avatar" />
           <p>{{dataEventTypeOption.$}}</p>
         </md-list-item>
       </div>
@@ -80,7 +80,6 @@
         <md-subheader class="md-no-sticky">Templates ({{alertForm.progressText}})</md-subheader>
         <md-progress-linear md-mode="indeterminate" ng-show="alertForm.hidePage[alertForm.checkPageIdx('template')].loadData"></md-progress-linear>
         <md-list-item id="template-opt_{{dataTemplateOption['id']}}" class="template-opt unSelectedList" ng-repeat="dataTemplateOption in alertForm.dataTemplateOptions" ng-click="alertForm.clickTemplateOption($event,dataTemplateOption)">
-          <img alt="{{ dataTemplateOption.template_title }}" ng-src="assets/images/disaster/27832-200.png" class="md-avatar" />
           <p>{{dataTemplateOption.template_title}}</p>
         </md-list-item>
       </div>
@@ -285,7 +284,7 @@
         
         <md-subheader ng-click="alertForm.summaryClickDetail('event-type')" class="md-no-sticky">Event Types</md-subheader>
         <md-list-item ng-click="alertForm.summaryClickDetail('event-type')" ng-repeat="dataEventTypeOption in alertForm.dataEventTypeOptions" ng-if="dataEventTypeOption['@value'] == alertForm.dataAlertForm.eventType.id" >
-          <img alt="{{ dataEventTypeOption.$ }}" ng-src="assets/images/disaster/27832-200.png" class="md-avatar" />
+          <img alt="{{ dataEventTypeOption.$ }}" ng-src="{{alertForm.evenTypeIcon(dataEventTypeOption.$)}}" class="md-avatar" />
           <p>{{dataEventTypeOption.$}}</p>
         </md-list-item>
         <md-divider ></md-divider>
@@ -298,7 +297,6 @@
 
         <md-subheader ng-click="alertForm.summaryClickDetail('template')" class="md-no-sticky">Templates</md-subheader>
         <md-list-item ng-click="alertForm.summaryClickDetail('template')" ng-repeat="dataTemplateOption in alertForm.dataTemplateOptions" ng-if="dataTemplateOption['id'] == alertForm.dataAlertForm.template.id">
-          <img alt="{{ dataTemplateOption.template_title }}" ng-src="assets/images/disaster/27832-200.png" class="md-avatar" />
           <p>{{dataTemplateOption.template_title}}</p>
         </md-list-item>
         <md-divider ></md-divider>

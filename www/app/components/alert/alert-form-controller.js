@@ -93,6 +93,10 @@ angular.module("ngapp")
       alert('You swiped down!!');
     };
 
+    ctrl.evenTypeIcon = function(eventTypeName){
+        return "assets/images/disaster/"+ shared.evenTypeIcon(eventTypeName) + ".png";
+    }; 
+
     ctrl.currentDateTime = new Date();
     ctrl.todayDate = new Date(ctrl.currentDateTime.getFullYear(), ctrl.currentDateTime.getMonth(), ctrl.currentDateTime.getDate(), ctrl.currentDateTime.getHours(), ctrl.currentDateTime.getMinutes(), 0);
     $scope.minDate = new Date(
@@ -825,8 +829,25 @@ angular.module("ngapp")
         angular.element('#map').hide();
     }
     ctrl.clickSubmitMap = function(){
-        ctrl.clickCancelDrawonMap();
-        ctrl.hidePagelocation = [true,true,false];
+        $cordovaDialogs.prompt('Enter area name', 'Area Name', ['Ok','Cancel'], ctrl.newArea.name)
+        .then(function(result) {
+          var input = result.input1;
+          // no button = 0, 'OK' = 1, 'Cancel' = 2
+          var btnIndex = result.buttonIndex;
+          if(btnIndex == 1){
+            if(input != ""){
+                ctrl.newArea.name = input;
+                ctrl.clickCancelDrawonMap();
+                ctrl.hidePagelocation = [false,true,true];
+
+                ctrl.clickSubmitNewArea();
+            } 
+            else{
+                $cordovaDialogs.alert('Please enter area name!', 'Error', 'Ok');
+            } 
+          }
+        });
+        
     };
     ctrl.clickSubmitPredefinedArea = function(){
         ctrl.clickCancelNewArea();

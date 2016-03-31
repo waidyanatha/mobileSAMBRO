@@ -62,6 +62,10 @@ angular.module("ngapp")
         });
     };
 
+    ctrl.evenTypeIcon = function(eventTypeName){
+        return "assets/images/disaster/"+ shared.evenTypeIcon(eventTypeName) + ".png";
+    }; 
+
     ctrl.showAlertListPage = true;
     ctrl.showAlertDetailPage = false;
     ctrl.showProfilePage = false;

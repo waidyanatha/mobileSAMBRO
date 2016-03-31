@@ -483,6 +483,63 @@ angular.module("ngapp").service("shared", function($http,$localStorage,$sessionS
     });
   };
 
+  ctrl.evenTypeIcon = function(eventTypeName){
+    var iconName = "mark";
+    switch (eventTypeName.toLowerCase()) {
+      case "flood":
+          iconName = "76252-200";
+          break;
+      case "floods":
+          iconName = "76252-200";
+          break;
+      case "severe thunderstorm":
+          iconName = "85693-200";
+          break;
+      case "tropical cyclone":
+          iconName = "77269-200";
+          break;
+      case "volcano":
+          iconName = "85689-200";
+          break;
+      case "tropical cyclone warning":
+          iconName = "77269-200";
+          break;
+      case "tsunami":
+          iconName = "77273-200";
+          break;
+      case "landslide":
+          iconName = "85695-200";
+          break;
+      case "tropical cyclone (extreme)":
+          iconName = "77269-200";
+          break;
+      case "drought":
+          iconName = "85690-200";
+          break;
+      case "heavy rain":
+          iconName = "76249-200";
+          break;
+      case "tropical cyclone alert":
+          iconName = "77269-200";   
+          break;
+      case "earthquake":
+          iconName = "77272-200"; 
+          break;  
+      case "accident":
+          iconName = "accident";                            
+          break;
+      default: 
+          iconName = "mark";    
+  }
+
+  return iconName;
+
+
+
+//<div>Font made from <a href="http://www.onlinewebfonts.com">oNline Web Fonts</a>is licensed by CC BY 3.0</div>
+//<div>Icons made by <a href="http://www.flaticon.com/authors/amit-jakhu" title="Amit Jakhu">Amit Jakhu</a> from <a href="http://www.flaticon.com" title="Flaticon">www.flaticon.com</a> is licensed by <a href="http://creativecommons.org/licenses/by/3.0/" title="Creative Commons BY 3.0" target="_blank">CC 3.0 BY</a></div>
+  };
+
   ctrl.guid = function() {
     return ctrl.s4() + ctrl.s4() + '-' + ctrl.s4() + '-' + ctrl.s4() + '-' +
       ctrl.s4() + '-' + ctrl.s4() + ctrl.s4() + ctrl.s4();
