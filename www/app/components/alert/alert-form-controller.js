@@ -781,7 +781,8 @@ angular.module("ngapp")
                   'name': result.rows.item(i).name,
                   'event_type_id':result.rows.item(i).event_type_id,
                   'cap_area_location.location_id': result.rows.item(i).location_id,
-                  'selected':false
+                  'selected':false,
+                  'spatial_val':result.rows.item(i).spatial_val
                 };
                 ctrl.dataPredefinedAreaOptions.push(dataPredefinedAreaOption);   
             } 
@@ -862,8 +863,8 @@ angular.module("ngapp")
             } 
           }
         });
-        
     };
+
     ctrl.clickSubmitPredefinedArea = function(){
         ctrl.clickCancelNewArea();
     };
@@ -901,6 +902,7 @@ angular.module("ngapp")
             var btnIndex = buttonIndex;
             if(btnIndex == 1){
                 ctrl.dataPredefinedAreaOptions[idx].selected = false;
+                ctrl.clickCancelNewArea();
             } 
         });
     };
@@ -1027,6 +1029,15 @@ angular.module("ngapp")
             featureGroupPolyThumbnail.addLayer(poly);
         }
 
+        for(var i=0;i<ctrl.dataPredefinedAreaOptions.length;i++){
+            if(ctrl.dataPredefinedAreaOptions[i].selected == true){
+                var geom = JSON.parse(ctrl.dataPredefinedAreaOptions[i].spatial_val);
+                var coordinates = ctrl.changeWKTLonLat(geom.coordinates);
+                var poly = L.polygon(coordinates,{color: 'green',fillOpacity: 0.7,stroke: true}).bindPopup(ctrl.dataPredefinedAreaOptions[i].name);
+                featureGroupPolyThumbnail.addLayer(poly);
+            }  
+        }
+
         mapThumbnail.fitBounds(featureGroupPolyThumbnail.getBounds());
         
         if(ctrl.renderingGeolocation == true){
@@ -1048,6 +1059,15 @@ angular.module("ngapp")
 
             var poly = L.polygon(wkt1.toObject()._latlngs,{color: 'green',fillOpacity: 0.7,stroke: true}).bindPopup(ctrl.newAreas[i].name);
             featureGroupPolyThumbnailSumm.addLayer(poly);
+        }
+
+        for(var i=0;i<ctrl.dataPredefinedAreaOptions.length;i++){
+            if(ctrl.dataPredefinedAreaOptions[i].selected == true){
+                var geom = JSON.parse(ctrl.dataPredefinedAreaOptions[i].spatial_val);
+                var coordinates = ctrl.changeWKTLonLat(geom.coordinates);
+                var poly = L.polygon(coordinates,{color: 'green',fillOpacity: 0.7,stroke: true}).bindPopup(ctrl.dataPredefinedAreaOptions[i].name);
+                featureGroupPolyThumbnailSumm.addLayer(poly);
+            }  
         }
 
         mapThumbnailSummary.fitBounds(featureGroupPolyThumbnailSumm.getBounds());
@@ -1169,11 +1189,11 @@ angular.module("ngapp")
     });
 
     ctrl.changeWKTLonLat = function (wkt1){
-      for(var i=0;i<wkt1.components[0].length;i++){
-        var y = wkt1.components[0][i].x;
-        var x = wkt1.components[0][i].y;
-        wkt1.components[0][i].x = x;
-        wkt1.components[0][i].y = y;
+      for(var i=0;i<wkt1[0].length;i++){
+        var y = wkt1[0][i][0];
+        var x = wkt1[0][i][1];
+        wkt1[0][i][0] = x;
+        wkt1[0][i][1] = y;
       }
 
       return wkt1;

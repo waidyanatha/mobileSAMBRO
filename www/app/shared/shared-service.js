@@ -477,6 +477,28 @@ angular.module("ngapp").service("shared", function($http,$localStorage,$sessionS
         };
         ctrl.insertDB("m_predefined_area",query,dataDB,callBack,callBackErr);
       }
+      ctrl.getDataPredefinedAreaGeo();
+      //ctrl.dataPredefinedAreaOptions = response;
+    }, function(reason) {
+      console.log('Failed: ' + reason);
+    });
+
+  };
+
+  ctrl.getDataPredefinedAreaGeo = function(){
+    var promiseLoadDataPredefinedAreaGeo = ctrl.loadDataAlert(ctrl.apiUrl+'cap/area.geojson?~.is_template=True');
+    promiseLoadDataPredefinedAreaGeo.then(function(response) {
+      for(var i=0;i<response.features.length;i++){
+        var query = "update m_predefined_area set spatial_val=? where id=?";
+        var dataDB = [JSON.stringify(response.features[i]['geometry']),parseInt(response.features[i]['properties'].id[1]) ];
+        var callBack = function(result){
+          console.log('success update area spatial to db');
+        };
+        var callBackErr = function(error){
+          console.log('error to db');
+        };
+        ctrl.updateDB("m_predefined_area",query,dataDB,callBack,callBackErr);
+      }
       //ctrl.dataPredefinedAreaOptions = response;
     }, function(reason) {
       console.log('Failed: ' + reason);

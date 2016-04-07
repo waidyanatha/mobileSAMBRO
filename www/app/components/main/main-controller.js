@@ -1,7 +1,7 @@
 "use strict";
 
 angular.module("ngapp")
-.controller("MainController", function(shared, $state, $scope,$rootScope, $mdSidenav, $mdComponentRegistry, $http, $cordovaDevice, $cordovaStatusbar,$cordovaGeolocation,$cordovaDialogs,$location,$localStorage,$cordovaSQLite,$cordovaNetwork,$cordovaInAppBrowser){
+.controller("MainController", function(shared, $state, $scope,$rootScope, $mdSidenav, $mdComponentRegistry, $http, $cordovaDevice, $cordovaStatusbar,$cordovaGeolocation,$cordovaDialogs,$location,$localStorage,$cordovaSQLite,$cordovaNetwork,$cordovaInAppBrowser,$timeout){
     var ctrl = this;
 
     ctrl.typeNetwork = $cordovaNetwork.getNetwork();
@@ -89,6 +89,12 @@ angular.module("ngapp")
       ctrl.showSettingPage = false;
 
       ctrl.dataAlert = ctrl.dataAlerts[idx];
+
+     $timeout(function () { 
+          mapThumbnailDetail.invalidateSize();
+          ctrl.renderPolygonOnThumbnailDetailMap();
+      }, 1000);
+
 
     };
 
@@ -226,7 +232,8 @@ angular.module("ngapp")
               'cap_area.name': JSON.parse(result.rows.item(i).cap_area_name),
               'scope': result.rows.item(i).cap_scope,
               'event_event_type.name': JSON.parse(result.rows.item(i).event_event_type_name),
-              'sent': result.rows.item(i).sent
+              'sent': result.rows.item(i).sent,
+              'spatial_val':result.rows.item(i).spatial_val
             };
 
             ctrl.dataAlerts.push(dataAlert);
@@ -242,7 +249,6 @@ angular.module("ngapp")
       var promiseLoadData = shared.loadDataAlert(shared.apiUrl+'cap/alert.json');
       promiseLoadData.then(function(response) {
         //console.log(response);
-        ctrl.loadDataAlert = false;
         ctrl.deleteAlert();
         ctrl.dataAlerts = new Array();
         for(var i=0;i<response.length;i++){
@@ -262,8 +268,42 @@ angular.module("ngapp")
 
           ctrl.insertAlert(dataAlert);
         }
-        ctrl.selectAlert();
+        ctrl.getDataAlertGeoFromAPI();
+        
         //ctrl.dataAlerts = response;
+      }, function(reason) {
+        console.log('Failed: ' + reason);
+      });
+
+    };
+
+    ctrl.getDataAlertGeoFromAPI = function(){
+      var promiseLoadData = shared.loadDataAlert(shared.apiUrl+'cap/alert.geojson');
+      promiseLoadData.then(function(response) {
+        var currentId = 0;
+        var currentSpatial = new Array();
+        ctrl.loadDataAlert = false;
+        for(var i=0;i<response.features.length;i++){
+          var spatial = response.features[i]['geometry'];
+          var id = parseInt(response.features[i]['properties'].id[1]);
+          if(currentId == id){
+            currentSpatial.push(spatial);
+          }
+          else{
+            currentSpatial = [spatial];
+          }
+          currentId = id;
+          var query = "update t_alert set spatial_val=? where id=?";
+          var dataDB = [JSON.stringify(currentSpatial),id];
+          var callBack = function(result){
+            console.log('success update alert area spatial to db');
+          };
+          var callBackErr = function(error){
+            console.log('error to db');
+          };
+          shared.updateDB("t_alert",query,dataDB,callBack,callBackErr);
+        }
+        ctrl.selectAlert();
       }, function(reason) {
         console.log('Failed: ' + reason);
       });
@@ -343,5 +383,44 @@ angular.module("ngapp")
       ctrl.isNetworkOffline = true;
       ctrl.isNetworkOnline = false;
     });
+
+    //map
+    var mapOSMThumbnail;
+    mapThumbnailDetail = L.map('mapThumbnailDetail',{
+      maxZoom: 16,
+      minZoom: 2,
+      attributionControl:false
+    }).setView([-6.1918, 106.8345], 2);
+    mapOSMThumbnail = new L.TileLayer('http://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png');
+    mapThumbnailDetail.addLayer(mapOSMThumbnail);
+
+    var featureGroupPolyThumbnailDetail = null;
+    ctrl.renderPolygonOnThumbnailDetailMap = function(){
+        if(featureGroupPolyThumbnailDetail != null){
+            mapThumbnailDetail.removeLayer(featureGroupPolyThumbnailDetail);
+        }
+        featureGroupPolyThumbnailDetail = L.featureGroup();
+        mapThumbnailDetail.addLayer(featureGroupPolyThumbnailDetail);
+        var arrSpatialVal = JSON.parse(ctrl.dataAlert.spatial_val);
+        for(var i=0;i<arrSpatialVal.length;i++){
+            var geom = arrSpatialVal[i];
+            var coordinates = ctrl.changeWKTLonLat(geom.coordinates);
+            var poly = L.polygon(coordinates,{color: 'green',fillOpacity: 0.7,stroke: true});
+            featureGroupPolyThumbnailDetail.addLayer(poly);
+        }
+
+        mapThumbnailDetail.fitBounds(featureGroupPolyThumbnailDetail.getBounds());
+    };
+
+    ctrl.changeWKTLonLat = function (wkt1){
+      for(var i=0;i<wkt1[0].length;i++){
+        var y = wkt1[0][i][0];
+        var x = wkt1[0][i][1];
+        wkt1[0][i][0] = x;
+        wkt1[0][i][1] = y;
+      }
+
+      return wkt1;
+    };
 
 });
