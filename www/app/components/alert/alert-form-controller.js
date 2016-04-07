@@ -401,6 +401,9 @@ angular.module("ngapp")
                  "addresses" : {
                     "@value" : ctrl.dataAlertForm.addresses
                  },
+                 "event_type_id" : {
+                    "@value" : ctrl.dataAlertForm.eventType.id.toString()
+                 },
                  "$_cap_info" : [ {
                     "sender_name" : $localStorage["username"],
                     "event" : ctrl.dataAlertForm.eventType.name,
@@ -444,6 +447,7 @@ angular.module("ngapp")
             '    <data field="scope">'+ctrl.dataAlertForm.scope+'</data>'+
             '    <data field="template_id">'+ctrl.dataAlertForm.template.id.toString()+'</data>'+
             '    <data field="restriction">'+ctrl.dataAlertForm.restriction+'</data>'+
+            '    <data field="event_type_id">'+ctrl.dataAlertForm.eventType.id.toString()+'</data>'+
             capGroupUserValXML+
             '    <resource name="cap_info">'+
             '        <data field="sender_name">'+$localStorage["username"]+'</data>'+
@@ -804,6 +808,17 @@ angular.module("ngapp")
         if(layerTemp != null){
             featureGroupDraw.removeLayer(layerTemp);
         }  
+
+        var toolbarId = drawControl._toolbars.draw._leaflet_id - 1;
+        console.log('_leaflet_click'+toolbarId.toString());
+        angular.element('.leaflet-draw-draw-polygon').trigger('_leaflet_click'+toolbarId.toString());
+        
+        // var event = document.createEvent('Event');
+        // event.initEvent('click', true, true);
+        // var cb = document.getElementsByClassName('leaflet-draw-draw-polyline');
+        // !cb[0].dispatchEvent(event);
+
+        console.log('passed');
     };
     ctrl.showMap = function(){
         ctrl.btnBackName = "";
