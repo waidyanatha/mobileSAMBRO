@@ -83,51 +83,34 @@
 
         <div ng-show="main.showAlertDetailPage">
           
-          <md-subheader class="md-no-sticky">Headline</md-subheader>
+          <md-list-item ng-repeat="eventType in main.dataAlert['event_event_type.name']" >
+            <img alt="{{ eventType }}" ng-src="{{main.evenTypeIcon(eventType)}}" class="md-avatar" />
+            <div layout="column">
+              <p>{{eventType}} - {{main.dataAlert.scope}}<br/>
+              {{main.dataAlert.sent | date:'medium'}}</p>
+            </div>
+            
+          </md-list-item>
+
+          <div id="mapThumbnailDetail" style="height:100px;"></div>
+          
+          <md-list-item layout-align="start start" layout="column">
+              Location 
+              <div ng-repeat="area in main.dataAlert['cap_area.name']" >
+                &nbsp;&nbsp;&nbsp;&nbsp;{{area}}
+              </div>
+          </md-list-item>
+          <h4></h4>
+
           <md-list-item ng-repeat="headline in main.dataAlert['cap_info.headline']" >
               <p>{{headline}}</p>
           </md-list-item>
-          <md-divider ></md-divider>
 
-          <md-subheader class="md-no-sticky">Event Types</md-subheader>
-          <md-list-item ng-repeat="eventType in main.dataAlert['event_event_type.name']" >
-              <p>{{eventType}}</p>
-          </md-list-item>
-          <md-divider ></md-divider>
+          <md-button style="width: 95%;" layout-align="center center" class="md-raised md-accent" aria-label="Back"
+                                 ng-click="main.clickHyperlinkAlert(main.dataAlert.id)">
+                          Go to link
+                        </md-button>  
 
-          <md-subheader class="md-no-sticky">Area</md-subheader>
-          <div id="mapThumbnailDetail" style="height:100px;"></div>
-          <md-list-item ng-repeat="area in main.dataAlert['cap_area.name']" >
-              <p>{{area}}</p>
-          </md-list-item>
-          <md-divider ></md-divider>
-
-          <md-subheader class="md-no-sticky">Scope</md-subheader>
-          <md-dialog-content>
-            <div class="md-dialog-content" style="padding-left:15px;" >
-              <p>{{main.dataAlert.scope}}</p>
-            </div>
-           </md-dialog-content> 
-          <md-divider ></md-divider>
-
-          <md-subheader class="md-no-sticky">Date</md-subheader>
-          <md-dialog-content>
-            <div class="md-dialog-content" style="padding-left:15px;" >
-              <div layout="column" layout-gt-sm="column">
-                  <strong>On Set Date</strong>
-                  <p>{{main.dataAlert.sent | date:'medium'}}</p>
-              </div>
-            </div>
-           </md-dialog-content> 
-          <md-divider ></md-divider>
-
-          <md-subheader class="md-no-sticky">Link</md-subheader>
-          <md-dialog-content>
-            <div class="md-dialog-content" style="padding-left:15px;" >
-              <p ng-click="main.clickHyperlinkAlert(main.dataAlert.id)">Go to link</p>
-            </div>
-           </md-dialog-content> 
-          <md-divider ></md-divider>
 
           <md-button style="width: 95%;" layout-align="center center" class="md-raised md-accent" aria-label="Back"
                                  ng-click="main.clickBackBtn()">
