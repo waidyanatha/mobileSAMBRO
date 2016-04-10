@@ -13,3 +13,4 @@ Instructions for building Android app
 5. Option #2: Build APK locally
 	2. 	Install Android SDK
 	6.	Build the app, with your terminal: “cordova build android”
+	7. copy the created APK to your phone and install
