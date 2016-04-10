@@ -12,4 +12,4 @@ Instructions for building Android app
 	2.	Wirelessly pair the app, with your terminal or command prompt go to your source code location and then type “phonegap serve”
 5. Option #2: Build APK locally
 	2. 	Install Android SDK
-	6.	You can also build the app, with your terminal or command prompt “cordova build android”
+	6.	Build the app, with your terminal: “cordova build android”
