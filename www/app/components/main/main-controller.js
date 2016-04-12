@@ -124,11 +124,24 @@ angular.module("ngapp")
               shared.deleteDBWithFilter("t_alert_offline"," where id=?",[ctrl.dataOfflineAlerts[idx].id],null,null);
               console.log("success save");
               console.log(response);
-              ctrl.dataOfflineAlerts[idx].is_send = true;
-              ctrl.dataOfflineAlerts[idx].is_progress = false;
-              console.log('done');
-              ctrl.refreshPageAfterSendAlert();
-              ctrl.sendAlertToServer(idx+1);
+
+              var alertId = response.created[0];
+              shared.sendNotif(alertId,function(){
+                  console.log("Send notif success ["+alertId.toString()+"]");
+                  ctrl.dataOfflineAlerts[idx].is_send = true;
+                  ctrl.dataOfflineAlerts[idx].is_progress = false;
+                  console.log('done');
+                  ctrl.refreshPageAfterSendAlert();
+                  ctrl.sendAlertToServer(idx+1);
+              },function(){
+                  console.log("Send notif failed ["+alertId.toString()+"]");
+                  ctrl.dataOfflineAlerts[idx].is_send = true;
+                  ctrl.dataOfflineAlerts[idx].is_progress = false;
+                  console.log('done');
+                  ctrl.refreshPageAfterSendAlert();
+                  ctrl.sendAlertToServer(idx+1);
+              });
+              
           }, function(reason) {
               console.log("failed save");
               console.log(reason);

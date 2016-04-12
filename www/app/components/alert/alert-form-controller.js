@@ -313,7 +313,7 @@ angular.module("ngapp")
 
                 capAreasValXML = capAreasValXML + '<resource name="cap_area">'+
                 '   <data field="name">'+ctrl.dataPredefinedAreaOptions[i].name+'</data>'+
-                '   <data field="is_template">F</data>'+
+                '   <data field="is_template" value="false"/>'+
                 '   <resource name="cap_area_location">'+
                 '       <data field="location_id">'+ctrl.dataPredefinedAreaOptions[i]['cap_area_location.location_id'].toString()+'</data>'+
                 '   </resource>'+
@@ -334,7 +334,7 @@ angular.module("ngapp")
 
             capAreasValXML = capAreasValXML + '<resource name="cap_area">'+
                 '   <data field="name">'+ctrl.newAreas[i].name+'</data>'+
-                '   <data field="is_template">F</data>'+
+                '   <data field="is_template" value="false"/>'+
                 '   <resource name="cap_area_location">'+
                 '       <reference field="location_id" resource="gis_location" uuid="urn:uuid:'+guid+'" />'+
                 '   </resource>'+
@@ -443,7 +443,7 @@ angular.module("ngapp")
             '<resource name="cap_alert">'+
             '    <data field="status">'+ctrl.dataAlertForm.status+'</data>'+
             '    <data field="msg_type">Alert</data>'+
-            '    <data field="is_template">F</data>'+
+            '    <data field="is_template" value="false"/>'+
             '    <data field="scope">'+ctrl.dataAlertForm.scope+'</data>'+
             '    <data field="template_id">'+ctrl.dataAlertForm.template.id.toString()+'</data>'+
             '    <data field="restriction">'+ctrl.dataAlertForm.restriction+'</data>'+
@@ -462,7 +462,7 @@ angular.module("ngapp")
             '        <data field="expires">'+$filter('date')(ctrl.dataAlertForm.expireDate,"yyyy-MM-ddTHH:mm:ss")+'</data>'+
             '        <data field="onset">'+$filter('date')(ctrl.dataAlertForm.onSetDate,"yyyy-MM-ddTHH:mm:ss")+'</data>'+
             '        <data field="effective">'+$filter('date')(ctrl.dataAlertForm.effectiveDate,"yyyy-MM-ddTHH:mm:ss")+'</data>'+
-            '        <data field="is_template">F</data>'+
+            '        <data field="is_template" value="false"/>'+
             '    </resource>'+
             capAreasValXML+
             '</resource>'+
@@ -494,7 +494,16 @@ angular.module("ngapp")
                     console.log("success Save");
                     console.log(JSON.stringify(response));
                     ctrl.responseDebug = response;
-                    $location.path("/main");
+
+                    var alertId = response.created[0];
+                    shared.sendNotif(alertId,function(){
+                        console.log("Send notif success ["+alertId.toString()+"]");
+                        $location.path("/main");
+                    },function(){
+                        console.log("Send notif failed ["+alertId.toString()+"]");
+                        $location.path("/main");
+                    });
+                    
                     //$cordovaDialogs.alert('success', response, 'OK');
                 }, function(reason) {
                     console.log("failed Save");
