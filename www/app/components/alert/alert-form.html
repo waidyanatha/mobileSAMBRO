@@ -102,14 +102,14 @@
             <md-subheader ng-hide="alertForm.checkInsertedAreasVal()" class="md-no-sticky">New Area</md-subheader>
             <md-list-item ng-hide="alertForm.checkInsertedAreasVal()" ng-repeat="newArea in alertForm.newAreas" >
               <p>{{newArea.name}}</p>
-              <ng-md-icon icon="edit" ng-click="alertForm.selectedArea(alertForm.newAreas.indexOf(newArea))"></ng-md-icon>
+              <ng-md-icon icon="edit" ng-click="alertForm.selectedArea(alertForm.newAreas.indexOf(newArea))" style="margin-right:20px;"></ng-md-icon>
               <ng-md-icon icon="delete" ng-click="alertForm.clickDeleteNewArea(alertForm.newAreas.indexOf(newArea))"></ng-md-icon>
             </md-list-item>
             <md-divider ng-hide="alertForm.checkPredefinedAreasVal()" ></md-divider>
             <md-subheader ng-hide="alertForm.checkPredefinedAreasVal()" class="md-no-sticky">Predefined Area</md-subheader>
             <md-list-item ng-hide="alertForm.checkPredefinedAreasVal()" ng-repeat="dataPredefinedAreaOption in alertForm.dataPredefinedAreaOptions" ng-if="dataPredefinedAreaOption.selected">
               <p>{{dataPredefinedAreaOption.name}}</p>
-              <ng-md-icon icon="edit" ng-click="alertForm.clickAddArea()"></ng-md-icon>
+              <ng-md-icon icon="edit" ng-click="alertForm.clickAddArea()" style="margin-right:20px;"></ng-md-icon>
               <ng-md-icon icon="delete" ng-click="alertForm.clickDeletePredefinedArea(alertForm.dataPredefinedAreaOptions.indexOf(dataPredefinedAreaOption))"></ng-md-icon>
             </md-list-item>
         </div>
@@ -263,12 +263,20 @@
 
                     <md-input-container flex>
                         <label>Headline</label>
-                        <textarea ng-model="alertForm.dataAlertForm.headline" md-maxlength="140" rows="5"></textarea>
+                        <textarea ng-model="alertForm.dataAlertForm.headline" md-maxlength="140" rows="5">
+                          
+
+
+                        </textarea>
                     </md-input-container>
                 
                     <md-input-container flex>
                         <label>Description</label>
-                        <textarea ng-model="alertForm.dataAlertForm.description" rows="5"></textarea>
+                        <textarea ng-model="alertForm.dataAlertForm.description" rows="5">
+                          
+
+
+                        </textarea>
                     </md-input-container>
                     <!--<div>{{alertForm.responseDebug}}</div>-->
                                  
