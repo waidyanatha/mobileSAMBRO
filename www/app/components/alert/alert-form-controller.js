@@ -694,10 +694,12 @@ angular.module("ngapp")
     },null);
 
     ctrl.dataGroupUsers = new Array();
+    ctrl.showNoAvailableGroupUsers = false;
     shared.selectDB("m_group_user","select * from m_group_user",[],function(result){
       if(result.rows.length > 0) {
 
         ctrl.hidePage[ctrl.checkPageIdx('addresses')].loadData = false;
+        ctrl.showNoAvailableGroupUsers = false;
 
         for(var i=0;i<result.rows.length;i++){
             var dataGroupPerson = {
@@ -711,6 +713,10 @@ angular.module("ngapp")
             ctrl.dataGroupUsers.push(dataGroupPerson);   
         } 
       } 
+      else{
+        ctrl.hidePage[ctrl.checkPageIdx('addresses')].loadData = false;
+        ctrl.showNoAvailableGroupUsers = true;
+      }
     },null);
 
     ctrl.dataStatusOptions = new Array();
@@ -972,6 +978,12 @@ angular.module("ngapp")
             }
         }
         return true;
+    };
+    ctrl.checkPredefinedAreaAvailableVal = function(){
+        if(ctrl.dataPredefinedAreaOptions.length>0){
+            return true;
+        }
+        return false;
     };
     ctrl.checkGroupUsersVal = function(){
         for(var i=0;i<ctrl.dataGroupUsers.length;i++){

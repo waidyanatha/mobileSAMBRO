@@ -91,7 +91,7 @@
             <div id="mapThumbnail" style="height:100px;"></div>
 
             <div layout="row" layout-align="center center">
-                <md-button class="md-raised md-accent" aria-label="Submit" ng-disabled="alertForm.checkPredefinedAreasVal()" ng-click="alertForm.clickAddArea()">
+                <md-button class="md-raised md-accent" aria-label="Submit" ng-disabled="!alertForm.checkPredefinedAreaAvailableVal()" ng-click="alertForm.clickAddArea()">
                 Predefined Area
                 </md-button>
                 <md-button class="md-raised md-accent" aria-label="Submit" ng-click="alertForm.clickShowMap()">
@@ -219,6 +219,11 @@
           <p>{{dataGroupUser.name}}</p>
           <md-checkbox class="md-secondary" ng-model="dataGroupUser.selected" ></md-checkbox>
         </md-list-item>
+
+        <md-list-item ng-show="alertForm.showNoAvailableGroupUsers">
+          <p>No data available</p>
+        </md-list-item>
+
       </div>
 
       <div ng-hide="alertForm.checkPageShow('date')">  
