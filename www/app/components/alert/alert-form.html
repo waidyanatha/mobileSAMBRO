@@ -249,6 +249,30 @@
         </form>
       </div>
 
+      <div ng-hide="alertForm.checkPageShow('parameter')">  
+        <md-subheader class="md-no-sticky">Parameter ({{alertForm.progressText}})</md-subheader>
+        <form name="dataForm" class="md-inline-form" novalidate>
+
+          <md-dialog-content>
+            <div class="md-dialog-content" style="padding-left:15px;" >
+
+                <div layout="column" layout-gt-sm="column">
+                   
+                    <div ng-repeat="parameter in alertForm.dataAlertForm.parameters">
+                      <md-input-container class="md-block" flex-gt-sm>
+                        <label>{{parameter.key}}</label>
+                        <input ng-model="parameter.value">
+                      </md-input-container>
+                    </div>
+                    
+                                 
+                </div>
+
+            </div>
+          </md-dialog-content>
+        </form>
+      </div>
+
       <div ng-hide="alertForm.checkPageShow('note')">  
         <md-subheader class="md-no-sticky">Note ({{alertForm.progressText}})</md-subheader>
         <form name="dataForm" class="md-inline-form" novalidate>
@@ -347,6 +371,22 @@
                     <p>{{alertForm.dataAlertForm.onSetDate | date:'medium'}}</p>
                 </div>
 
+            </div>
+          </md-dialog-content>
+        </form>
+        <md-divider ></md-divider>
+
+        <md-subheader ng-click="alertForm.summaryClickDetail('note')" class="md-no-sticky">Parameter</md-subheader>
+        <form name="dataForm" class="md-inline-form" novalidate>
+          <md-dialog-content>
+            <div class="md-dialog-content" style="padding-left:15px;" >
+
+                <div layout="column" layout-gt-sm="column">
+                  <div ng-repeat="parameter in alertForm.dataAlertForm.parameters">
+                    <strong>{{parameter.key}}</strong>
+                    <p>{{parameter.value}}</p>
+                  </div>
+                </div>
             </div>
           </md-dialog-content>
         </form>

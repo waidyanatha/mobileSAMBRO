@@ -402,8 +402,11 @@ angular.module("ngapp").service("shared", function($http,$localStorage,$sessionS
       ctrl.deleteDB("m_template",null,null);
       for(var j=0;j<response.length;j++){
         
-        var query = "insert into m_template (id, template_title, cap_scope, cap_info_category, cap_info_response_type, event_event_type_id,cap_info_description,cap_info_headline) values (?,?,?,?,?,?,?,?)";
-        var dataDB = [parseInt(response[j]['id']),response[j]['template_title'],response[j]['scope'],JSON.stringify(response[j]['cap_info.category']),JSON.stringify(response[j]['cap_info.response_type']), parseInt(response[j]['cap_info.event_type_id']),JSON.stringify(response[j]['cap_info.description']),JSON.stringify(response[j]['cap_info.headline'])];
+        //this is only just a dummy data
+        response[j]['cap_info.parameter'] = ['[]','[{"value":"","key":"RisingCondition"},{"value":"","key":"FallingCondition"}]'];
+
+        var query = "insert into m_template (id, template_title, cap_scope, cap_info_category, cap_info_response_type, event_event_type_id,cap_info_description,cap_info_headline,cap_info_parameter) values (?,?,?,?,?,?,?,?,?)";
+        var dataDB = [parseInt(response[j]['id']),response[j]['template_title'],response[j]['scope'],JSON.stringify(response[j]['cap_info.category']),JSON.stringify(response[j]['cap_info.response_type']), parseInt(response[j]['cap_info.event_type_id']),JSON.stringify(response[j]['cap_info.description']),JSON.stringify(response[j]['cap_info.headline']),JSON.stringify(response[j]['cap_info.parameter'])];
         var callBack = function(result){
           console.log('success insert to db');
           ctrl.setBooleanDataLoad(ctrlDetail.callBackFinish,"m_template");
