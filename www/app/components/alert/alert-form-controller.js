@@ -865,13 +865,15 @@ angular.module("ngapp")
         }  
 
         var toolbarId = drawControl._toolbars.draw._leaflet_id - 1;
-        console.log('_leaflet_click'+toolbarId.toString());
-        angular.element('.leaflet-draw-draw-polygon').trigger('_leaflet_click'+toolbarId.toString());
+        //console.log('_leaflet_click'+toolbarId.toString());
+        //angular.element('.leaflet-draw-draw-polygon').trigger('_leaflet_click'+toolbarId.toString());
         
         // var event = document.createEvent('Event');
         // event.initEvent('click', true, true);
         // var cb = document.getElementsByClassName('leaflet-draw-draw-polyline');
         // !cb[0].dispatchEvent(event);
+
+        polygonDrawer.enable();
 
         console.log('passed');
     };
@@ -1022,6 +1024,7 @@ angular.module("ngapp")
     var mapOSM;
     var ggl;
     var ggls;
+    var polygonDrawer;
     map = L.map('map',{
       maxZoom: 16,
       minZoom: 2,
@@ -1196,7 +1199,7 @@ angular.module("ngapp")
         position: 'topright',
         draw: {
           polyline:false,
-          rectangle: false,
+          rectangle:false,
           circle:false,
           marker:false,
           polygon: {
@@ -1220,6 +1223,8 @@ angular.module("ngapp")
         }
     });
     map.addControl(drawControl);
+
+    polygonDrawer = new L.Draw.Polygon(map,drawControl.options.polygon).enable();
 
     map.on('draw:created', function(e) {
         var type = e.layerType,
