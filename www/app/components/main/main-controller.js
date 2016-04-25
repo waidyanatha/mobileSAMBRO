@@ -107,6 +107,15 @@ angular.module("ngapp")
       ctrl.toggle();
     };
 
+    ctrl.clickSettings = function(){
+      ctrl.showAlertListPage = false;
+      ctrl.showAlertDetailPage = false;
+      ctrl.showProfilePage = false;
+      ctrl.showSettingPage = true;
+
+      ctrl.toggle();
+    };
+
     //============================================================ Data Alert Offline ===============================================
     ctrl.sendAlertToServerProgress = false;
     ctrl.sendAlertsToServer = function(){

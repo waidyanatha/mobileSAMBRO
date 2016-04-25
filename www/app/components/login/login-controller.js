@@ -10,6 +10,12 @@ angular.module("ngapp")
     ctrl.hideErrorMessage = true;
     ctrl.shared = shared;
 
+    $localStorage.$reset();
+    $localStorage['username'] = "";
+    $localStorage['password'] = "";
+    $localStorage['userId'] = 0;
+    $localStorage['userRole'] = "";
+
     //http://203.159.29.15:8181/eden/
     //http://sambro.geoinfo.ait.ac.th/eden/
     $localStorage['serverUrl'] = "http://203.159.29.15:8181/eden/";
@@ -22,7 +28,7 @@ angular.module("ngapp")
           ctrl.isOfflineDataExist = true;
           
           for(var i=0;i<result.rows.length;i++){
-              serverUrl = result.rows.item(i).id;
+              serverUrl = result.rows.item(i).server_url;
           } 
         } 
         else{
@@ -37,6 +43,7 @@ angular.module("ngapp")
           });
         }
         $localStorage['serverUrl'] = serverUrl;
+        console.log($localStorage['serverUrl']);
       },null);
     };
     ctrl.setServerUrl();
@@ -69,11 +76,7 @@ angular.module("ngapp")
     //$cordovaStatusbar.overlaysWebView(true); // Always Show Status Bar
     //$cordovaStatusbar.styleHex('#E53935'); // Status Bar With Red Color, Using Angular-Material Style
 
-    $localStorage.$reset();
-    $localStorage['username'] = "";
-    $localStorage['password'] = "";
-    $localStorage['userId'] = 0;
-    $localStorage['userRole'] = "";
+    
 
     ctrl.loginFormContainer = true;
     ctrl.directLoginContainer = false;
