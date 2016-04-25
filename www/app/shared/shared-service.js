@@ -119,7 +119,7 @@ angular.module("ngapp").service("shared", function($http,$localStorage,$sessionS
     }
   }
 
-  this.apiUrl = "http://sambro.geoinfo.ait.ac.th/eden/";
+  this.apiUrl = $localStorage['serverUrl'];
   this.sendAlertApiUrl = this.apiUrl+'cap/alert.xml';   //this.apiUrl+'cap/alert.s3json';
   //this.apiUrl = "http://203.159.29.147:8000/eden/";
 

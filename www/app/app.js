@@ -68,6 +68,7 @@ angular.module("ngapp", [ "ngTouch", "ui.router", "ngMdIcons", "ngMaterial", "ng
   $cordovaSQLite.execute(dbShared,"CREATE TABLE IF NOT EXISTS m_template (id integer primary key, template_title text, cap_scope text, cap_info_category text, cap_info_response_type text, event_event_type_id integer,cap_info_description text,cap_info_headline text,cap_info_parameter text)");
   $cordovaSQLite.execute(dbShared,"CREATE TABLE IF NOT EXISTS m_predefined_area (id integer primary key, name text, event_type_id integer,location_id integer,spatial_val text)");
   $cordovaSQLite.execute(dbShared,"CREATE TABLE IF NOT EXISTS sync_data_master (periodic_sync integer, time_sync text)"); 
+  $cordovaSQLite.execute(dbShared,"CREATE TABLE IF NOT EXISTS t_server_url (id integer primary key,server_url text)"); 
 
   var androidConfig = {
     "senderID": "70029886742",

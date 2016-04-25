@@ -366,12 +366,29 @@ angular.module("ngapp")
       }
     },null);
 
+    ctrl.syncFromSetting = function(){
+      ctrl.isSync = true;
+      shared.loadAllMasterData(function(){
+        shared.updateDB("sync_data_master","update sync_data_master set time_sync=?",[new Date()],null,null);
+
+        //enabled button add alert
+        ctrl.isSync = false;
+      });
+    };
+
     if(ctrl.isNetworkOffline){
       ctrl.selectAlert();
     }
     else{
       ctrl.getDataAlertFromAPI();
     }
+
+    ctrl.serverUrl = shared.apiUrl;
+    ctrl.changeServerUrl = function(){
+      console.log("change server to "+ctrl.serverUrl);
+      shared.updateDB("t_server_url","update t_server_url set server_url=?",[ctrl.serverUrl],null,null);
+      $localStorage['serverUrl'] = ctrl.serverUrl;
+    };
 
     // listen for Online event
     $rootScope.$on('$cordovaNetwork:online', function(event, networkState){

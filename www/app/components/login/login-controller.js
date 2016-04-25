@@ -9,6 +9,37 @@ angular.module("ngapp")
     ctrl.title = shared.info.title;
     ctrl.hideErrorMessage = true;
     ctrl.shared = shared;
+
+    //http://203.159.29.15:8181/eden/
+    //http://sambro.geoinfo.ait.ac.th/eden/
+    $localStorage['serverUrl'] = "http://203.159.29.15:8181/eden/";
+    ctrl.setServerUrl = function(){
+      shared.selectDB("t_server_url","select * from t_server_url",[],function(result){
+        console.log('get server url');
+        console.log(result.rows.length);
+        var serverUrl = $localStorage['serverUrl'];
+        if(result.rows.length > 0) {
+          ctrl.isOfflineDataExist = true;
+          
+          for(var i=0;i<result.rows.length;i++){
+              serverUrl = result.rows.item(i).id;
+          } 
+        } 
+        else{
+          shared.insertDB("t_server_url","insert into t_server_url (server_url) values (?)",
+          [serverUrl],     //[new Date(),JSON.stringify(submitFormVal)],
+          function(result){
+          
+              console.log('success insert to db server url');
+          },function(error){
+              
+              console.log('error to db db server url');
+          });
+        }
+        $localStorage['serverUrl'] = serverUrl;
+      },null);
+    };
+    ctrl.setServerUrl();
     
     var typeNetwork = $cordovaNetwork.getNetwork();
     var isNetworkOnline = $cordovaNetwork.isOnline();
@@ -267,10 +298,13 @@ angular.module("ngapp")
       if(otherContacts['$_pr_contact'] != undefined){
         otherContacts = dataJson['$_pr_person'][0]['$_pr_contact'];
         for(var i=0;i<otherContacts.length;i++){
-          if(otherContacts[i].value['@value'] == $localStorage['deviceTokenId']){
-            isTokenIdExist = true;
-            break;
+          if(otherContacts[i].contact_method['@value'] == "GCM"){
+            if(otherContacts[i].value['@value'] == $localStorage['deviceTokenId']){
+              isTokenIdExist = true;
+              break;
+            }
           }
+          
         }
       }
 
@@ -284,11 +318,13 @@ angular.module("ngapp")
 
     ctrl.saveToken = function(userId){
       console.log("saving token id");
+      //GCM , OTHER
+      var typeContact = "GCM";
       var dataJsonToken = {
           "$_pr_person": [{ 
             "$_pr_contact": [{
               "contact_method": {
-                "@value": "OTHER"
+                "@value": typeContact
                 },
                 "value": {
                 "@value": $localStorage['deviceTokenId']

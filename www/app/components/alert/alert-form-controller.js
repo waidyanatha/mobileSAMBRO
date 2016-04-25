@@ -769,7 +769,13 @@ angular.module("ngapp")
                             var val = JSON.parse(dataTemplateOption['cap_info.parameter'][j]);
                             if(angular.isArray(val)){
                                 if(val.length>0){
-                                    arrNewVal = val;
+                                    var valDetail = new Array();
+                                    for(var k=0;k<val.length;k++){
+                                        if(val[k].key.indexOf("sahana") > -1){
+                                            valDetail.push(val[k]);
+                                        }
+                                    }
+                                    arrNewVal = valDetail;
                                 }   
                             }
                         }
@@ -1024,7 +1030,6 @@ angular.module("ngapp")
     var mapOSM;
     var ggl;
     var ggls;
-    var polygonDrawer;
     map = L.map('map',{
       maxZoom: 16,
       minZoom: 2,
