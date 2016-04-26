@@ -3,3 +3,4 @@
   .sideLeftNavTopBar{padding-top:0px;}
   .spaceTop{height:80px;}
   .spaceBottom{height:10px;}
+  .md-toolbar.md-default-theme:not(.md-menu-toolbar), md-toolbar:not(.md-menu-toolbar){background-color:#e2a704;color:#ffffff;}

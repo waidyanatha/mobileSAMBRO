@@ -29,6 +29,10 @@ angular.module("ngapp", [ "ngTouch", "ui.router", "ngMdIcons", "ngMaterial", "ng
   // $localStorage['password'] = ctrl.loginForm.password;
 
   // $location.path("/main");
+  
+  //http://203.159.29.15:8181/eden/
+  //http://sambro.geoinfo.ait.ac.th/eden/
+  $localStorage['serverUrl'] = "http://sambro.geoinfo.ait.ac.th/eden/";
 
   if($localStorage['username'] == ""){
     $location.path("/login");
@@ -45,7 +49,7 @@ angular.module("ngapp", [ "ngTouch", "ui.router", "ngMdIcons", "ngMaterial", "ng
     }, false);*/
 
   $cordovaStatusbar.overlaysWebView(false); 
-  $cordovaStatusbar.styleHex('#E53935'); // Status Bar With Red Color, Using Angular-Material Style
+  $cordovaStatusbar.styleHex('#e2a704'); // Status Bar With Red Color, Using Angular-Material Style
   $cordovaStatusbar.show();
 
   //$cordovaDialogs.alert('Test', 'Test Body', 'OK');
@@ -86,7 +90,11 @@ angular.module("ngapp", [ "ngTouch", "ui.router", "ngMdIcons", "ngMaterial", "ng
       // Error
     });
   }
-    
+    var srcSound = "/android_asset/www/assets/sound/sound.mp3";
+    //file:///android_asset/www/app/app.js
+    mediaSound = $cordovaMedia.newMedia(srcSound);
+    mediaSound.setVolume(1.0);
+    //mediaSound.play(); 
 
     $localStorage['deviceTokenId'] = "";
     $rootScope.$on('$cordovaPush:notificationReceived', function(event, notification) {
@@ -127,10 +135,7 @@ angular.module("ngapp", [ "ngTouch", "ui.router", "ngMdIcons", "ngMaterial", "ng
     //myService = cordova.plugins.myService;
     //getStatus();
 
-    var srcSound = "file:///android_asset/www/assets/sound/sound.mp3";
-    mediaSound = $cordovaMedia.newMedia(srcSound);
-    mediaSound.setVolume(1.0);
-    //mediaSound.play(); 
+    
 
 
     console.log('end controller app.js');

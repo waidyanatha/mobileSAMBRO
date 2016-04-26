@@ -10,15 +10,13 @@ angular.module("ngapp")
     ctrl.hideErrorMessage = true;
     ctrl.shared = shared;
 
-    $localStorage.$reset();
+    //$localStorage.$reset();
     $localStorage['username'] = "";
     $localStorage['password'] = "";
     $localStorage['userId'] = 0;
     $localStorage['userRole'] = "";
 
-    //http://203.159.29.15:8181/eden/
-    //http://sambro.geoinfo.ait.ac.th/eden/
-    $localStorage['serverUrl'] = "http://sambro.geoinfo.ait.ac.th/eden/";
+    
     ctrl.setServerUrl = function(){
       shared.selectDB("t_server_url","select * from t_server_url",[],function(result){
         console.log('get server url');
