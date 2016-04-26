@@ -386,6 +386,20 @@ angular.module("ngapp")
         if(capGroupUserValXML != ''){
             capGroupUserValXML = '<data field="addresses">'+capGroupUserValXML + ']</data>';
         }
+
+        //<data field="parameter">[{"value":"Flood","key":"eventtype"},{"value":"Rising","key":"warningpriority"}]</data> 
+        var parameterStr = "";
+        if(ctrl.dataAlertForm.parameters != null){
+            for(var i=0;i<ctrl.dataAlertForm.parameters.length;i++){
+                if(i==0){
+                    parameterStr = '<data field="parameter">[';
+                }
+                parameterStr = parameterStr + '{"value":"'+dataAlertForm.parameters[i].value+'","key":"'+dataAlertForm.parameters[i].key+'"}';
+                if((i+1) == ctrl.dataAlertForm.parameters.length){
+                    parameterStr = parameterStr + ']</data>';
+                }
+            }
+        }
         
         var submitFormVal = {
             "$_cap_alert": [{
@@ -469,6 +483,7 @@ angular.module("ngapp")
             '        <data field="onset">'+$filter('date')(ctrl.dataAlertForm.onSetDate,"yyyy-MM-ddTHH:mm:ss")+'</data>'+
             '        <data field="effective">'+$filter('date')(ctrl.dataAlertForm.effectiveDate,"yyyy-MM-ddTHH:mm:ss")+'</data>'+
             '        <data field="is_template" value="false"/>'+
+            parameterStr+
             '    </resource>'+
             capAreasValXML+
             '</resource>'+

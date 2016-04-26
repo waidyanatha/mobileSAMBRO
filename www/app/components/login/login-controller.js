@@ -18,7 +18,7 @@ angular.module("ngapp")
 
     //http://203.159.29.15:8181/eden/
     //http://sambro.geoinfo.ait.ac.th/eden/
-    $localStorage['serverUrl'] = "http://203.159.29.15:8181/eden/";
+    $localStorage['serverUrl'] = "http://sambro.geoinfo.ait.ac.th/eden/";
     ctrl.setServerUrl = function(){
       shared.selectDB("t_server_url","select * from t_server_url",[],function(result){
         console.log('get server url');
@@ -296,12 +296,14 @@ angular.module("ngapp")
 
     ctrl.checkTokenId = function(dataJson){
       console.log("check token id");
+      //GCM , OTHER
+      var typeContact = "OTHER";
       var otherContacts = dataJson['$_pr_person'][0];
       var isTokenIdExist = false;
       if(otherContacts['$_pr_contact'] != undefined){
         otherContacts = dataJson['$_pr_person'][0]['$_pr_contact'];
         for(var i=0;i<otherContacts.length;i++){
-          if(otherContacts[i].contact_method['@value'] == "GCM"){
+          if(otherContacts[i].contact_method['@value'] == typeContact){
             if(otherContacts[i].value['@value'] == $localStorage['deviceTokenId']){
               isTokenIdExist = true;
               break;
@@ -322,7 +324,7 @@ angular.module("ngapp")
     ctrl.saveToken = function(userId){
       console.log("saving token id");
       //GCM , OTHER
-      var typeContact = "GCM";
+      var typeContact = "OTHER";
       var dataJsonToken = {
           "$_pr_person": [{ 
             "$_pr_contact": [{
