@@ -394,7 +394,7 @@ angular.module("ngapp")
                 if(i==0){
                     parameterStr = '<data field="parameter">[';
                 }
-                parameterStr = parameterStr + '{"value":"'+dataAlertForm.parameters[i].value+'","key":"'+dataAlertForm.parameters[i].key+'"}';
+                parameterStr = parameterStr + '{"value":"'+ctrl.dataAlertForm.parameters[i].value+'","key":"'+ctrl.dataAlertForm.parameters[i].key+'"}';
                 if((i+1) == ctrl.dataAlertForm.parameters.length){
                     parameterStr = parameterStr + ']</data>';
                 }
@@ -894,7 +894,7 @@ angular.module("ngapp")
         // var cb = document.getElementsByClassName('leaflet-draw-draw-polyline');
         // !cb[0].dispatchEvent(event);
 
-        polygonDrawer.enable();
+        //polygonDrawer.enable();
 
         console.log('passed');
     };
@@ -1208,6 +1208,31 @@ angular.module("ngapp")
     $compile(content.contents())(scope);
 
     //draw
+    //Polygon drawer
+    // var controlPolygonDrawerToolbar = L.Control.extend({
+    //     options: {
+    //         position: 'topright'
+    //     },
+
+    //     onAdd: function (map) {
+    //         // create the control container with a particular class name
+    //         var contain = L.DomUtil.create('div', 'controlPolygonDrawer');
+    //         $(contain).addClass('leaflet-bar');
+    //         $(contain).html('<button id="leaflet_controlPolygonDrawer" class="leaflet-control" '+
+    //         'style="margin:0px;width: 30px;height: 30px;padding-bottom: 0px;padding-top: 0px;padding-right: 0px;border-left-width: 0px;padding-left: 0px;border-top-width: 0px;border-bottom-width: 0px;border-right-width: 0px;background: white;border-radius: 5px;" >'+
+    //         '<ng-md-icon icon="map"></ng-md-icon></button>');
+
+    //         return contain;
+    //     }
+    // });
+    // map.addControl(new controlPolygonDrawerToolbar());
+    // content=angular.element('#leaflet_controlPolygonDrawer');
+    // scope=content.scope();
+    // $compile(content.contents())(scope);
+    // angular.element('#leaflet_controlPolygonDrawer').on('click', function() {
+    //   ctrl.toggleBaseMap();
+    // });
+
     var drawControl;
     var featureGroupDraw;
     var typeLayerDraw;
@@ -1244,7 +1269,19 @@ angular.module("ngapp")
     });
     map.addControl(drawControl);
 
-    polygonDrawer = new L.Draw.Polygon(map,drawControl.options.polygon).enable();
+    // polygonDrawer = new L.Draw.Polygon(map,{
+    //                 allowIntersection: false,
+    //                 showArea: true,
+    //                 drawError: {
+    //                     color: '#b00b00',
+    //                     timeout: 1000
+    //                 },
+    //                 shapeOptions: {
+    //                     color: 'green',
+    //                     stroke: true,
+    //                     opacity:0.7
+    //                 }
+    //             }).enable();
 
     map.on('draw:created', function(e) {
         var type = e.layerType,

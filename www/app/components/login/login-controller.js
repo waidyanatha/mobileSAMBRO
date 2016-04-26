@@ -218,8 +218,14 @@ angular.module("ngapp")
       console.log('call this sendform');
 
       shared.clearCache();
+      var apiUrl = shared.apiUrl;
+      console.log(apiUrl);
+      if(apiUrl == null){
+        apiUrl = "http://sambro.geoinfo.ait.ac.th/eden/";
+        shared.apiUrl = apiUrl;
+      }
 
-      var promiseLoadData = shared.loadDataLogin(shared.apiUrl+'default/index/user_info',ctrl.loginForm.email,ctrl.loginForm.password);
+      var promiseLoadData = shared.loadDataLogin(apiUrl+'default/index/user_info',ctrl.loginForm.email,ctrl.loginForm.password);
       promiseLoadData.then(function(response) {
         console.log('success');
         console.log(response);  
