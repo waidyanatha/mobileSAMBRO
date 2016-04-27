@@ -366,6 +366,24 @@
         </md-list-item>
         <md-divider ng-hide="alertForm.checkGroupUsersVal()" ></md-divider>
 
+        <md-subheader ng-click="alertForm.summaryClickDetail('note')" class="md-no-sticky">Note</md-subheader>
+        <form name="dataForm" class="md-inline-form" novalidate>
+          <md-dialog-content>
+            <div class="md-dialog-content" style="padding-left:15px;" >
+
+                <div layout="column" layout-gt-sm="column">
+                  <strong ng-show="alertForm.showRestriction()">Restriction</strong>
+                  <p ng-show="alertForm.showRestriction()">{{alertForm.dataAlertForm.restriction}}</p>
+                  <strong>Headline</strong>
+                  <p>{{alertForm.dataAlertForm.headline}}</p>
+                  <strong>Description</strong>
+                  <p>{{alertForm.dataAlertForm.description}}</p>
+                </div>
+            </div>
+          </md-dialog-content>
+        </form>
+        <md-divider ></md-divider>
+
         <md-subheader ng-click="alertForm.summaryClickDetail('date')" class="md-no-sticky">Date</md-subheader>
         <form class="md-inline-form" novalidate>
           <md-dialog-content>
@@ -397,23 +415,7 @@
         </form>
         <md-divider ></md-divider>
 
-        <md-subheader ng-click="alertForm.summaryClickDetail('note')" class="md-no-sticky">Note</md-subheader>
-        <form name="dataForm" class="md-inline-form" novalidate>
-          <md-dialog-content>
-            <div class="md-dialog-content" style="padding-left:15px;" >
-
-                <div layout="column" layout-gt-sm="column">
-                  <strong ng-show="alertForm.showRestriction()">Restriction</strong>
-                  <p ng-show="alertForm.showRestriction()">{{alertForm.dataAlertForm.restriction}}</p>
-                  <strong>Headline</strong>
-                  <p>{{alertForm.dataAlertForm.headline}}</p>
-                  <strong>Description</strong>
-                  <p>{{alertForm.dataAlertForm.description}}</p>
-                </div>
-            </div>
-          </md-dialog-content>
-        </form>
-        <md-divider ></md-divider>
+        
 
         <md-subheader class="md-no-sticky">You're login as</md-subheader>
         <md-list-item >
