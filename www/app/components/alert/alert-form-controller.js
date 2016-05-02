@@ -246,9 +246,15 @@ angular.module("ngapp")
             }
         }
         else if(ctrl.hidePage[ctrl.currPage-1].pageName == 'warning-priority'){
-            if(ctrl.dataAlertForm.urgency != null && ctrl.dataAlertForm.certainty != null && ctrl.dataAlertForm.severity != null){
+            if(ctrl.showNoAvailableWarningPrioritys == false){
+                if(ctrl.dataAlertForm.urgency != null && ctrl.dataAlertForm.certainty != null && ctrl.dataAlertForm.severity != null){
+                    return false;
+                }
+            }
+            else{
                 return false;
             }
+            
             
         }
         else if(ctrl.hidePage[ctrl.currPage-1].pageName == 'scope'){
@@ -351,6 +357,14 @@ angular.module("ngapp")
                 '   <data field="wkt">'+ctrl.newAreas[i].wkt+'</data>'+
                 '</resource>';    
             
+        }
+
+        //ctrl.showNoAvailableWarningPrioritys
+        var warningPriorityXml = "";
+        if(ctrl.showNoAvailableWarningPrioritys == false){
+            warningPriorityXml = '<data field="urgency">'+ctrl.dataAlertForm.urgency+'</data>'+
+            '<data field="severity">'+ctrl.dataAlertForm.severity+'</data>'+
+            '<data field="certainty">'+ctrl.dataAlertForm.certainty+'</data>';
         }
 
         var responseTypeVal = '';   //sample [\"AllClear\",\"Prepare\"]
@@ -476,9 +490,7 @@ angular.module("ngapp")
             '        <data field="description">'+ctrl.dataAlertForm.description+'</data>'+
             '        <data field="event_type_id">'+ctrl.dataAlertForm.eventType.id.toString()+'</data>'+
             '        <data field="response_type">'+responseTypeValXML+'</data>'+
-            '        <data field="urgency">'+ctrl.dataAlertForm.urgency+'</data>'+
-            '        <data field="severity">'+ctrl.dataAlertForm.severity+'</data>'+
-            '        <data field="certainty">'+ctrl.dataAlertForm.certainty+'</data>'+
+            warningPriorityXml+
             '        <data field="expires">'+$filter('date')(ctrl.dataAlertForm.expireDate,"yyyy-MM-ddTHH:mm:ss")+'</data>'+
             '        <data field="onset">'+$filter('date')(ctrl.dataAlertForm.onSetDate,"yyyy-MM-ddTHH:mm:ss")+'</data>'+
             '        <data field="effective">'+$filter('date')(ctrl.dataAlertForm.effectiveDate,"yyyy-MM-ddTHH:mm:ss")+'</data>'+
@@ -551,6 +563,10 @@ angular.module("ngapp")
         //predefined area
         ctrl.dataPredefinedAreaOptions = new Array();
         ctrl.getPredefinedAreaData("where event_type_id = ?",[eventTypeObj['@value']]);
+
+        //warning priority
+        ctrl.dataWarningPrioritys = new Array();
+        ctrl.getWarningPriorityData("where event_type_id = ?",[eventTypeObj['@value']]);
 
         angular.element( ".event-type-opt" ).removeClass('selectedList').addClass( "unSelectedList" );
         angular.element( "#event-type-opt_"+eventTypeObj['@value'] ).removeClass('unSelectedList').addClass( "selectedList" );
@@ -805,26 +821,42 @@ angular.module("ngapp")
     };   
 
     ctrl.dataWarningPrioritys = new Array();
-    shared.selectDB("m_warning_priority","select * from m_warning_priority",[],function(result){
-      if(result.rows.length > 0) {
+    ctrl.showNoAvailableWarningPrioritys = false;
+    ctrl.getWarningPriorityData = function(filter,dataDB){
 
-        ctrl.hidePage[ctrl.checkPageIdx('warning-priority')].loadData = false;
+        ctrl.hidePage[ctrl.checkPageIdx('warning-priority')].loadData = true;
 
-        for(var i=0;i<result.rows.length;i++){
-            var dataWarningPriority = {
-                'id':result.rows.item(i).id,
-                'name':result.rows.item(i).name,
-                'priority_rank':result.rows.item(i).priority_rank,
-                'color_code':result.rows.item(i).color_code,
-                'severity':result.rows.item(i).severity,
-                'certainty':result.rows.item(i).certainty,
-                'urgency':result.rows.item(i).urgency,
-                'event_type_id':result.rows.item(i).event_type_id
-            };
-            ctrl.dataWarningPrioritys.push(dataWarningPriority);   
-        } 
-      } 
-    },null);
+        var query = "select * from m_warning_priority "+filter;
+        console.log('query = '+query);
+        console.log('dataDB = '+dataDB);
+        shared.selectDB("m_warning_priority",query,dataDB,function(result){
+          if(result.rows.length > 0) {
+
+            ctrl.hidePage[ctrl.checkPageIdx('warning-priority')].loadData = false;
+            ctrl.showNoAvailableWarningPrioritys = false;
+
+            for(var i=0;i<result.rows.length;i++){
+                var dataWarningPriority = {
+                    'id':result.rows.item(i).id,
+                    'name':result.rows.item(i).name,
+                    'priority_rank':result.rows.item(i).priority_rank,
+                    'color_code':result.rows.item(i).color_code,
+                    'severity':result.rows.item(i).severity,
+                    'certainty':result.rows.item(i).certainty,
+                    'urgency':result.rows.item(i).urgency,
+                    'event_type_id':result.rows.item(i).event_type_id
+                };
+                ctrl.dataWarningPrioritys.push(dataWarningPriority);  
+                console.log('dataWarningPriority = '+ JSON.stringify(dataWarningPriority) ); 
+            } 
+          } 
+          else{
+            ctrl.hidePage[ctrl.checkPageIdx('warning-priority')].loadData = false;
+            ctrl.showNoAvailableWarningPrioritys = true;
+          }
+        },null);
+    };   
+    
 
     ctrl.dataPredefinedAreaOptions = new Array();
     ctrl.getPredefinedAreaData = function(filter,dataDB){

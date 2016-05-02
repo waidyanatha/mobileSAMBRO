@@ -397,6 +397,7 @@ angular.module("ngapp")
       console.log("change server to "+ctrl.serverUrl);
       shared.updateDB("t_server_url","update t_server_url set server_url=?",[ctrl.serverUrl],null,null);
       $localStorage['serverUrl'] = ctrl.serverUrl;
+      ctrl.syncFromSetting();
     };
 
     // listen for Online event

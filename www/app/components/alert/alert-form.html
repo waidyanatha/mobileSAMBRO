@@ -196,6 +196,10 @@
             </md-radio-button>
           </md-list-item>
         </md-radio-group>
+
+        <md-list-item ng-show="alertForm.showNoAvailableWarningPrioritys">
+          <p>No data available</p>
+        </md-list-item>
       </div>
 
       <div ng-hide="alertForm.checkPageShow('scope')">  
@@ -313,26 +317,26 @@
       <div ng-hide="alertForm.checkPageShow('submit')">  
         <md-subheader class="md-no-sticky">Submit ({{alertForm.progressText}})</md-subheader>
         
-        <md-subheader ng-click="alertForm.summaryClickDetail('event-type')" class="md-no-sticky">Event Types</md-subheader>
+        <h4 style="padding-left:15px;" ng-click="alertForm.summaryClickDetail('event-type')" class="md-title">Event Types</h4>
         <md-list-item ng-click="alertForm.summaryClickDetail('event-type')" ng-repeat="dataEventTypeOption in alertForm.dataEventTypeOptions" ng-if="dataEventTypeOption['@value'] == alertForm.dataAlertForm.eventType.id" >
           <img alt="{{ dataEventTypeOption.$ }}" ng-src="{{alertForm.evenTypeIcon(dataEventTypeOption.$)}}" class="md-avatar" />
           <p>{{dataEventTypeOption.$}}</p>
         </md-list-item>
         <md-divider ></md-divider>
 
-        <md-subheader ng-click="alertForm.summaryClickDetail('status')" class="md-no-sticky">Status</md-subheader>
+        <h4 style="padding-left:15px;" ng-click="alertForm.summaryClickDetail('status')" class="md-title">Status</h4>
         <md-list-item ng-click="alertForm.summaryClickDetail('status')" ng-repeat="dataStatusOption in alertForm.dataStatusOptions" ng-if="dataStatusOption['@value'] == alertForm.dataAlertForm.status">
           <p>{{dataStatusOption['@value']}}</p>
         </md-list-item>
         <md-divider ></md-divider>
 
-        <md-subheader ng-click="alertForm.summaryClickDetail('template')" class="md-no-sticky">Templates</md-subheader>
+        <h4 style="padding-left:15px;" ng-click="alertForm.summaryClickDetail('template')" class="md-title">Templates</h4>
         <md-list-item ng-click="alertForm.summaryClickDetail('template')" ng-repeat="dataTemplateOption in alertForm.dataTemplateOptions" ng-if="dataTemplateOption['id'] == alertForm.dataAlertForm.template.id">
           <p>{{dataTemplateOption.template_title}}</p>
         </md-list-item>
         <md-divider ></md-divider>
 
-        <md-subheader ng-click="alertForm.summaryClickDetail('location')" class="md-no-sticky">Location</md-subheader>
+        <h4 style="padding-left:15px;" ng-click="alertForm.summaryClickDetail('location')" class="md-title">Location</h4>
         <div id="mapThumbnailSummary" style="height:100px;"></div>
         <md-list-item ng-hide="alertForm.checkInsertedAreasVal()" ng-click="alertForm.summaryClickDetail('location')" ng-repeat="newArea in alertForm.newAreas" >
           <p>{{newArea.name}}</p>
@@ -342,31 +346,31 @@
         </md-list-item>
         <md-divider ></md-divider>
 
-        <md-subheader ng-click="alertForm.summaryClickDetail('response-type')" class="md-no-sticky">Response Type</md-subheader>
+        <h4 style="padding-left:15px;" ng-click="alertForm.summaryClickDetail('response-type')" class="md-title">Response Type</h4>
         <md-list-item ng-click="alertForm.summaryClickDetail('response-type')" ng-repeat="dataResponseTypeOption in alertForm.dataResponseTypeOptions" ng-if="dataResponseTypeOption.selected">
           <p>{{dataResponseTypeOption['@value']}}</p>
         </md-list-item>
         <md-divider ></md-divider>
 
-        <md-subheader ng-click="alertForm.summaryClickDetail('warning-priority')" class="md-no-sticky">Warning Priority</md-subheader>
+        <h4 style="padding-left:15px;" ng-click="alertForm.summaryClickDetail('warning-priority')" class="md-title">Warning Priority</h4>
         <md-list-item ng-click="alertForm.summaryClickDetail('warning-priority')" ng-repeat="dataWarningPriority in alertForm.dataWarningPrioritys" ng-if="dataWarningPriority['id'] == alertForm.dataAlertForm.warningPriority">
           <p>{{dataWarningPriority['name']}}</p>
         </md-list-item>
         <md-divider ></md-divider>
 
-        <md-subheader ng-click="alertForm.summaryClickDetail('scope')" class="md-no-sticky">Scope</md-subheader>
+        <h4 style="padding-left:15px;" ng-click="alertForm.summaryClickDetail('scope')" class="md-title">Scope</h4>
         <md-list-item ng-click="alertForm.summaryClickDetail('scope')" ng-repeat="dataScopeOption in alertForm.dataScopeOptions" ng-if="dataScopeOption['@value'] == alertForm.dataAlertForm.scope">
           <p>{{dataScopeOption['@value']}}</p>
         </md-list-item>
         <md-divider ></md-divider>
 
-        <md-subheader ng-hide="alertForm.checkGroupUsersVal()" ng-click="alertForm.summaryClickDetail('addresses')" class="md-no-sticky">Recipients</md-subheader>
+        <h4 style="padding-left:15px;" ng-hide="alertForm.checkGroupUsersVal()" ng-click="alertForm.summaryClickDetail('addresses')" class="md-no-sticky">Recipients</h4>
         <md-list-item ng-hide="alertForm.checkGroupUsersVal()" ng-click="alertForm.summaryClickDetail('addresses')" ng-repeat="dataGroupUser in alertForm.dataGroupUsers" ng-if="dataGroupUser.selected">
           <p>{{dataGroupUser.name}}</p>
         </md-list-item>
         <md-divider ng-hide="alertForm.checkGroupUsersVal()" ></md-divider>
 
-        <md-subheader ng-click="alertForm.summaryClickDetail('note')" class="md-no-sticky">Note</md-subheader>
+        <h4 style="padding-left:15px;" ng-click="alertForm.summaryClickDetail('note')" class="md-title">Note</h4>
         <form name="dataForm" class="md-inline-form" novalidate>
           <md-dialog-content>
             <div class="md-dialog-content" style="padding-left:15px;" >
@@ -384,7 +388,7 @@
         </form>
         <md-divider ></md-divider>
 
-        <md-subheader ng-click="alertForm.summaryClickDetail('date')" class="md-no-sticky">Date</md-subheader>
+        <h4 style="padding-left:15px;" ng-click="alertForm.summaryClickDetail('date')" class="md-title">Date</h4>
         <form class="md-inline-form" novalidate>
           <md-dialog-content>
             <div class="md-dialog-content" style="padding-left:15px;" >
@@ -399,7 +403,7 @@
         </form>
         <md-divider ></md-divider>
 
-        <md-subheader ng-click="alertForm.summaryClickDetail('note')" class="md-no-sticky">Parameter</md-subheader>
+        <h4 style="padding-left:15px;" ng-click="alertForm.summaryClickDetail('note')" class="md-title">Parameter</h4>
         <form name="dataForm" class="md-inline-form" novalidate>
           <md-dialog-content>
             <div class="md-dialog-content" style="padding-left:15px;" >
