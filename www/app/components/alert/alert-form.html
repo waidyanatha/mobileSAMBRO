@@ -76,6 +76,20 @@
         </md-radio-group>
       </div>
 
+      <div ng-hide="alertForm.checkPageShow('msgType')">  
+        <md-subheader class="md-no-sticky">Message Type ({{alertForm.progressText}})</md-subheader>
+        <md-progress-linear md-mode="indeterminate" ng-show="alertForm.hidePage[alertForm.checkPageIdx('msgType')].loadData"></md-progress-linear>
+        <md-radio-group ng-model="alertForm.dataAlertForm.msgType" >
+          <md-list-item ng-repeat="dataMsgTypeOption in alertForm.dataMsgTypeOptions" >
+            <md-radio-button flex
+                ng-value="dataMsgTypeOption['@value']"
+                class="md-primary" >
+                {{dataMsgTypeOption['@value']}}
+            </md-radio-button>
+          </md-list-item>
+        </md-radio-group>
+      </div>
+
       <div ng-hide="alertForm.checkPageShow('template')">  
         <md-subheader class="md-no-sticky">Templates ({{alertForm.progressText}})</md-subheader>
         <md-progress-linear md-mode="indeterminate" ng-show="alertForm.hidePage[alertForm.checkPageIdx('template')].loadData"></md-progress-linear>
@@ -305,6 +319,12 @@
                         <textarea ng-model="alertForm.dataAlertForm.description"  style="height:100px;" rows="5">
                         </textarea>
                     </md-input-container>
+
+                    <md-input-container flex>
+                        <label>Instruction</label>
+                        <textarea ng-model="alertForm.dataAlertForm.instruction"  style="height:100px;" rows="5">
+                        </textarea>
+                    </md-input-container>
                     <!--<div>{{alertForm.responseDebug}}</div>-->
                                  
                 </div>
@@ -327,6 +347,12 @@
         <h4 style="padding-left:15px;" ng-click="alertForm.summaryClickDetail('status')" class="md-title">Status</h4>
         <md-list-item ng-click="alertForm.summaryClickDetail('status')" ng-repeat="dataStatusOption in alertForm.dataStatusOptions" ng-if="dataStatusOption['@value'] == alertForm.dataAlertForm.status">
           <p>{{dataStatusOption['@value']}}</p>
+        </md-list-item>
+        <md-divider ></md-divider>
+
+        <h4 style="padding-left:15px;" ng-click="alertForm.summaryClickDetail('msgType')" class="md-title">Message Type</h4>
+        <md-list-item ng-click="alertForm.summaryClickDetail('msgType')" ng-repeat="dataMsgTypeOption in alertForm.dataMsgTypeOptions" ng-if="dataStatusOption['@value'] == alertForm.dataAlertForm.msgType">
+          <p>{{dataMsgTypeOption['@value']}}</p>
         </md-list-item>
         <md-divider ></md-divider>
 
@@ -382,6 +408,8 @@
                   <p>{{alertForm.dataAlertForm.headline}}</p>
                   <strong>Description</strong>
                   <p>{{alertForm.dataAlertForm.description}}</p>
+                  <strong>Instruction</strong>
+                  <p>{{alertForm.dataAlertForm.instruction}}</p>
                 </div>
             </div>
           </md-dialog-content>

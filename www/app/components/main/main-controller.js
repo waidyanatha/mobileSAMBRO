@@ -1,7 +1,7 @@
 "use strict";
 
 angular.module("ngapp")
-.controller("MainController", function(shared, $state, $scope,$rootScope, $mdSidenav, $mdComponentRegistry, $http, $cordovaDevice, $cordovaStatusbar,$cordovaGeolocation,$cordovaDialogs,$location,$localStorage,$cordovaSQLite,$cordovaNetwork,$cordovaInAppBrowser,$timeout){
+.controller("MainController", function(shared, $state, $scope,$rootScope, $mdSidenav, $mdComponentRegistry, $http, $cordovaDevice, $cordovaStatusbar,$cordovaGeolocation,$cordovaDialogs,$location,$localStorage,$cordovaSQLite,$cordovaNetwork,$cordovaInAppBrowser,$timeout, $cordovaAppVersion){
     var ctrl = this;
 
     ctrl.typeNetwork = $cordovaNetwork.getNetwork();
@@ -12,6 +12,11 @@ angular.module("ngapp")
     console.log(ctrl.typeNetwork);
     console.log(ctrl.isNetworkOnline);
     console.log(ctrl.isNetworkOffline);
+
+    callBackButton = function(){
+        console.log("call inside controller main");
+        //ctrl.goBack();
+    };
 
     //$cordovaStatusbar.overlaysWebView(true); // Always Show Status Bar = false
     //$cordovaStatusbar.styleHex('#E53935'); // Status Bar With Red Color, Using Angular-Material Style
@@ -41,6 +46,13 @@ angular.module("ngapp")
 
     ctrl.title = shared.info.title;
     ctrl.logout = shared.logout;
+
+    ctrl.verisonNumber = "";
+    ctrl.tokenId = $localStorage['deviceTokenId'];
+
+    $cordovaAppVersion.getVersionNumber().then(function (version) {
+        ctrl.verisonNumber = version;
+    });
 
     ctrl.isOpen = function() { return false };
     $mdComponentRegistry
@@ -79,7 +91,7 @@ angular.module("ngapp")
     };
 
     ctrl.clickHyperlinkAlert = function(idAlert){
-      navigator.app.loadUrl("http://sambro.geoinfo.ait.ac.th/eden/cap/alert/"+idAlert.toString()+"/profile", {openExternal : true});
+      navigator.app.loadUrl(shared.apiUrl+"cap/alert/"+idAlert.toString()+"/profile", {openExternal : true});
     }
 
     ctrl.clickAlertDetail = function(idx){
@@ -94,8 +106,6 @@ angular.module("ngapp")
           mapThumbnailDetail.invalidateSize();
           ctrl.renderPolygonOnThumbnailDetailMap();
       }, 1000);
-
-
     };
 
     ctrl.clickUserProfile = function(){
@@ -254,11 +264,12 @@ angular.module("ngapp")
               'cap_area.name': JSON.parse(result.rows.item(i).cap_area_name),
               'scope': result.rows.item(i).cap_scope,
               'event_event_type.name': JSON.parse(result.rows.item(i).event_event_type_name),
-              'sent': result.rows.item(i).sent,
+              'sent': new Date(result.rows.item(i).sent),
               'spatial_val':result.rows.item(i).spatial_val
             };
 
             ctrl.dataAlerts.push(dataAlert);
+            console.log("dataAlert = "+ JSON.stringify(dataAlert));
           }
         }
       }, function(error) {

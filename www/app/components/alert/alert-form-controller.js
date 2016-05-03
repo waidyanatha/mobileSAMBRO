@@ -1,5 +1,16 @@
 "use strict";
 
+angular.element(document).ready(function () {
+  if (window.cordova) {
+    console.log("Running in Cordova, Back button.");
+    document.addEventListener("backbutton", function(){
+        callBackButton();
+    }, false);
+
+   
+  } 
+});
+
 angular.module("ngapp")
 .controller("AlertFormController", function(shared, $state, $scope, $compile,$rootScope, $mdSidenav, $mdComponentRegistry, $http, $cordovaDevice, $cordovaStatusbar,$cordovaGeolocation,$cordovaDialogs,$location,$localStorage,$cordovaSQLite,$filter,$timeout,$cordovaNetwork){
     shared.checkUserCached();
@@ -121,12 +132,14 @@ angular.module("ngapp")
         effectiveDate : ctrl.todayDate,
         onSetDate : ctrl.todayDate,
         status : null,
+        msgType : null,
         warningPriority : null,
         urgency : null,
         certainty : null,
         severity : null,
         scope : null,
         description : null,
+        instruction : null,
         headline : null,
         restriction: "",
         addresses:null,
@@ -134,7 +147,7 @@ angular.module("ngapp")
     };
 
     ctrl.currPage = 1;
-    ctrl.hidePage = [{'pageName':'event-type','isHide':false,'loadData':true},{'pageName':'status','isHide':true,'loadData':true},{'pageName':'template','isHide':true,'loadData':true},{'pageName':'location','isHide':true,'loadData':true},{'pageName':'response-type','isHide':true,'loadData':true},{'pageName':'warning-priority','isHide':true,'loadData':true},{'pageName':'scope','isHide':true,'loadData':true},{'pageName':'addresses','isHide':true,'loadData':true},{'pageName':'note','isHide':true,'loadData':true},{'pageName':'date','isHide':true,'loadData':true},{'pageName':'parameter','isHide':true,'loadData':true},{'pageName':'submit','isHide':true,'loadData':true}];
+    ctrl.hidePage = [{'pageName':'event-type','isHide':false,'loadData':true},{'pageName':'status','isHide':true,'loadData':true},{'pageName':'msgType','isHide':true,'loadData':true},{'pageName':'template','isHide':true,'loadData':true},{'pageName':'location','isHide':true,'loadData':true},{'pageName':'response-type','isHide':true,'loadData':true},{'pageName':'warning-priority','isHide':true,'loadData':true},{'pageName':'scope','isHide':true,'loadData':true},{'pageName':'addresses','isHide':true,'loadData':true},{'pageName':'note','isHide':true,'loadData':true},{'pageName':'date','isHide':true,'loadData':true},{'pageName':'parameter','isHide':true,'loadData':true},{'pageName':'submit','isHide':true,'loadData':true}];
     ctrl.progress = 100/ctrl.hidePage.length;
     ctrl.progressText = ctrl.currPage.toString()+"/"+ctrl.hidePage.length.toString();
     ctrl.btnBackName = "< Home";
@@ -204,6 +217,12 @@ angular.module("ngapp")
         
     };
 
+    varOutside = ctrl;
+    callBackButton = function(){
+        console.log("call inside controller alert form");
+        varOutside.goBack();
+    };
+
     ctrl.goHome = function(){
         $location.path("/main");
     }
@@ -225,7 +244,10 @@ angular.module("ngapp")
         if(ctrl.hidePage[ctrl.currPage-1].pageName == 'event-type' && ctrl.dataAlertForm.eventType.id != null){
             return false;
         }
-        if(ctrl.hidePage[ctrl.currPage-1].pageName == 'status' && ctrl.dataAlertForm.status != null){
+        else if(ctrl.hidePage[ctrl.currPage-1].pageName == 'status' && ctrl.dataAlertForm.status != null){
+            return false;
+        }
+        else if(ctrl.hidePage[ctrl.currPage-1].pageName == 'msgType' && ctrl.dataAlertForm.status != null){
             return false;
         }
         else if(ctrl.hidePage[ctrl.currPage-1].pageName == 'template' && ctrl.dataAlertForm.template.id != null){
@@ -284,7 +306,7 @@ angular.module("ngapp")
             }
         }
         else if(ctrl.hidePage[ctrl.currPage-1].pageName == 'note'){
-            if(ctrl.dataAlertForm.description != null && ctrl.dataAlertForm.description != "" && ctrl.dataAlertForm.headline != null && ctrl.dataAlertForm.headline != ""){
+            if(ctrl.dataAlertForm.description != null && ctrl.dataAlertForm.description != "" && ctrl.dataAlertForm.headline != null && ctrl.dataAlertForm.headline != "" && ctrl.dataAlertForm.instruction != null && ctrl.dataAlertForm.instruction != ""){
 
                 if(ctrl.showRestriction()){
                     if(ctrl.dataAlertForm.restriction != null && ctrl.dataAlertForm.restriction != ""){
@@ -420,6 +442,9 @@ angular.module("ngapp")
                 "status": {
                   "@value" : ctrl.dataAlertForm.status
                  },
+                 "msg_type": {
+                  "@value" : ctrl.dataAlertForm.msgType
+                 },
                  "is_template" : {
                   "@value" : "F"
                  },
@@ -443,6 +468,7 @@ angular.module("ngapp")
                     "event" : ctrl.dataAlertForm.eventType.name,
                     "headline" : ctrl.dataAlertForm.headline,
                     "description" : ctrl.dataAlertForm.description,
+                    "instruction" : ctrl.dataAlertForm.instruction,
                     "event_type_id" : {
                       "@value" : ctrl.dataAlertForm.eventType.id.toString()
                     },
@@ -476,7 +502,7 @@ angular.module("ngapp")
         var strXML = '<s3xml>'+
             '<resource name="cap_alert">'+
             '    <data field="status">'+ctrl.dataAlertForm.status+'</data>'+
-            '    <data field="msg_type">Alert</data>'+
+            '    <data field="msg_type">'+ctrl.dataAlertForm.msgType+'</data>'+
             '    <data field="is_template" value="false"/>'+
             '    <data field="scope">'+ctrl.dataAlertForm.scope+'</data>'+
             '    <data field="template_id">'+ctrl.dataAlertForm.template.id.toString()+'</data>'+
@@ -488,6 +514,7 @@ angular.module("ngapp")
             '        <data field="event">'+ctrl.dataAlertForm.eventType.name+'</data>'+ 
             '        <data field="headline">'+ctrl.dataAlertForm.headline+'</data>'+
             '        <data field="description">'+ctrl.dataAlertForm.description+'</data>'+
+            '        <data field="instruction">'+ctrl.dataAlertForm.instruction+'</data>'+
             '        <data field="event_type_id">'+ctrl.dataAlertForm.eventType.id.toString()+'</data>'+
             '        <data field="response_type">'+responseTypeValXML+'</data>'+
             warningPriorityXml+
@@ -762,6 +789,22 @@ angular.module("ngapp")
                 '$':result.rows.item(i).name
             };
             ctrl.dataStatusOptions.push(dataStatusOption);   
+        } 
+      } 
+    },null);
+
+    ctrl.dataMsgTypeOptions = new Array();
+    shared.selectDB("m_msg_type","select * from m_msg_type",[],function(result){
+      if(result.rows.length > 0) {
+
+        ctrl.hidePage[ctrl.checkPageIdx('msgType')].loadData = false;
+
+        for(var i=0;i<result.rows.length;i++){
+            var dataMsgTypeOption = {
+                '@value':result.rows.item(i).fvalue,
+                '$':result.rows.item(i).name
+            };
+            ctrl.dataMsgTypeOptions.push(dataMsgTypeOption);   
         } 
       } 
     },null);

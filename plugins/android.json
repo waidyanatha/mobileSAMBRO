@@ -51,6 +51,10 @@
                         {
                             "xml": "<feature name=\"InAppBrowser\"><param name=\"android-package\" value=\"org.apache.cordova.inappbrowser.InAppBrowser\" /></feature>",
                             "count": 1
+                        },
+                        {
+                            "xml": "<feature name=\"AppVersion\"><param name=\"android-package\" value=\"uk.co.whiteoctober.cordova.AppVersion\" /></feature>",
+                            "count": 1
                         }
                     ]
                 }
@@ -183,6 +187,9 @@
         },
         "cordova-plugin-inappbrowser": {
             "PACKAGE_NAME": "com.gic.cap"
+        },
+        "cordova-plugin-app-version": {
+            "PACKAGE_NAME": "io.sahana.sambro.mobile"
         }
     },
     "dependent_plugins": {

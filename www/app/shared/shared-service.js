@@ -392,6 +392,23 @@ angular.module("ngapp").service("shared", function($http,$localStorage,$sessionS
                 }  
             }
         }
+        else if(dataField[i]['@name'] == "msg_type"){
+            ctrl.deleteDB("m_msg_type",null,null);
+            for(var j=0;j<dataField[i]['select'][0]['option'].length;j++){
+                if(dataField[i]['select'][0]['option'][j]['@value'] != ""){
+                  var query = "insert into m_msg_type (fvalue, name) values (?,?)";
+                  var dataDB = [dataField[i]['select'][0]['option'][j]['@value'],dataField[i]['select'][0]['option'][j]['$']];
+                  var callBack = function(result){
+                    console.log('success insert to db');
+                    ctrl.setBooleanDataLoad(ctrlDetail.callBackFinish,"m_msg_type");
+                  };
+                  var callBackErr = function(error){
+                    console.log('error to db');
+                  };
+                  ctrl.insertDB("m_msg_type",query,dataDB,callBack,callBackErr);
+                }  
+            }
+        }
       }
     }, function(reason) {
       console.log('Failed: ' + reason);

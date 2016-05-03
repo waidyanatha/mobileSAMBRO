@@ -66,6 +66,7 @@ angular.module("ngapp", [ "ngTouch", "ui.router", "ngMdIcons", "ngMaterial", "ng
   $cordovaSQLite.execute(dbShared,"CREATE TABLE IF NOT EXISTS m_certainty (fvalue text, name text)");
   $cordovaSQLite.execute(dbShared,"CREATE TABLE IF NOT EXISTS m_severity (fvalue text, name text)");
   $cordovaSQLite.execute(dbShared,"CREATE TABLE IF NOT EXISTS m_scope (fvalue text, name text)");
+  $cordovaSQLite.execute(dbShared,"CREATE TABLE IF NOT EXISTS m_msg_type (fvalue text, name text)");
   $cordovaSQLite.execute(dbShared,"CREATE TABLE IF NOT EXISTS m_group_user (id integer, name text , group_type text,comments text, description text)");
   $cordovaSQLite.execute(dbShared,"CREATE TABLE IF NOT EXISTS m_status (fvalue text, name text)");
   $cordovaSQLite.execute(dbShared,"CREATE TABLE IF NOT EXISTS m_warning_priority (id integer primary key, name text,priority_rank text, color_code text, severity text, certainty text, urgency text, event_type_id integer)");
