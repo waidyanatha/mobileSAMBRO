@@ -13,6 +13,11 @@ angular.module("ngapp")
     console.log(ctrl.isNetworkOnline);
     console.log(ctrl.isNetworkOffline);
 
+    callBackButton = function(){
+        console.log("call inside controller main");
+        //ctrl.goBack();
+    };
+
     //$cordovaStatusbar.overlaysWebView(true); // Always Show Status Bar = false
     //$cordovaStatusbar.styleHex('#E53935'); // Status Bar With Red Color, Using Angular-Material Style
 
@@ -259,6 +264,7 @@ angular.module("ngapp")
             };
 
             ctrl.dataAlerts.push(dataAlert);
+            console.log("dataAlert = "+ JSON.stringify(dataAlert));
           }
         }
       }, function(error) {

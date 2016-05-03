@@ -1,5 +1,16 @@
 "use strict";
 
+angular.element(document).ready(function () {
+  if (window.cordova) {
+    console.log("Running in Cordova, Back button.");
+    document.addEventListener("backbutton", function(){
+        callBackButton();
+    }, false);
+
+   
+  } 
+});
+
 angular.module("ngapp")
 .controller("AlertFormController", function(shared, $state, $scope, $compile,$rootScope, $mdSidenav, $mdComponentRegistry, $http, $cordovaDevice, $cordovaStatusbar,$cordovaGeolocation,$cordovaDialogs,$location,$localStorage,$cordovaSQLite,$filter,$timeout,$cordovaNetwork){
     shared.checkUserCached();
@@ -202,6 +213,12 @@ angular.module("ngapp")
             ctrl.changePageView();
         }
         
+    };
+
+    varOutside = ctrl;
+    callBackButton = function(){
+        console.log("call inside controller alert form");
+        varOutside.goBack();
     };
 
     ctrl.goHome = function(){
