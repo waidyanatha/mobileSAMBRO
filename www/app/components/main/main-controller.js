@@ -259,7 +259,7 @@ angular.module("ngapp")
               'cap_area.name': JSON.parse(result.rows.item(i).cap_area_name),
               'scope': result.rows.item(i).cap_scope,
               'event_event_type.name': JSON.parse(result.rows.item(i).event_event_type_name),
-              'sent': result.rows.item(i).sent,
+              'sent': new Date(result.rows.item(i).sent),
               'spatial_val':result.rows.item(i).spatial_val
             };
 
