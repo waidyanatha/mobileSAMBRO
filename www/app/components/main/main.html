@@ -144,8 +144,7 @@
           <md-subheader class="md-no-sticky">Server Setting</md-subheader>
           <md-input-container style="padding-left:15px;" class="md-block">
               <input type="text" name="serverUrl" ng-model="main.serverUrl" ng-blur="main.changeServerUrl()" placeholder="Server Url"
-                 required>
-              
+                 required>   
           </md-input-container>
           <md-divider ></md-divider>
 
@@ -154,6 +153,14 @@
                    ng-click="main.syncFromSetting()">
             Sync the data
           </md-button> 
+
+          <md-subheader class="md-no-sticky">Version Number</md-subheader>
+          <md-dialog-content>
+            <div class="md-dialog-content" style="padding-left:15px;" >
+              <p>{{main.verisonNumber}}</p>
+            </div>
+           </md-dialog-content> 
+          <md-divider ></md-divider>
 
           <md-button style="width: 95%;" layout-align="center center" class="md-raised md-accent" aria-label="Back"
                    ng-click="main.clickBackBtn()">

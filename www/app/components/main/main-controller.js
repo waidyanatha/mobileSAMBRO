@@ -1,7 +1,7 @@
 "use strict";
 
 angular.module("ngapp")
-.controller("MainController", function(shared, $state, $scope,$rootScope, $mdSidenav, $mdComponentRegistry, $http, $cordovaDevice, $cordovaStatusbar,$cordovaGeolocation,$cordovaDialogs,$location,$localStorage,$cordovaSQLite,$cordovaNetwork,$cordovaInAppBrowser,$timeout){
+.controller("MainController", function(shared, $state, $scope,$rootScope, $mdSidenav, $mdComponentRegistry, $http, $cordovaDevice, $cordovaStatusbar,$cordovaGeolocation,$cordovaDialogs,$location,$localStorage,$cordovaSQLite,$cordovaNetwork,$cordovaInAppBrowser,$timeout, $cordovaAppVersion){
     var ctrl = this;
 
     ctrl.typeNetwork = $cordovaNetwork.getNetwork();
@@ -46,6 +46,13 @@ angular.module("ngapp")
 
     ctrl.title = shared.info.title;
     ctrl.logout = shared.logout;
+
+    ctrl.verisonNumber = "";
+    ctrl.tokenId = $localStorage['deviceTokenId'];
+
+    $cordovaAppVersion.getVersionNumber().then(function (version) {
+        ctrl.verisonNumber = version;
+    });
 
     ctrl.isOpen = function() { return false };
     $mdComponentRegistry
@@ -99,8 +106,6 @@ angular.module("ngapp")
           mapThumbnailDetail.invalidateSize();
           ctrl.renderPolygonOnThumbnailDetailMap();
       }, 1000);
-
-
     };
 
     ctrl.clickUserProfile = function(){
