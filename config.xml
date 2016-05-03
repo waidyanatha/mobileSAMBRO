@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <widget 
     id="io.sahana.sambro.mobile" 
-    version="0.0.8"
+    version="0.0.9"
     versionCode="1" 
     xmlns="http://www.w3.org/ns/widgets" 
     xmlns:cdv="http://cordova.apache.org/ns/1.0"
@@ -64,7 +64,5 @@
     <allow-intent href="geo:*" />
     <platform name="android">
         <allow-intent href="market:*" />
-        <hook type="before_build" src="scripts/android/before-build.sh" />
-        <hook type="after_build" src="scripts/android/after-build.sh" />
     </platform>
 </widget>
