@@ -3,7 +3,7 @@
 ZIPALIGN=/var/lib/jenkins/possum/android-sdk-linux/build-tools/20.0.0/zipalign
 #ZIPALIGN=/Users/lutz/Library/Android/sdk/build-tools/23.0.2/zipalign
 BUILDLOC=platforms/android/build/outputs/apk
-APK=android-release-unsigned.apk
+APK=android-release.apk
 TARGETBASE=SAMBROmobile
 
 
