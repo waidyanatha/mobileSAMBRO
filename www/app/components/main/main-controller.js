@@ -91,7 +91,7 @@ angular.module("ngapp")
     };
 
     ctrl.clickHyperlinkAlert = function(idAlert){
-      navigator.app.loadUrl("http://sambro.geoinfo.ait.ac.th/eden/cap/alert/"+idAlert.toString()+"/profile", {openExternal : true});
+      navigator.app.loadUrl(shared.apiUrl+"cap/alert/"+idAlert.toString()+"/profile", {openExternal : true});
     }
 
     ctrl.clickAlertDetail = function(idx){

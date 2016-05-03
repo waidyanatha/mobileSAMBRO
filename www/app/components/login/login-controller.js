@@ -9,6 +9,7 @@ angular.module("ngapp")
     ctrl.title = shared.info.title;
     ctrl.hideErrorMessage = true;
     ctrl.shared = shared;
+    ctrl.serverUrl = shared.apiUrl;
 
     //$localStorage.$reset();
     $localStorage['username'] = "";
@@ -26,6 +27,7 @@ angular.module("ngapp")
           ctrl.isOfflineDataExist = true;
           
           for(var i=0;i<result.rows.length;i++){
+
               serverUrl = result.rows.item(i).server_url;
           } 
         } 
@@ -41,6 +43,7 @@ angular.module("ngapp")
           });
         }
         $localStorage['serverUrl'] = serverUrl;
+        ctrl.serverUrl = serverUrl;
         console.log($localStorage['serverUrl']);
       },null);
     };
@@ -79,6 +82,7 @@ angular.module("ngapp")
     ctrl.loginFormContainer = true;
     ctrl.directLoginContainer = false;
     ctrl.selectLoginContainer = false;
+    ctrl.serverUrlChangeContainer = false;
 
     ctrl.userName = "";
     ctrl.userId = 0;
@@ -135,6 +139,7 @@ angular.module("ngapp")
       ctrl.loginFormContainer = false;
       ctrl.directLoginContainer = false;
       ctrl.selectLoginContainer = true;
+      ctrl.serverUrlChangeContainer = false;
     };
     ctrl.clickDirectLoginUsers = function(idx){
       $localStorage['username'] = ctrl.dataUsers[idx].email;
@@ -151,6 +156,31 @@ angular.module("ngapp")
       ctrl.loginFormContainer = true;
       ctrl.directLoginContainer = false;
       ctrl.selectLoginContainer = false;
+      ctrl.serverUrlChangeContainer = false;
+    };
+    ctrl.clickChangeServerUrl = function(){
+      ctrl.loginFormContainer = false;
+      ctrl.directLoginContainer = false;
+      ctrl.selectLoginContainer = false;
+      ctrl.serverUrlChangeContainer = true;
+    };
+
+    ctrl.cancelChangeServerUrl = function(){
+      ctrl.clickToLoginForm();
+      ctrl.selectAllUser();
+    };
+    ctrl.submitChangeServerUrl = function(){
+      var apiUrl = shared.apiUrl;
+      //console.log(apiUrl);
+
+      shared.apiUrl = ctrl.serverUrl;
+      $localStorage['serverUrl'] = ctrl.serverUrl;
+
+      console.log("change server to "+ctrl.serverUrl);
+      shared.updateDB("t_server_url","update t_server_url set server_url=?",[ctrl.serverUrl],null,null);
+
+      shared.deleteDB("sync_data_master",null,null);
+      ctrl.cancelChangeServerUrl();
     };
 
     ctrl.userRole = "";

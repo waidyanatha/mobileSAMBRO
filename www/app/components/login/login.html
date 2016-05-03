@@ -38,7 +38,13 @@
                            ng-disabled="loginForm.$invalid || loginForm.$pristine" ng-click="login.sendForm();">
                     LOG IN
                 </md-button>
-                <div ng-hide="login.hideErrorMessage" class="msg-wrong-pass md-warn-fg text-center">Username or Password is Wrong</div>    
+                <div ng-hide="login.hideErrorMessage" class="msg-wrong-pass md-warn-fg text-center">Username or Password is Wrong</div>   
+
+                <md-button type="submit" class="md-raised md-accent" aria-label="Server Url" style="width:90%;"
+                           ng-click="login.clickChangeServerUrl()">
+                    Change server url
+                </md-button> 
+                
           </div>
           <div ng-show="login.directLoginContainer">
               <md-button class="md-raised md-accent" aria-label="{{login.userName}}" style="width:90%;"
@@ -60,7 +66,32 @@
               </div>  
               
                 <h4></h4>
-              <div class="md-accent-fg text-center" ng-click="login.clickToLoginForm()">Different account?</div>   
+              <div class="md-accent-fg text-center" ng-click="login.clickToLoginForm()">Different account?</div>  
+              <div style="padding-top: 10px;" class="md-accent-fg text-center" ng-click="login.clickChangeServerUrl()">Change server url</div> 
+          </div>
+
+          <div ng-show="login.serverUrlChangeContainer">
+              <md-input-container class="md-block" md-no-float>
+                  <input type="text" name="serverUrl" ng-model="login.serverUrl" placeholder="Server Url" required>
+                  <div ng-messages="loginForm.serverUrl.$error" ng-show="loginForm.serverUrl.$touched" role="alert" multiple>
+                      <div ng-message="required">
+                          <span >Server url field is required</span>
+                      </div>
+                      
+                  </div>
+              </md-input-container> 
+
+              <div layout="row" layout-align="center center">
+                <md-button class="md-raised md-accent" aria-label="Cancel"
+                         ng-click="login.cancelChangeServerUrl();">
+                  Cancel
+                </md-button>  
+                <md-button type="submit" class="md-raised md-accent" aria-label="LOG IN" style="width:90%;" ng-click="login.submitChangeServerUrl();">
+                    Change
+                </md-button>
+              </div>
+
+              
           </div>
 
           
