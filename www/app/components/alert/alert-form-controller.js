@@ -964,6 +964,7 @@ angular.module("ngapp")
         }  
 
         var toolbarId = drawControl._toolbars.draw._leaflet_id - 1;
+        globalCallBtn.draw._modes.polygon.button['_leaflet_click'+toolbarId.toString()]();
         //console.log('_leaflet_click'+toolbarId.toString());
         //angular.element('.leaflet-draw-draw-polygon').trigger('_leaflet_click'+toolbarId.toString());
         
