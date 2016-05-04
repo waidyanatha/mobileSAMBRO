@@ -1001,6 +1001,9 @@ angular.module("ngapp")
         angular.element('#map').hide();
     }
     ctrl.clickSubmitMap = function(){
+
+        map.fitBounds(featureGroupDraw.getBounds());
+
         $cordovaDialogs.prompt('Enter area name', 'Area Name', ['Ok','Cancel'], ctrl.newArea.name)
         .then(function(result) {
           var input = result.input1;
