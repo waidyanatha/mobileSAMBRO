@@ -18,21 +18,24 @@ angular.module("ngapp")
     var ctrl = this;  
 
     var posOptions = {timeout: 10000, enableHighAccuracy: false};
-    $cordovaGeolocation
-    .getCurrentPosition(posOptions)
-    .then(function (position) {
-         //$cordovaDialogs.alert('success', 'Message', 'OK');
-         //$cordovaDialogs.alert('Lon = '+position.coords.longitude+" , Lat = "+position.coords.latitude, 'Message', 'OK');
-        console.log('Lon = '+position.coords.longitude+" , Lat = "+position.coords.latitude);
-        ctrl.renderingGeolocation = false;
-        ctrl.longitude = position.coords.longitude;
-        ctrl.latitude = position.coords.latitude;
-        map.setView([position.coords.latitude, position.coords.longitude], 16);
-        mapThumbnail.setView([position.coords.latitude, position.coords.longitude], 16);
-        mapThumbnailSummary.setView([position.coords.latitude, position.coords.longitude], 16);
-    }, function(err) {
-        // error
-    });
+    ctrl.getMyLocation = function(){
+        $cordovaGeolocation
+        .getCurrentPosition(posOptions)
+        .then(function (position) {
+             //$cordovaDialogs.alert('success', 'Message', 'OK');
+             //$cordovaDialogs.alert('Lon = '+position.coords.longitude+" , Lat = "+position.coords.latitude, 'Message', 'OK');
+            console.log('Lon = '+position.coords.longitude+" , Lat = "+position.coords.latitude);
+            ctrl.renderingGeolocation = false;
+            ctrl.longitude = position.coords.longitude;
+            ctrl.latitude = position.coords.latitude;
+            map.setView([position.coords.latitude, position.coords.longitude], 16);
+            mapThumbnail.setView([position.coords.latitude, position.coords.longitude], 16);
+            mapThumbnailSummary.setView([position.coords.latitude, position.coords.longitude], 16);
+        }, function(err) {
+            // error
+        });
+    };
+    ctrl.getMyLocation();
 
     //right side BaseMap
     ctrl.toggleBaseMap = function () {
@@ -1254,6 +1257,31 @@ angular.module("ngapp")
     $compile(content.contents())(scope);
     angular.element('#leaflet_layerBaseMap').on('click', function() {
       ctrl.toggleBaseMap();
+    });
+
+    //my location
+    var myLocationToolbar = L.Control.extend({
+        options: {
+            position: 'topright'
+        },
+
+        onAdd: function (map) {
+            // create the control container with a particular class name
+            var contain = L.DomUtil.create('div', 'myLocation');
+            $(contain).addClass('leaflet-bar');
+            $(contain).html('<button id="leaflet_myLocation" class="leaflet-control" '+
+            'style="margin:0px;width: 30px;height: 30px;padding-bottom: 0px;padding-top: 0px;padding-right: 0px;border-left-width: 0px;padding-left: 0px;border-top-width: 0px;border-bottom-width: 0px;border-right-width: 0px;background: white;border-radius: 5px;" >'+
+            '<ng-md-icon icon="near-me"></ng-md-icon></button>');
+
+            return contain;
+        }
+    });
+    map.addControl(new myLocationToolbar());
+    content=angular.element('#leaflet_myLocation');
+    scope=content.scope();
+    $compile(content.contents())(scope);
+    angular.element('#leaflet_myLocation').on('click', function() {
+      ctrl.getMyLocation();
     });
 
     //Action button
