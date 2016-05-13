@@ -17,7 +17,7 @@ table m_predefined_area (id integer primary key, name text, event_type_id intege
 table sync_data_master (periodic_sync integer, time_sync text) 
 table t_server_url (id integer primary key,server_url text) 
 
-v1.1
+v1.1  (13, May 2016)
 table t_server_url
 add server_location text
 
