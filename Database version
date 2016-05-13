@@ -1,0 +1,43 @@
+V1.0
+table m_user (email text, pwd text,expired integer,active_user integer,device_token_id text,user_id integer,profile_json text,user_role text)
+table t_alert (id integer primary key, cap_info_headline text, cap_area_name text, cap_scope text,event_event_type_name text,sent TEXT,spatial_val text)
+table t_alert_offline (id INTEGER PRIMARY KEY AUTOINCREMENT, created_time text, data_form text, data_form_json text);
+table m_event_type (id integer primary key, name text,icon text)
+table m_response_type (fvalue text, name text)
+table m_urgency (fvalue text, name text)
+table m_certainty (fvalue text, name text)
+table m_severity (fvalue text, name text)
+table m_scope (fvalue text, name text)
+table m_msg_type (fvalue text, name text)
+table m_group_user (id integer, name text , group_type text,comments text, description text)
+table m_status (fvalue text, name text)
+table m_warning_priority (id integer primary key, name text,priority_rank text, color_code text, severity text, certainty text, urgency text, event_type_id integer)
+table m_template (id integer primary key, template_title text, cap_scope text, cap_info_category text, cap_info_response_type text, event_event_type_id integer,cap_info_description text,cap_info_headline text,cap_info_parameter text)
+table m_predefined_area (id integer primary key, name text, event_type_id integer,location_id integer,spatial_val text)
+table sync_data_master (periodic_sync integer, time_sync text) 
+table t_server_url (id integer primary key,server_url text) 
+
+v1.1
+table t_server_url
+add server_location text
+
+table m_user
+table t_alert
+table t_alert_offline
+table m_event_type
+table m_response_type
+table m_urgency
+table m_certainty
+table m_severity
+table m_scope
+table m_msg_type
+table m_group_user
+table m_status
+table m_warning_priority
+table m_template
+table m_predefined_area
+add server_url_id integer
+
+table sync_data_master
+add server_url_id
+add curr_location text
