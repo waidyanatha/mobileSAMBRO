@@ -41,3 +41,4 @@ add server_url_id integer
 table sync_data_master
 add server_url_id
 add curr_location text
+add database_version text
