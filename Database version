@@ -20,6 +20,7 @@ table t_server_url (id integer primary key,server_url text)
 v1.1  (13, May 2016)
 table t_server_url
 add server_location text
+add server_name text
 
 table m_user
 table t_alert
