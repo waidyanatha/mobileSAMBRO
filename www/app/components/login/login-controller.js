@@ -4,6 +4,704 @@ angular.module("ngapp")
 .controller("LoginController", function(shared, $state, $scope,$rootScope, $mdSidenav, $mdComponentRegistry, $http, $cordovaDevice, $cordovaStatusbar,$cordovaGeolocation,$cordovaDialogs,$localStorage,$sessionStorage,$location,$cordovaSQLite,$cordovaNetwork){
     var ctrl = this;
 
+    //version 1.1
+    var databaseVersion = "1.1";
+    $localStorage['databaseVersion'] = databaseVersion;
+    var databaseSchema = {
+      "tables": [{
+          "name": "m_user",
+          "columns": [{
+              "name": "email",
+              "type": "text"
+          }, {
+              "name": "pwd",
+              "type": "text"
+          }, {
+              "name": "expired",
+              "type": "integer"
+          }, {
+              "name": "active_user",
+              "type": "integer"
+          }, {
+              "name": "device_token_id",
+              "type": "text"
+          }, {
+              "name": "user_id",
+              "type": "integer"
+          }, {
+              "name": "profile_json",
+              "type": "text"
+          }, {
+              "name": "user_role",
+              "type": "text"
+          }, {
+              "name": "server_url_id",
+              "type": "integer"
+          }]
+      }, {
+          "name": "t_alert",
+          "columns": [{
+              "name": "id",
+              "type": "integer"
+          }, {
+              "name": "cap_info_headline",
+              "type": "text"
+          }, {
+              "name": "cap_area_name",
+              "type": "text"
+          }, {
+              "name": "cap_scope",
+              "type": "text"
+          }, {
+              "name": "event_event_type_name",
+              "type": "text"
+          }, {
+              "name": "sent",
+              "type": "TEXT"
+          }, {
+              "name": "spatial_val",
+              "type": "text"
+          }, {
+              "name": "server_url_id",
+              "type": "integer"
+          }]
+      }, {
+          "name": "t_alert_offline",
+          "columns": [{
+              "name": "id",
+              "type": "INTEGER"
+          }, {
+              "name": "created_time",
+              "type": "text"
+          }, {
+              "name": "data_form",
+              "type": "text"
+          }, {
+              "name": "data_form_json",
+              "type": "text"
+          }, {
+              "name": "server_url_id",
+              "type": "integer"
+          }]
+      }, {
+          "name": "m_event_type",
+          "columns": [{
+              "name": "id",
+              "type": "integer"
+          }, {
+              "name": "name",
+              "type": "text"
+          }, {
+              "name": "icon",
+              "type": "text"
+          }, {
+              "name": "server_url_id",
+              "type": "integer"
+          }]
+      }, {
+          "name": "m_response_type",
+          "columns": [{
+              "name": "fvalue",
+              "type": "text"
+          }, {
+              "name": "name",
+              "type": "text"
+          }, {
+              "name": "server_url_id",
+              "type": "integer"
+          }]
+      }, {
+          "name": "m_urgency",
+          "columns": [{
+              "name": "fvalue",
+              "type": "text"
+          }, {
+              "name": "name",
+              "type": "text"
+          }, {
+              "name": "server_url_id",
+              "type": "integer"
+          }]
+      }, {
+          "name": "m_certainty",
+          "columns": [{
+              "name": "fvalue",
+              "type": "text"
+          }, {
+              "name": "name",
+              "type": "text"
+          }, {
+              "name": "server_url_id",
+              "type": "integer"
+          }]
+      }, {
+          "name": "m_severity",
+          "columns": [{
+              "name": "fvalue",
+              "type": "text"
+          }, {
+              "name": "name",
+              "type": "text"
+          }, {
+              "name": "server_url_id",
+              "type": "integer"
+          }]
+      }, {
+          "name": "m_scope",
+          "columns": [{
+              "name": "fvalue",
+              "type": "text"
+          }, {
+              "name": "name",
+              "type": "text"
+          }, {
+              "name": "server_url_id",
+              "type": "integer"
+          }]
+      }, {
+          "name": "m_msg_type",
+          "columns": [{
+              "name": "fvalue",
+              "type": "text"
+          }, {
+              "name": "name",
+              "type": "text"
+          }, {
+              "name": "server_url_id",
+              "type": "integer"
+          }]
+      }, {
+          "name": "m_group_user",
+          "columns": [{
+              "name": "id",
+              "type": "integer"
+          }, {
+              "name": "name",
+              "type": "text"
+          }, {
+              "name": "group_type",
+              "type": "text"
+          }, {
+              "name": "comments",
+              "type": "text"
+          }, {
+              "name": "description",
+              "type": "text"
+          }, {
+              "name": "server_url_id",
+              "type": "integer"
+          }]
+      }, {
+          "name": "m_status",
+          "columns": [{
+              "name": "fvalue",
+              "type": "text"
+          }, {
+              "name": "name",
+              "type": "text"
+          }, {
+              "name": "server_url_id",
+              "type": "integer"
+          }]
+      }, {
+          "name": "m_warning_priority",
+          "columns": [{
+              "name": "id",
+              "type": "integer"
+          }, {
+              "name": "name",
+              "type": "text"
+          }, {
+              "name": "priority_rank",
+              "type": "text"
+          }, {
+              "name": "color_code",
+              "type": "text"
+          }, {
+              "name": "severity",
+              "type": "text"
+          }, {
+              "name": "certainty",
+              "type": "text"
+          }, {
+              "name": "urgency",
+              "type": "text"
+          }, {
+              "name": "event_type_id",
+              "type": "integer"
+          }, {
+              "name": "server_url_id",
+              "type": "integer"
+          }]
+      }, {
+          "name": "m_template",
+          "columns": [{
+              "name": "id",
+              "type": "integer"
+          }, {
+              "name": "template_title",
+              "type": "text"
+          }, {
+              "name": "cap_scope",
+              "type": "text"
+          }, {
+              "name": "cap_info_category",
+              "type": "text"
+          }, {
+              "name": "cap_info_response_type",
+              "type": "text"
+          }, {
+              "name": "event_event_type_id",
+              "type": "integer"
+          }, {
+              "name": "cap_info_description",
+              "type": "text"
+          }, {
+              "name": "cap_info_headline",
+              "type": "text"
+          }, {
+              "name": "cap_info_parameter",
+              "type": "text"
+          }, {
+              "name": "server_url_id",
+              "type": "integer"
+          }]
+      }, {
+          "name": "m_predefined_area",
+          "columns": [{
+              "name": "id",
+              "type": "integer"
+          }, {
+              "name": "name",
+              "type": "text"
+          }, {
+              "name": "event_type_id",
+              "type": "integer"
+          }, {
+              "name": "location_id",
+              "type": "integer"
+          }, {
+              "name": "spatial_val",
+              "type": "text"
+          }, {
+              "name": "server_url_id",
+              "type": "integer"
+          }]
+      }, {
+          "name": "sync_data_master",
+          "columns": [{
+              "name": "periodic_sync",
+              "type": "integer"
+          }, {
+              "name": "time_sync",
+              "type": "text"
+          }, {
+              "name": "server_url_id",
+              "type": "integer"
+          }, {
+              "name": "curr_location",
+              "type": "text"
+          }, {
+              "name": "database_version",
+              "type": "text"
+          }, {
+              "name": "database_schema",
+              "type": "text"
+          }]
+      }, {
+          "name": "t_server_url",
+          "columns": [{
+              "name": "id",
+              "type": "integer"
+          }, {
+              "name": "server_url",
+              "type": "text"
+          }, {
+              "name": "server_location",
+              "type": "text"
+          }, {
+              "name": "server_name",
+              "type": "text"
+          }]
+      }]
+    };
+
+    dbShared = $cordovaSQLite.openDB({name: "offline_data.db" });
+  
+    var arrNewTableCreate = new Array();
+    var createNewTableQuery = function(){
+      arrNewTableCreate = new Array();
+      for(var i=0;i<databaseSchema.tables.length;i++ ){
+
+        var tableSchema = "CREATE TABLE IF NOT EXISTS "+databaseSchema.tables[i].name+" (";
+        
+        for(var j=0;j< databaseSchema.tables[i].columns.length;j++){
+          tableSchema = tableSchema + databaseSchema.tables[i].columns[j].name + " " + databaseSchema.tables[i].columns[j].type;
+          if(j+1 == databaseSchema.tables[i].columns.length){
+            tableSchema = tableSchema + ")";
+          }
+          else{
+            tableSchema = tableSchema + ",";
+          }
+        }
+        arrNewTableCreate.push({name: databaseSchema.tables[i].name ,query:tableSchema,created:false});
+      }  
+    };
+
+    //init run
+    createNewTableQuery();
+
+    var objTableCurrSchema = {};
+    var getTablesName = function(){
+      shared.selectDB("sqlite_master","SELECT name FROM sqlite_master WHERE type='table'",[],function(result){
+        if(result.rows.length > 0) {
+          objTableCurrSchema.tables = new Array();
+          for(var i=0;i<result.rows.length;i++){
+            if(result.rows.item(i).name != 'sqlite_sequence'){
+              objTableCurrSchema.tables.push({name:result.rows.item(i).name,columns:new Array()});
+
+              var idxArrNewTableCreate = findFilterAttr(arrNewTableCreate, result.rows.item(i).name, ".name");
+              if(idxArrNewTableCreate != -1){
+                arrNewTableCreate[idxArrNewTableCreate].created = true;
+              }
+            }
+          } 
+
+          if(objTableCurrSchema.tables.length > 0){
+            getDetailColumn(0,objTableCurrSchema.tables[0].name);
+          }
+      
+        } 
+      },null);
+    }; 
+
+    var getDetailColumn = function(idx,tableName){
+      shared.selectDB("table_info","PRAGMA table_info('"+tableName+"')",[],function(result1){
+        //console.log('get all table name');
+        //console.log(result1.rows.length);
+        if(result1.rows.length > 0) {
+          for(var j=0;j<result1.rows.length;j++){
+            objTableCurrSchema.tables[idx].columns.push({"name":result1.rows.item(j).name,"type":result1.rows.item(j).type});
+          } 
+          //console.log("objTableCurrSchema = "+ JSON.stringify(objTableCurrSchema));
+        } 
+
+        if((idx+1) < objTableCurrSchema.tables.length){
+          getDetailColumn((idx+1),objTableCurrSchema.tables[(idx+1)].name);
+        }
+        if(idx+1 == objTableCurrSchema.tables.length){
+          createTempTable();
+        }
+      },null);
+    };
+
+    var checkDBVersion = function(){
+      shared.selectDB("sync_data_master","SELECT * FROM sync_data_master",[],function(result){
+        console.log("result sync_data_master");
+        if(result.rows.length > 0) {
+          if(result.rows.item(0).database_version != undefined){
+            if(databaseVersion != result.rows.item(0).database_version){
+              //diffrent database version
+              console.log("diffrent database");
+            }
+          }
+          else{
+            console.log("app without database schema - old version");
+            getTablesName();
+          }
+        }
+        else{
+          //new application
+          console.log("new application");
+
+          for(var i=0;i<arrNewTableCreate.length;i++){
+            $cordovaSQLite.execute(dbShared, arrNewTableCreate[i].query);
+            arrNewTableCreate[i].created = true; 
+          }
+
+          //init run
+          ctrl.setServerUrl();
+
+          //init run
+          ctrl.selectAllUser();
+        } 
+      },null);
+    };
+
+    var customInsertForNewDBSchema = function(){
+      shared.updateDB("sync_data_master","update sync_data_master set database_version='1.1',database_schema='"+JSON.stringify(databaseSchema)+"',curr_location='POINT(100.612952 14.082130)',server_url_id=1 ",[]
+      ,function(result){
+        console.log("success update");
+
+      },function(error){
+        console.log("error update");
+      });
+
+      shared.updateDB("t_server_url","update t_server_url set server_location='POINT(100.612952 14.082130)',server_name='AIT' ",[]
+      ,function(result){
+        console.log("success update");
+
+      },function(error){
+        console.log("error update");
+      });
+
+      shared.insertDB("t_server_url","insert into t_server_url (server_location,server_name,server_url) values ('POINT(16.865134 96.153957)','MYANMAR','http://203.81.87.42/eden/')",[]
+      ,function(result){
+        console.log("success update");
+
+      },function(error){
+        console.log("error update");
+      });
+
+      shared.updateDB("m_user","update m_user set server_url_id=1 ",[]
+      ,function(result){
+        console.log("success update");
+
+      },function(error){
+        console.log("error update");
+      });
+
+      shared.updateDB("t_alert","update t_alert set server_url_id=1 ",[]
+      ,function(result){
+        console.log("success update");
+
+      },function(error){
+        console.log("error update");
+      });
+
+      shared.updateDB("t_alert_offline","update t_alert_offline set server_url_id=1 ",[]
+      ,function(result){
+        console.log("success update");
+
+      },function(error){
+        console.log("error update");
+      });
+
+      shared.updateDB("m_event_type","update m_event_type set server_url_id=1 ",[]
+      ,function(result){
+        console.log("success update");
+
+      },function(error){
+        console.log("error update");
+      });
+
+      shared.updateDB("m_response_type","update m_response_type set server_url_id=1 ",[]
+      ,function(result){
+        console.log("success update");
+
+      },function(error){
+        console.log("error update");
+      });
+
+      shared.updateDB("m_urgency","update m_urgency set server_url_id=1 ",[]
+      ,function(result){
+        console.log("success update");
+
+      },function(error){
+        console.log("error update");
+      });
+
+      shared.updateDB("m_certainty","update m_certainty set server_url_id=1 ",[]
+      ,function(result){
+        console.log("success update");
+
+      },function(error){
+        console.log("error update");
+      });
+
+      shared.updateDB("m_severity","update m_severity set server_url_id=1 ",[]
+      ,function(result){
+        console.log("success update");
+
+      },function(error){
+        console.log("error update");
+      });
+
+      shared.updateDB("m_scope","update m_scope set server_url_id=1 ",[]
+      ,function(result){
+        console.log("success update");
+
+      },function(error){
+        console.log("error update");
+      });
+
+      shared.updateDB("m_msg_type","update m_msg_type set server_url_id=1 ",[]
+      ,function(result){
+        console.log("success update");
+
+      },function(error){
+        console.log("error update");
+      });
+
+      shared.updateDB("m_group_user","update m_group_user set server_url_id=1 ",[]
+      ,function(result){
+        console.log("success update");
+
+      },function(error){
+        console.log("error update");
+      });
+
+      shared.updateDB("m_status","update m_status set server_url_id=1 ",[]
+      ,function(result){
+        console.log("success update");
+
+      },function(error){
+        console.log("error update");
+      });
+
+      shared.updateDB("m_warning_priority","update m_warning_priority set server_url_id=1 ",[]
+      ,function(result){
+        console.log("success update");
+
+      },function(error){
+        console.log("error update");
+      });
+
+      shared.updateDB("m_template","update m_template set server_url_id=1 ",[]
+      ,function(result){
+        console.log("success update");
+
+      },function(error){
+        console.log("error update");
+      });
+
+      shared.updateDB("m_predefined_area","update m_predefined_area set server_url_id=1 ",[]
+      ,function(result){
+        console.log("success update");
+
+      },function(error){
+        console.log("error update");
+      });
+
+      //init run
+      ctrl.setServerUrl();
+
+      //init run
+      ctrl.selectAllUser();
+    };
+
+    var createTableAndInsertData = function(i){
+      console.log(arrTableSchema[i]);
+      $cordovaSQLite.execute(dbShared, "DROP TABLE IF EXISTS temp_"+objTableCurrSchema.tables[i].name);
+      $cordovaSQLite.execute(dbShared, arrTableSchema[i]);
+
+      shared.insertDB(objTableCurrSchema.tables[i].name,"INSERT INTO temp_"+objTableCurrSchema.tables[i].name+" SELECT * FROM "+objTableCurrSchema.tables[i].name,[]
+      ,function(result,tblName){
+        console.log("success insert to "+tblName);
+        $cordovaSQLite.execute(dbShared, "DROP TABLE IF EXISTS "+tblName);
+
+        //arrNewTableCreate
+        var idxArrNewTableCreate = findFilterAttr(arrNewTableCreate, tblName, ".name");
+        if(idxArrNewTableCreate != -1){
+          $cordovaSQLite.execute(dbShared, arrNewTableCreate[idxArrNewTableCreate].query);
+          arrNewTableCreate[idxArrNewTableCreate].created = true;
+        }
+
+        //need to create table here
+        
+        if((i+1) < objTableCurrSchema.tables.length){
+          createTableAndInsertData(i+1);
+        }
+        if(i+1 == objTableCurrSchema.tables.length){
+          insertDataToNewTableFnc(0);
+        }
+      },function(error){
+        console.log("error to temp_");
+
+        if((i+1) < objTableCurrSchema.tables.length){
+          createTableAndInsertData(i+1);
+        }
+        if(i+1 == objTableCurrSchema.tables.length){
+          insertDataToNewTableFnc(0);
+        }
+      });
+    };
+
+    var insertDataToNewTableFnc = function(i){
+      var idxNewTable = findFilterAttr(arrDataToNewTable, objTableCurrSchema.tables[i].name, ".name");
+        if(idxNewTable != -1){
+          shared.insertDB(arrDataToNewTable[idxNewTable].name,arrDataToNewTable[idxNewTable].query,[]
+          ,function(result,tblName){
+            console.log("success insert to new table ");
+
+            if((i+1) < objTableCurrSchema.tables.length){
+              $cordovaSQLite.execute(dbShared, "DROP TABLE IF EXISTS temp_"+tblName);
+              insertDataToNewTableFnc(i+1);
+            }
+            if(i+1 == objTableCurrSchema.tables.length){
+              customInsertForNewDBSchema();
+            }
+          },function(error,tblName){
+            console.log("error to new table ");
+
+            if((i+1) < objTableCurrSchema.tables.length){
+              $cordovaSQLite.execute(dbShared, "DROP TABLE IF EXISTS temp_"+tblName);
+              insertDataToNewTableFnc(i+1);
+            }
+            if(i+1 == objTableCurrSchema.tables.length){
+              customInsertForNewDBSchema();
+            }
+          });
+        }
+    };
+
+    var arrTableSchema = new Array();
+    var arrDataToNewTable = new Array();
+    var createTempTable = function(){
+      
+      // "CREATE TABLE IF NOT EXISTS m_user (email text, pwd text,expired integer,active_user integer,device_token_id text,user_id integer,profile_json text,user_role text,server_url_id integer)"
+      
+      arrTableSchema = new Array();
+      arrDataToNewTable = new Array();
+      for(var i=0;i<objTableCurrSchema.tables.length;i++ ){
+
+        var tableSchema = "CREATE TABLE IF NOT EXISTS temp_"+objTableCurrSchema.tables[i].name+" (";
+        var idxNewTable = findFilterAttr(databaseSchema.tables, objTableCurrSchema.tables[i].name, ".name");
+        var insertDataToNewTable = "";
+        var columnDataToNew = "";
+        if(idxNewTable != -1){
+          insertDataToNewTable = "insert into "+objTableCurrSchema.tables[i].name+" (";
+        }
+        for(var j=0;j< objTableCurrSchema.tables[i].columns.length;j++){
+          tableSchema = tableSchema + objTableCurrSchema.tables[i].columns[j].name + " " + objTableCurrSchema.tables[i].columns[j].type;
+          if(j+1 == objTableCurrSchema.tables[i].columns.length){
+            tableSchema = tableSchema + ")";
+          }
+          else{
+            tableSchema = tableSchema + ",";
+          }
+
+          if(idxNewTable != -1){
+            var idxNewColumn = findFilterAttr(databaseSchema.tables[idxNewTable].columns, objTableCurrSchema.tables[i].columns[j].name, ".name");
+            if(idxNewColumn != -1){
+              columnDataToNew = columnDataToNew + databaseSchema.tables[idxNewTable].columns[idxNewColumn].name + ",";
+            }
+          }
+        }
+        arrTableSchema.push(tableSchema);
+
+        if(idxNewTable != -1){
+          if(columnDataToNew != ""){
+            columnDataToNew = columnDataToNew.substring(0, columnDataToNew.length-1);
+            insertDataToNewTable = insertDataToNewTable + columnDataToNew + ") select " + columnDataToNew + " from temp_"+objTableCurrSchema.tables[i].name;
+            console.log(insertDataToNewTable);
+            arrDataToNewTable.push({name: objTableCurrSchema.tables[i].name, query:insertDataToNewTable});
+          }
+        }
+      }
+
+      for(var i=0;i<arrNewTableCreate.length;i++){
+        if(arrNewTableCreate[i].created == false){
+          $cordovaSQLite.execute(dbShared, arrNewTableCreate[i].query);
+          arrNewTableCreate[i].created = true;
+        }
+      }
+
+      createTableAndInsertData(0);
+    };
+    //========================================= end database section =========================================
+
+
     ctrl.loginForm = {};
     ctrl.auth = shared.info.auth;
     ctrl.title = shared.info.title;
@@ -17,7 +715,6 @@ angular.module("ngapp")
     $localStorage['userId'] = 0;
     $localStorage['userRole'] = "";
 
-    
     ctrl.setServerUrl = function(){
       shared.selectDB("t_server_url","select * from t_server_url",[],function(result){
         console.log('get server url');
@@ -26,10 +723,10 @@ angular.module("ngapp")
         if(result.rows.length > 0) {
           ctrl.isOfflineDataExist = true;
           
-          for(var i=0;i<result.rows.length;i++){
+          //for(var i=0;i<result.rows.length;i++){
 
-              serverUrl = result.rows.item(i).server_url;
-          } 
+            serverUrl = result.rows.item(0).server_url;
+          //} 
         } 
         else{
           shared.insertDB("t_server_url","insert into t_server_url (server_url) values (?)",
@@ -47,8 +744,7 @@ angular.module("ngapp")
         console.log($localStorage['serverUrl']);
       },null);
     };
-    ctrl.setServerUrl();
-    
+
     var typeNetwork = $cordovaNetwork.getNetwork();
     var isNetworkOnline = $cordovaNetwork.isOnline();
     var isNetworkOffline = $cordovaNetwork.isOffline();
@@ -76,8 +772,6 @@ angular.module("ngapp")
 
     //$cordovaStatusbar.overlaysWebView(true); // Always Show Status Bar
     //$cordovaStatusbar.styleHex('#E53935'); // Status Bar With Red Color, Using Angular-Material Style
-
-    
 
     ctrl.loginFormContainer = true;
     ctrl.directLoginContainer = false;
@@ -129,8 +823,6 @@ angular.module("ngapp")
           console.error(error);
       });
     };
-
-    ctrl.selectAllUser();
 
     ctrl.clickDirectLogin = function(){
       $location.path("/main");
@@ -436,6 +1128,9 @@ angular.module("ngapp")
         failed();
       });
     };
+
+    //init run
+    checkDBVersion();
 
     //==================== application goes online or offline ====================
     ctrl.sendForm = ctrl.sendFormFnc;

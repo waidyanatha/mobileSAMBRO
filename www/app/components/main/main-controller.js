@@ -13,9 +13,32 @@ angular.module("ngapp")
     console.log(ctrl.isNetworkOnline);
     console.log(ctrl.isNetworkOffline);
 
+    ctrl.showAlertListPage = true;
+    ctrl.showAlertDetailPage = false;
+    ctrl.showProfilePage = false;
+    ctrl.showSettingPage = false;
+
+    ctrl.clickBackBtn = function(){
+      ctrl.showAlertListPage = true;
+      ctrl.showAlertDetailPage = false;
+      ctrl.showProfilePage = false;
+      ctrl.showSettingPage = false;
+    };
+
+    ctrl.goBack = function(){
+      console.log("go back main");
+      console.log(ctrl.showAlertListPage);
+      if(ctrl.showAlertListPage == false){
+        ctrl.clickBackBtn(); 
+        console.log("execute back button");
+      }
+        
+    };
+
+    varOutside = ctrl;
     callBackButton = function(){
         console.log("call inside controller main");
-        //ctrl.goBack();
+        varOutside.goBack();
     };
 
     //$cordovaStatusbar.overlaysWebView(true); // Always Show Status Bar = false
@@ -78,17 +101,7 @@ angular.module("ngapp")
         return "assets/images/disaster/"+ shared.evenTypeIcon(eventTypeName) + ".png";
     }; 
 
-    ctrl.showAlertListPage = true;
-    ctrl.showAlertDetailPage = false;
-    ctrl.showProfilePage = false;
-    ctrl.showSettingPage = false;
-
-    ctrl.clickBackBtn = function(){
-      ctrl.showAlertListPage = true;
-      ctrl.showAlertDetailPage = false;
-      ctrl.showProfilePage = false;
-      ctrl.showSettingPage = false;
-    };
+    
 
     ctrl.clickHyperlinkAlert = function(idAlert){
       navigator.app.loadUrl(shared.apiUrl+"cap/alert/"+idAlert.toString()+"/profile", {openExternal : true});

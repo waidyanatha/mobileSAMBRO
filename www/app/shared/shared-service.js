@@ -128,12 +128,12 @@ angular.module("ngapp").service("shared", function($http,$localStorage,$sessionS
     $cordovaSQLite.execute(dbShared, query, dataDB).then(function(result) {
       console.log("insert "+tblName );  
       if(callBack != null){
-        callBack(result);
+        callBack(result,tblName);
       }
     }, function (err) {
       //$cordovaDialogs.alert('err', err, 'OK');
       console.error("error " + tblName);
-      console.error(err);
+      console.error(JSON.stringify(err));
       if(callBackErr != null){
         callBackErr(err);
       }
@@ -144,12 +144,12 @@ angular.module("ngapp").service("shared", function($http,$localStorage,$sessionS
     $cordovaSQLite.execute(dbShared, query, dataDB).then(function(result) {
       console.log("update "+tblName );  
       if(callBack != null){
-        callBack(result);
+        callBack(result,tblName);
       }
     }, function (err) {
       //$cordovaDialogs.alert('err', err, 'OK');
       console.error("error " + tblName);
-      console.error(err);
+      console.error(JSON.stringify(err));
       if(callBackErr != null){
         callBackErr(err);
       }
@@ -160,12 +160,12 @@ angular.module("ngapp").service("shared", function($http,$localStorage,$sessionS
     $cordovaSQLite.execute(dbShared, query).then(function(result) {
       console.log("delete "+tblName);
       if(callBack != null){
-        callBack(result);
+        callBack(result,tblName);
       }
     }, function (err) {
       //$cordovaDialogs.alert('err', err, 'OK');
       console.error("error " + tblName);
-      console.error(err);
+      console.error(JSON.stringify(err));
       if(callBackErr != null){
         callBackErr(err);
       }
@@ -182,7 +182,7 @@ angular.module("ngapp").service("shared", function($http,$localStorage,$sessionS
     }, function (err) {
       //$cordovaDialogs.alert('err', err, 'OK');
       console.error("error " + tblName);
-      console.error(err);
+      console.error(JSON.stringify(err));
       if(callBackErr != null){
         callBackErr(err);
       }

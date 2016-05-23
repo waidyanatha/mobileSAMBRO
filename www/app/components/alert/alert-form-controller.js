@@ -1,16 +1,5 @@
 "use strict";
 
-angular.element(document).ready(function () {
-  if (window.cordova) {
-    console.log("Running in Cordova, Back button.");
-    document.addEventListener("backbutton", function(){
-        callBackButton();
-    }, false);
-
-   
-  } 
-});
-
 angular.module("ngapp")
 .controller("AlertFormController", function(shared, $state, $scope, $compile,$rootScope, $mdSidenav, $mdComponentRegistry, $http, $cordovaDevice, $cordovaStatusbar,$cordovaGeolocation,$cordovaDialogs,$location,$localStorage,$cordovaSQLite,$filter,$timeout,$cordovaNetwork){
     shared.checkUserCached();
@@ -208,6 +197,7 @@ angular.module("ngapp")
     }
 
     ctrl.goBack = function(){
+        console.log("go back alert form");
         if(ctrl.currPage == 1){
             ctrl.goHome();
         }
@@ -903,7 +893,6 @@ angular.module("ngapp")
         },null);
     };   
     
-
     ctrl.dataPredefinedAreaOptions = new Array();
     ctrl.getPredefinedAreaData = function(filter,dataDB){
 
@@ -1275,7 +1264,7 @@ angular.module("ngapp")
             $(contain).addClass('leaflet-bar');
             $(contain).html('<button id="leaflet_myLocation" class="leaflet-control" '+
             'style="margin:0px;width: 30px;height: 30px;padding-bottom: 0px;padding-top: 0px;padding-right: 0px;border-left-width: 0px;padding-left: 0px;border-top-width: 0px;border-bottom-width: 0px;border-right-width: 0px;background: white;border-radius: 5px;" >'+
-            '<ng-md-icon icon="near-me"></ng-md-icon></button>');
+            '<ng-md-icon icon="target"></ng-md-icon></button>');
 
             return contain;
         }
