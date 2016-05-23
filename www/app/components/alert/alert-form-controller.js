@@ -45,6 +45,8 @@ angular.module("ngapp")
     ctrl.isNetworkOnline = $cordovaNetwork.isOnline();
     ctrl.isNetworkOffline = $cordovaNetwork.isOffline();
 
+    ctrl.serverUrlId = 1;
+
     console.log('network');
     console.log(ctrl.typeNetwork);
     console.log(ctrl.isNetworkOnline);
@@ -526,8 +528,8 @@ angular.module("ngapp")
         console.log($localStorage['password']);
         if(CryptoJS.AES.decrypt($localStorage['password'], "Secret Passphrase").toString(CryptoJS.enc.Utf8) == ctrl.password){
             if(ctrl.isNetworkOffline){
-                shared.insertDB("t_alert_offline","insert into t_alert_offline (created_time, data_form,data_form_json) values (?,?,?)",
-                [new Date(),strXML,JSON.stringify(submitFormVal)],     //[new Date(),JSON.stringify(submitFormVal)],
+                shared.insertDB("t_alert_offline","insert into t_alert_offline (created_time, data_form,data_form_json,server_url_id) values (?,?,?,?)",
+                [new Date(),strXML,JSON.stringify(submitFormVal),ctrl.serverUrlId],     //[new Date(),JSON.stringify(submitFormVal)],
                 function(result){
                     $cordovaDialogs.alert('The alert could not be sent to the server because you are offline at the moment.\nPlease check your network settings.\nThe alert will be sent as soon you are online again.','Stored alert in local', 'OK');
                     
@@ -578,15 +580,15 @@ angular.module("ngapp")
         
         //filter template
         ctrl.dataTemplateOptions = new Array();
-        ctrl.getTemplateData("where event_event_type_id = ?",[eventTypeObj['@value']]);
+        ctrl.getTemplateData("where event_event_type_id = ? and server_url_id=?",[eventTypeObj['@value'],ctrl.serverUrlId]);
 
         //predefined area
         ctrl.dataPredefinedAreaOptions = new Array();
-        ctrl.getPredefinedAreaData("where event_type_id = ?",[eventTypeObj['@value']]);
+        ctrl.getPredefinedAreaData("where event_type_id = ? and server_url_id=?",[eventTypeObj['@value'],ctrl.serverUrlId]);
 
         //warning priority
         ctrl.dataWarningPrioritys = new Array();
-        ctrl.getWarningPriorityData("where event_type_id = ?",[eventTypeObj['@value']]);
+        ctrl.getWarningPriorityData("where event_type_id = ? and server_url_id=?",[eventTypeObj['@value'],ctrl.serverUrlId]);
 
         angular.element( ".event-type-opt" ).removeClass('selectedList').addClass( "unSelectedList" );
         angular.element( "#event-type-opt_"+eventTypeObj['@value'] ).removeClass('unSelectedList').addClass( "selectedList" );
@@ -656,7 +658,7 @@ angular.module("ngapp")
 
     //SELECT met.* FROM m_event_type met INNER JOIN m_template mt ON met.id = mt.event_event_type_id
     //select * from m_event_type
-    shared.selectDB("m_event_type","SELECT distinct met.* FROM m_event_type met INNER JOIN m_template mt ON met.id = mt.event_event_type_id",[],function(result){
+    shared.selectDB("m_event_type","SELECT distinct met.* FROM m_event_type met INNER JOIN m_template mt ON met.id = mt.event_event_type_id where met.server_url_id=?",[ctrl.serverUrlId],function(result){
       if(result.rows.length > 0) {
 
         ctrl.hidePage[ctrl.checkPageIdx('event-type')].loadData = false;
@@ -672,7 +674,7 @@ angular.module("ngapp")
     },null);
 
     ctrl.dataResponseTypeOptions = new Array();
-    shared.selectDB("m_response_type","select * from m_response_type",[],function(result){
+    shared.selectDB("m_response_type","select * from m_response_type where server_url_id=?",[ctrl.serverUrlId],function(result){
       if(result.rows.length > 0) {
 
         ctrl.hidePage[ctrl.checkPageIdx('response-type')].loadData = false;
@@ -689,7 +691,7 @@ angular.module("ngapp")
     },null);
 
     ctrl.dataUrgencyOptions = new Array();
-    shared.selectDB("m_urgency","select * from m_urgency",[],function(result){
+    shared.selectDB("m_urgency","select * from m_urgency where server_url_id=?",[ctrl.serverUrlId],function(result){
       if(result.rows.length > 0) {
 
         for(var i=0;i<result.rows.length;i++){
@@ -703,7 +705,7 @@ angular.module("ngapp")
     },null);
 
     ctrl.dataCertaintyOptions = new Array();
-    shared.selectDB("m_certainty","select * from m_certainty",[],function(result){
+    shared.selectDB("m_certainty","select * from m_certainty where server_url_id=?",[ctrl.serverUrlId],function(result){
       if(result.rows.length > 0) {
         for(var i=0;i<result.rows.length;i++){
             var dataCertaintyOption = {
@@ -716,7 +718,7 @@ angular.module("ngapp")
     },null);
 
     ctrl.dataSeverityOptions = new Array();
-    shared.selectDB("m_severity","select * from m_severity",[],function(result){
+    shared.selectDB("m_severity","select * from m_severity where server_url_id=?",[ctrl.serverUrlId],function(result){
       if(result.rows.length > 0) {
         for(var i=0;i<result.rows.length;i++){
             var dataSeverityOption = {
@@ -729,7 +731,7 @@ angular.module("ngapp")
     },null);
 
     ctrl.dataScopeOptions = new Array();
-    shared.selectDB("m_scope","select * from m_scope",[],function(result){
+    shared.selectDB("m_scope","select * from m_scope where server_url_id=?",[ctrl.serverUrlId],function(result){
       if(result.rows.length > 0) {
 
         ctrl.hidePage[ctrl.checkPageIdx('scope')].loadData = false;
@@ -746,7 +748,7 @@ angular.module("ngapp")
 
     ctrl.dataGroupUsers = new Array();
     ctrl.showNoAvailableGroupUsers = false;
-    shared.selectDB("m_group_user","select * from m_group_user",[],function(result){
+    shared.selectDB("m_group_user","select * from m_group_user where server_url_id=?",[ctrl.serverUrlId],function(result){
       if(result.rows.length > 0) {
 
         ctrl.hidePage[ctrl.checkPageIdx('addresses')].loadData = false;
@@ -771,7 +773,7 @@ angular.module("ngapp")
     },null);
 
     ctrl.dataStatusOptions = new Array();
-    shared.selectDB("m_status","select * from m_status",[],function(result){
+    shared.selectDB("m_status","select * from m_status where server_url_id=?",[ctrl.serverUrlId],function(result){
       if(result.rows.length > 0) {
 
         ctrl.hidePage[ctrl.checkPageIdx('status')].loadData = false;
@@ -787,7 +789,7 @@ angular.module("ngapp")
     },null);
 
     ctrl.dataMsgTypeOptions = new Array();
-    shared.selectDB("m_msg_type","select * from m_msg_type",[],function(result){
+    shared.selectDB("m_msg_type","select * from m_msg_type where server_url_id=?",[ctrl.serverUrlId],function(result){
       if(result.rows.length > 0) {
 
         ctrl.hidePage[ctrl.checkPageIdx('msgType')].loadData = false;

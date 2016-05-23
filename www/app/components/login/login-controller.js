@@ -404,6 +404,14 @@ angular.module("ngapp")
               //diffrent database version
               console.log("diffrent database");
             }
+            else{
+              console.log("same database version");
+              //init run
+              ctrl.setServerUrl();
+
+              //init run
+              ctrl.selectAllUser();
+            }
           }
           else{
             console.log("app without database schema - old version");
@@ -699,6 +707,7 @@ angular.module("ngapp")
 
       createTableAndInsertData(0);
     };
+    ctrl.serverUrlId = 1;
     //========================================= end database section =========================================
 
 
@@ -724,7 +733,6 @@ angular.module("ngapp")
           ctrl.isOfflineDataExist = true;
           
           //for(var i=0;i<result.rows.length;i++){
-
             serverUrl = result.rows.item(0).server_url;
           //} 
         } 
@@ -784,8 +792,8 @@ angular.module("ngapp")
     ctrl.selectAllUser = function() {
       ctrl.dataUsers = new Array();
       console.log('select all user');
-      var query = "SELECT * FROM m_user";
-      $cordovaSQLite.execute(dbShared,query).then(function(result) {
+      var query = "SELECT * FROM m_user where server_url_id=?";
+      $cordovaSQLite.execute(dbShared,query, [ctrl.serverUrlId]).then(function(result) {
           if(result.rows.length > 0) {
               for(var i=0;i<result.rows.length;i++){
                 var dataUser = {
@@ -877,8 +885,8 @@ angular.module("ngapp")
 
     ctrl.userRole = "";
     ctrl.selectUser = function(email,pwd) {
-      var query = "SELECT * FROM m_user where email=?";
-      $cordovaSQLite.execute(dbShared,query, [email]).then(function(result) {
+      var query = "SELECT * FROM m_user where email=? and server_url_id=?";
+      $cordovaSQLite.execute(dbShared,query, [email,ctrl.serverUrlId]).then(function(result) {
           if(result.rows.length > 0) {
               var deviceTokenId = result.rows.item(0).device_token_id;
               ctrl.userRole = result.rows.item(0).user_role;
@@ -897,8 +905,8 @@ angular.module("ngapp")
 
     ctrl.updateUser = function(email,pwd,deviceTokenId) {
       shared.updateActiveUser();
-      var query = "update m_user set pwd=?,active_user=?,device_token_id=?,user_role=? where email=?";
-      $cordovaSQLite.execute(dbShared, query, [pwd,1,deviceTokenId,ctrl.userRole,email]).then(function(result) {
+      var query = "update m_user set pwd=?,active_user=?,device_token_id=?,user_role=? where email=? and server_url_id=?";
+      $cordovaSQLite.execute(dbShared, query, [pwd,1,deviceTokenId,ctrl.userRole,email,ctrl.serverUrlId]).then(function(result) {
         console.log("update user");
         
         ctrl.getUserProfile(email,ctrl.userId);
@@ -911,8 +919,8 @@ angular.module("ngapp")
 
     ctrl.insertUser = function(email,pwd) {
       shared.updateActiveUser();
-      var query = "insert into m_user (email,pwd,active_user,device_token_id,user_id,user_role) values (?,?,?,?,?,?)";
-      $cordovaSQLite.execute(dbShared, query, [email, pwd,1,$localStorage['deviceTokenId'],ctrl.userId,ctrl.userRole]).then(function(result) {
+      var query = "insert into m_user (email,pwd,active_user,device_token_id,user_id,user_role,server_url_id) values (?,?,?,?,?,?,?)";
+      $cordovaSQLite.execute(dbShared, query, [email, pwd,1,$localStorage['deviceTokenId'],ctrl.userId,ctrl.userRole,ctrl.serverUrlId]).then(function(result) {
         console.log("insert user");
         
         ctrl.getUserProfile(email,ctrl.userId);
@@ -924,8 +932,8 @@ angular.module("ngapp")
 
     ctrl.clickDeleteUser = function(idx){
         var email = ctrl.dataUsers[idx].email;
-        var query = "delete from m_user where email=?";
-        $cordovaSQLite.execute(dbShared, query, [email]).then(function(result) {
+        var query = "delete from m_user where email=? and server_url_id=?";
+        $cordovaSQLite.execute(dbShared, query, [email,ctrl.serverUrlId]).then(function(result) {
           console.log("delete user " + email);
           ctrl.dataUsers.splice(idx, 1);
           
@@ -995,8 +1003,8 @@ angular.module("ngapp")
         var promiseLoadData = shared.loadDataAlert(shared.apiUrl+'pr/person/'+userId.toString()+'.s3json');
         promiseLoadData.then(function(response) {
           console.log('saving content to DB');
-          var query = "update m_user set profile_json=? where email=?";
-          $cordovaSQLite.execute(dbShared, query, [JSON.stringify(response) , ctrlDetail.email]).then(function(result) {
+          var query = "update m_user set profile_json=? where email=? and server_url_id=?";
+          $cordovaSQLite.execute(dbShared, query, [JSON.stringify(response) , ctrlDetail.email,ctrl.serverUrlId]).then(function(result) {
             console.log("updated user profile");
 
             ctrl.checkTokenId(response);
