@@ -791,7 +791,7 @@ angular.module("ngapp")
           } 
         } 
         else{
-          shared.insertDB("t_server_url","insert into t_server_url (server_location,server_name,server_url) values (?,?,?)",["http://sambro.geoinfo.ait.ac.th/eden/",ctrl.serverName,ctrl.serverUrl],     //[new Date(),JSON.stringify(submitFormVal)],
+          shared.insertDB("t_server_url","insert into t_server_url (server_url,server_name,server_location) values (?,?,?)",["http://sambro.geoinfo.ait.ac.th/eden/",ctrl.serverName,ctrl.serverLocation],     //[new Date(),JSON.stringify(submitFormVal)],
           function(result){
           
               console.log('success insert to db server url');
