@@ -44,3 +44,7 @@ add server_url_id
 add curr_location text
 add database_version text
 add database_schema text
+
+v1.2  (24, May 2016)
+table t_server_url
+add active_server text
