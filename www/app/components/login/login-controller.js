@@ -5,7 +5,7 @@ angular.module("ngapp")
     var ctrl = this;
 
     //version 1.1
-    var databaseVersion = "1.1";
+    var databaseVersion = "1.2";
     $localStorage['databaseVersion'] = databaseVersion;
     var databaseSchema = {
       "tables": [{
@@ -322,6 +322,9 @@ angular.module("ngapp")
           }, {
               "name": "server_name",
               "type": "text"
+          }, {
+              "name": "active_server",
+              "type": "text"
           }]
       }]
     };
@@ -395,49 +398,9 @@ angular.module("ngapp")
       },null);
     };
 
-    var checkDBVersion = function(){
-      shared.selectDB("sync_data_master","SELECT * FROM sync_data_master",[],function(result){
-        console.log("result sync_data_master");
-        if(result.rows.length > 0) {
-          if(result.rows.item(0).database_version != undefined){
-            if(databaseVersion != result.rows.item(0).database_version){
-              //diffrent database version
-              console.log("diffrent database");
-            }
-            else{
-              console.log("same database version");
-              //init run
-              ctrl.setServerUrl();
-
-              //init run
-              ctrl.selectAllUser();
-            }
-          }
-          else{
-            console.log("app without database schema - old version");
-            getTablesName();
-          }
-        }
-        else{
-          //new application
-          console.log("new application");
-
-          for(var i=0;i<arrNewTableCreate.length;i++){
-            $cordovaSQLite.execute(dbShared, arrNewTableCreate[i].query);
-            arrNewTableCreate[i].created = true; 
-          }
-
-          //init run
-          ctrl.setServerUrl();
-
-          //init run
-          ctrl.selectAllUser();
-        } 
-      },null);
-    };
-
-    var customInsertForNewDBSchema = function(){
-      shared.updateDB("sync_data_master","update sync_data_master set database_version='1.1',database_schema='"+JSON.stringify(databaseSchema)+"',curr_location='POINT(100.612952 14.082130)',server_url_id=1 ",[]
+    ctrl.customInsertForNewDBSchema = function(){
+      console.log("customInsertForNewDBSchema 1");
+      shared.updateDB("sync_data_master","update sync_data_master set database_version='1.2',database_schema='"+JSON.stringify(databaseSchema)+"',curr_location='POINT(100.612952 14.082130)',server_url_id=1 ",[]
       ,function(result){
         console.log("success update");
 
@@ -445,7 +408,7 @@ angular.module("ngapp")
         console.log("error update");
       });
 
-      shared.updateDB("t_server_url","update t_server_url set server_location='POINT(100.612952 14.082130)',server_name='AIT' ",[]
+      shared.updateDB("t_server_url","update t_server_url set server_location='POINT(100.612952 14.082130)',server_name='AIT',active_server='true' ",[]
       ,function(result){
         console.log("success update");
 
@@ -588,6 +551,90 @@ angular.module("ngapp")
       ctrl.selectAllUser();
     };
 
+    var checkDBVersion = function(){
+      shared.selectDB("sync_data_master","SELECT * FROM sync_data_master",[],function(result){
+        console.log("result sync_data_master");
+        if(result.rows.length > 0) {
+          if(result.rows.item(0).database_version != undefined){
+            if(databaseVersion != result.rows.item(0).database_version){
+              //diffrent database version
+              console.log("Different database version");
+              console.log("Database version old = "+result.rows.item(0).database_version);
+              console.log("Database version new = "+databaseVersion);
+              if(databaseVersion == "1.2" && result.rows.item(0).database_version == "1.1"){
+                console.log("version 1.1 to 1.2");
+                ctrl.customInsertForNewDBSchema = function(){
+                  console.log("v1.2 change");
+                  shared.updateDB("sync_data_master","update sync_data_master set database_version='1.2',database_schema='"+JSON.stringify(databaseSchema)+"' ",[]
+                  ,function(result){
+                    console.log("success update");
+
+                  },function(error){
+                    console.log("error update");
+                  });
+
+                  shared.updateDB("t_server_url","update t_server_url set active_server='true' where id=1 ",[]
+                  ,function(result){
+                    console.log("success update");
+
+                  },function(error){
+                    console.log("error update");
+                  });
+                  //init run
+                  ctrl.setServerUrl();
+
+                  //init run
+                  ctrl.selectAllUser();
+                };
+                getTablesName();
+              }
+            }
+            else{
+              console.log("same database version");
+              //init run
+              ctrl.setServerUrl();
+
+              //init run
+              ctrl.selectAllUser();
+            }
+          }
+          else{
+            console.log("app without database schema - old version");
+            getTablesName();
+          }
+        }
+        else{
+          //new application
+          console.log("new application");
+
+          for(var i=0;i<arrNewTableCreate.length;i++){
+            $cordovaSQLite.execute(dbShared, arrNewTableCreate[i].query);
+            arrNewTableCreate[i].created = true; 
+          }
+
+          //init run
+          ctrl.setServerUrl();
+
+          //init run
+          ctrl.selectAllUser();
+        } 
+      },function(result){
+        //new application
+        console.log("new application");
+
+        for(var i=0;i<arrNewTableCreate.length;i++){
+          $cordovaSQLite.execute(dbShared, arrNewTableCreate[i].query);
+          arrNewTableCreate[i].created = true; 
+        }
+
+        //init run
+        ctrl.setServerUrl();
+
+        //init run
+        ctrl.selectAllUser();
+      });
+    };
+
     var createTableAndInsertData = function(i){
       console.log(arrTableSchema[i]);
       $cordovaSQLite.execute(dbShared, "DROP TABLE IF EXISTS temp_"+objTableCurrSchema.tables[i].name);
@@ -637,7 +684,7 @@ angular.module("ngapp")
               insertDataToNewTableFnc(i+1);
             }
             if(i+1 == objTableCurrSchema.tables.length){
-              customInsertForNewDBSchema();
+              ctrl.customInsertForNewDBSchema();
             }
           },function(error,tblName){
             console.log("error to new table ");
@@ -647,7 +694,7 @@ angular.module("ngapp")
               insertDataToNewTableFnc(i+1);
             }
             if(i+1 == objTableCurrSchema.tables.length){
-              customInsertForNewDBSchema();
+              ctrl.customInsertForNewDBSchema();
             }
           });
         }
@@ -717,6 +764,8 @@ angular.module("ngapp")
     ctrl.hideErrorMessage = true;
     ctrl.shared = shared;
     ctrl.serverUrl = shared.apiUrl;
+    ctrl.serverLocation = "POINT(100.612952 14.082130)";
+    ctrl.serverName = "AIT";
 
     //$localStorage.$reset();
     $localStorage['username'] = "";
@@ -724,6 +773,7 @@ angular.module("ngapp")
     $localStorage['userId'] = 0;
     $localStorage['userRole'] = "";
 
+    ctrl.listServerUrl = new Array();
     ctrl.setServerUrl = function(){
       shared.selectDB("t_server_url","select * from t_server_url",[],function(result){
         console.log('get server url');
@@ -732,16 +782,20 @@ angular.module("ngapp")
         if(result.rows.length > 0) {
           ctrl.isOfflineDataExist = true;
           
-          //for(var i=0;i<result.rows.length;i++){
-            serverUrl = result.rows.item(0).server_url;
-          //} 
+          for(var i=0;i<result.rows.length;i++){
+            ctrl.listServerUrl.push({serverUrl:result.rows.item(i).server_url,activeServer:result.rows.item(i).active_server});
+            if(result.rows.item(i).active_server == "true"){
+              serverUrl = result.rows.item(i).server_url;
+            }
+            
+          } 
         } 
         else{
-          shared.insertDB("t_server_url","insert into t_server_url (server_url) values (?)",
-          [serverUrl],     //[new Date(),JSON.stringify(submitFormVal)],
+          shared.insertDB("t_server_url","insert into t_server_url (server_location,server_name,server_url) values (?,?,?)",["http://sambro.geoinfo.ait.ac.th/eden/",ctrl.serverName,ctrl.serverUrl],     //[new Date(),JSON.stringify(submitFormVal)],
           function(result){
           
               console.log('success insert to db server url');
+              ctrl.setServerUrl();
           },function(error){
               
               console.log('error to db db server url');
@@ -877,9 +931,9 @@ angular.module("ngapp")
       $localStorage['serverUrl'] = ctrl.serverUrl;
 
       console.log("change server to "+ctrl.serverUrl);
-      shared.updateDB("t_server_url","update t_server_url set server_url=?",[ctrl.serverUrl],null,null);
+      shared.insertDB("t_server_url","insert into t_server_url (server_location,server_name,server_url) values (?,?,?)",[ctrl.serverLocation,ctrl.serverName,ctrl.serverUrl],null,null);
 
-      shared.deleteDB("sync_data_master",null,null);
+      shared.deleteDBWithFilter("sync_data_master","where server_url_id=?",[ctrl.serverUrlId],null,null);
       ctrl.cancelChangeServerUrl();
     };
 

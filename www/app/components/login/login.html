@@ -8,9 +8,10 @@
         <div layout="row" layout-align="space-around center" flex="20">
             <img src="cap.png">
         </div>
-        <form style="margin:1em auto;" name="loginForm" novalidate flex="80">
+        
 
           <div ng-show="login.loginFormContainer">
+            <form style="margin:1em auto;" name="loginForm" novalidate flex="80">
               <md-input-container class="md-block" md-no-float>
                   <input type="email" name="email" ng-model="login.loginForm.email" placeholder="Email"
                          ng-pattern="/^.+@.+\..+$/" required>
@@ -44,7 +45,7 @@
                            ng-click="login.clickChangeServerUrl()">
                     Change server url
                 </md-button> 
-                
+            </form>     
           </div>
           <div ng-show="login.directLoginContainer">
               <md-button class="md-raised md-accent" aria-label="{{login.userName}}" style="width:90%;"
@@ -71,31 +72,65 @@
           </div>
 
           <div ng-show="login.serverUrlChangeContainer">
-              <md-input-container class="md-block" md-no-float>
-                  <input type="text" name="serverUrl" ng-model="login.serverUrl" placeholder="Server Url" required>
-                  <div ng-messages="loginForm.serverUrl.$error" ng-show="loginForm.serverUrl.$touched" role="alert" multiple>
-                      <div ng-message="required">
-                          <span >Server url field is required</span>
-                      </div>
-                      
-                  </div>
-              </md-input-container> 
+            
+            <md-subheader class="md-no-sticky">Server List</md-subheader>
+            <md-radio-group ng-model="login.serverUrl" >
+              <md-list-item ng-repeat="serverUrl in login.listServerUrl" >
+                <md-radio-button flex
+                    ng-value="serverUrl.serverUrl"
+                    class="md-primary"
+                    ng-click="alertForm.clickWarningPriority(alertForm.dataWarningPrioritys.indexOf(dataWarningPriority))" >
+                    {{serverUrl.serverName - serverUrl.serverUrl}}
+                </md-radio-button>
+              </md-list-item>
+            </md-radio-group>
 
-              <div layout="row" layout-align="center center">
-                <md-button class="md-raised md-accent" aria-label="Cancel"
-                         ng-click="login.cancelChangeServerUrl();">
-                  Cancel
-                </md-button>  
-                <md-button type="submit" class="md-raised md-accent" aria-label="LOG IN" style="width:90%;" ng-click="login.submitChangeServerUrl();">
-                    Change
-                </md-button>
-              </div>
+            <form style="margin:1em auto;" name="serverForm" novalidate flex="80">
+            <md-input-container class="md-block" md-no-float>
+                <input type="text" name="serverUrl" ng-model="login.serverUrl" placeholder="Server Url" required>
+                <div ng-messages="serverForm.serverUrl.$error" ng-show="serverForm.serverUrl.$touched" role="alert" multiple>
+                    <div ng-message="required">
+                        <span >Server url field is required</span>
+                    </div>
+                    
+                </div>
+            </md-input-container> 
 
+            <md-input-container class="md-block" md-no-float>
+                <input type="text" name="serverName" ng-model="login.serverName" placeholder="Server Name" required>
+                <div ng-messages="serverForm.serverName.$error" ng-show="serverForm.serverName.$touched" role="alert" multiple>
+                    <div ng-message="required">
+                        <span >Server name field is required</span>
+                    </div>
+                    
+                </div>
+            </md-input-container> 
+
+            <md-input-container class="md-block" md-no-float>
+                <input type="text" name="serverLocation" ng-model="login.serverLocation" placeholder="Server Url" required>
+                <div ng-messages="serverForm.serverLocation.$error" ng-show="serverForm.serverLocation.$touched" role="alert" multiple>
+                    <div ng-message="required">
+                        <span >Server location field is required</span>
+                    </div>
+                    
+                </div>
+            </md-input-container> 
+
+            <div layout="row" layout-align="center center">
+              <md-button class="md-raised md-accent" aria-label="Cancel"
+                       ng-click="login.cancelChangeServerUrl();">
+                Cancel
+              </md-button>  
+              <md-button type="submit" class="md-raised md-accent" aria-label="LOG IN" style="width:90%;" ng-click="login.submitChangeServerUrl();">
+                  Change
+              </md-button>
+            </div>
+            </form>
               
           </div>
 
           
-        </form>
+        
           
       </div>
     <div flex="5"></div>
