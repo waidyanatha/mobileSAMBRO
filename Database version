@@ -48,3 +48,9 @@ add database_schema text
 v1.2  (24, May 2016)
 table t_server_url
 add active_server text
+
+v1.3  (28, May 2016)
+add table m_category
+add fvalue text
+add name text
+add server_url_id integer
