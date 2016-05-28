@@ -5,7 +5,7 @@ angular.module("ngapp")
     var ctrl = this;
 
     //version 1.1
-    var databaseVersion = "1.2";
+    var databaseVersion = "1.3";
     $localStorage['databaseVersion'] = databaseVersion;
     var databaseSchema = {
       "tables": [{
@@ -42,7 +42,7 @@ angular.module("ngapp")
           "name": "t_alert",
           "columns": [{
               "name": "id",
-              "type": "integer"
+              "type": "integer primary key AUTOINCREMENT"
           }, {
               "name": "cap_info_headline",
               "type": "text"
@@ -69,7 +69,7 @@ angular.module("ngapp")
           "name": "t_alert_offline",
           "columns": [{
               "name": "id",
-              "type": "INTEGER"
+              "type": "integer primary key AUTOINCREMENT"
           }, {
               "name": "created_time",
               "type": "text"
@@ -87,7 +87,7 @@ angular.module("ngapp")
           "name": "m_event_type",
           "columns": [{
               "name": "id",
-              "type": "integer"
+              "type": "integer primary key AUTOINCREMENT"
           }, {
               "name": "name",
               "type": "text"
@@ -174,7 +174,7 @@ angular.module("ngapp")
           "name": "m_group_user",
           "columns": [{
               "name": "id",
-              "type": "integer"
+              "type": "integer primary key AUTOINCREMENT"
           }, {
               "name": "name",
               "type": "text"
@@ -207,7 +207,7 @@ angular.module("ngapp")
           "name": "m_warning_priority",
           "columns": [{
               "name": "id",
-              "type": "integer"
+              "type": "integer primary key AUTOINCREMENT"
           }, {
               "name": "name",
               "type": "text"
@@ -237,7 +237,7 @@ angular.module("ngapp")
           "name": "m_template",
           "columns": [{
               "name": "id",
-              "type": "integer"
+              "type": "integer primary key AUTOINCREMENT"
           }, {
               "name": "template_title",
               "type": "text"
@@ -270,7 +270,7 @@ angular.module("ngapp")
           "name": "m_predefined_area",
           "columns": [{
               "name": "id",
-              "type": "integer"
+              "type": "integer primary key AUTOINCREMENT"
           }, {
               "name": "name",
               "type": "text"
@@ -312,7 +312,7 @@ angular.module("ngapp")
           "name": "t_server_url",
           "columns": [{
               "name": "id",
-              "type": "integer"
+              "type": "integer primary key AUTOINCREMENT"
           }, {
               "name": "server_url",
               "type": "text"
@@ -325,6 +325,18 @@ angular.module("ngapp")
           }, {
               "name": "active_server",
               "type": "text"
+          }]
+      }, {
+          "name": "m_category",
+          "columns": [{
+              "name": "fvalue",
+              "type": "text"
+          }, {
+              "name": "name",
+              "type": "text"
+          }, {
+              "name": "server_url_id",
+              "type": "integer"
           }]
       }]
     };
@@ -416,7 +428,7 @@ angular.module("ngapp")
         console.log("error update");
       });
 
-      shared.insertDB("t_server_url","insert into t_server_url (server_location,server_name,server_url) values ('POINT(16.865134 96.153957)','MYANMAR','http://203.81.87.42/eden/')",[]
+      shared.insertDB("t_server_url","insert into t_server_url (server_location,server_name,server_url,active_server) values ('POINT(16.865134 96.153957)','MYANMAR','http://203.81.87.42/eden/','false')",[]
       ,function(result){
         console.log("success update");
 
@@ -782,16 +794,34 @@ angular.module("ngapp")
         if(result.rows.length > 0) {
           ctrl.isOfflineDataExist = true;
           
+          var isActive = false;
           for(var i=0;i<result.rows.length;i++){
-            ctrl.listServerUrl.push({serverUrl:result.rows.item(i).server_url,activeServer:result.rows.item(i).active_server});
+            var dataServerUrl = {serverId:result.rows.item(i).id,serverUrl:result.rows.item(i).server_url,serverName:result.rows.item(i).server_name,activeServer:result.rows.item(i).active_server};
+            ctrl.listServerUrl.push(dataServerUrl);
             if(result.rows.item(i).active_server == "true"){
               serverUrl = result.rows.item(i).server_url;
+              ctrl.serverUrlId = result.rows.item(i).id;
+              isActive = true;
             }
+            console.log("dataServerUrl = "+ JSON.stringify(dataServerUrl));
+          }
+          if(isActive == false){
+            serverUrl = result.rows.item(0).server_url;
+            ctrl.serverUrlId = result.rows.item(0).id;
+
+            shared.updateDB("t_server_url","update t_server_url set active_server='true' where id=?",[ctrl.serverUrlId],     //[new Date(),JSON.stringify(submitFormVal)],
+            function(result){
             
+                console.log('success update to db server url');
+                ctrl.setServerUrl();
+            },function(error){
+                
+                console.log('error update to db server url');
+            });
           } 
         } 
         else{
-          shared.insertDB("t_server_url","insert into t_server_url (server_url,server_name,server_location) values (?,?,?)",["http://sambro.geoinfo.ait.ac.th/eden/",ctrl.serverName,ctrl.serverLocation],     //[new Date(),JSON.stringify(submitFormVal)],
+          shared.insertDB("t_server_url","insert into t_server_url (server_url,server_name,server_location,active_server) values (?,?,?,?)",["http://sambro.geoinfo.ait.ac.th/eden/",ctrl.serverName,ctrl.serverLocation,"true"],     //[new Date(),JSON.stringify(submitFormVal)],
           function(result){
           
               console.log('success insert to db server url');
@@ -802,8 +832,10 @@ angular.module("ngapp")
           });
         }
         $localStorage['serverUrl'] = serverUrl;
+        $localStorage['serverId'] = ctrl.serverUrlId;
         ctrl.serverUrl = serverUrl;
-        console.log($localStorage['serverUrl']);
+        console.log("[login] serverUrl = " + $localStorage['serverUrl']);
+        console.log("[login] serverId = " + $localStorage['serverId']);
       },null);
     };
 
@@ -912,7 +944,7 @@ angular.module("ngapp")
       ctrl.selectLoginContainer = false;
       ctrl.serverUrlChangeContainer = false;
     };
-    ctrl.clickChangeServerUrl = function(){
+    ctrl.clickChangeServerUrlForm = function(){
       ctrl.loginFormContainer = false;
       ctrl.directLoginContainer = false;
       ctrl.selectLoginContainer = false;
@@ -930,10 +962,10 @@ angular.module("ngapp")
       shared.apiUrl = ctrl.serverUrl;
       $localStorage['serverUrl'] = ctrl.serverUrl;
 
-      console.log("change server to "+ctrl.serverUrl);
-      shared.insertDB("t_server_url","insert into t_server_url (server_location,server_name,server_url) values (?,?,?)",[ctrl.serverLocation,ctrl.serverName,ctrl.serverUrl],null,null);
+      console.log("add server "+ctrl.serverUrl);
+      shared.insertDB("t_server_url","insert into t_server_url (server_location,server_name,server_url,active_server) values (?,?,?,?)",[ctrl.serverLocation,ctrl.serverName,ctrl.serverUrl,'false'],null,null);
 
-      shared.deleteDBWithFilter("sync_data_master","where server_url_id=?",[ctrl.serverUrlId],null,null);
+      //shared.deleteDBWithFilter("sync_data_master","where server_url_id=?",[ctrl.serverUrlId],null,null);
       ctrl.cancelChangeServerUrl();
     };
 
@@ -1189,6 +1221,29 @@ angular.module("ngapp")
         console.log('Failed: ' + reason);
         failed();
       });
+    };
+
+    ctrl.clickChangeServerUrl = function(idx){
+      console.log("clickChangeServerUrl idx");
+      console.log(idx);
+      ctrl.serverUrlId = ctrl.listServerUrl[idx].serverId;
+      $localStorage['serverUrl'] = ctrl.listServerUrl[idx].serverUrl;
+      shared.updateDB("t_server_url","update t_server_url set active_server='false'",[]
+      ,function(result){
+        console.log("success update t_server_url active_server = false");
+
+        shared.updateDB("t_server_url","update t_server_url set active_server='true' where id=?",[ctrl.serverUrlId]
+        ,function(result1){
+          console.log("success update t_server_url active_server = true");
+
+        },function(error1){
+          console.log("error update t_server_url active_server = true");
+        });
+
+      },function(error){
+        console.log("error update t_server_url active_server = false");
+      });
+
     };
 
     //init run

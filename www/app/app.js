@@ -37,6 +37,7 @@ angular.module("ngapp", [ "ngTouch", "ui.router", "ngMdIcons", "ngMaterial", "ng
   //http://203.159.29.15:8181/eden/
   //http://sambro.geoinfo.ait.ac.th/eden/
   $localStorage['serverUrl'] = "http://sambro.geoinfo.ait.ac.th/eden/";
+  $localStorage['serverId'] = 1;
 
   if($localStorage['username'] == ""){
     $location.path("/login");

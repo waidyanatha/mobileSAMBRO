@@ -95,7 +95,10 @@ angular.module("ngapp").service("shared", function($http,$localStorage,$sessionS
     } );
   };
 
-  ctrl.serverUrlId = 1;
+  ctrl.serverUrlId = $localStorage['serverId'];
+  ctrl.refreshServerUrlId = function(){
+    ctrl.serverUrlId = $localStorage['serverId'];
+  };
 
   this.sendFormViaDBFnc = function(email,password,success,failed)
     {
@@ -259,6 +262,10 @@ angular.module("ngapp").service("shared", function($http,$localStorage,$sessionS
   };
   
   ctrl.loadAllMasterData = function(callBackFinish){
+    ctrl.apiUrl = $localStorage['serverUrl'];
+    ctrl.serverUrlId = $localStorage['serverId'];
+    console.log("loadAllMasterData");
+    console.log(ctrl.serverUrlId);
     var ctrlDetail = this;
     ctrlDetail.callBackFinish = callBackFinish;
     var promiseLoadData = ctrl.loadDataAlert(ctrl.apiUrl+'cap/alert/create.s3json?options=true&references=true');
@@ -273,7 +280,7 @@ angular.module("ngapp").service("shared", function($http,$localStorage,$sessionS
             for(var j=0;j<dataField[i]['select'][0]['option'].length;j++){
                 if(dataField[i]['select'][0]['option'][j]['@value'] != ""){
                   var query = "insert into m_event_type (id, name,icon,server_url_id) values (?,?,?,?)";
-                  var dataDB = [parseInt(dataField[i]['select'][0]['option'][j]['@value']),dataField[i]['select'][0]['option'][j]['$'],''];
+                  var dataDB = [parseInt(dataField[i]['select'][0]['option'][j]['@value']),dataField[i]['select'][0]['option'][j]['$'],'',ctrl.serverUrlId];
                   var callBack = function(result){
                     console.log('success insert to db');
                     ctrl.setBooleanDataLoad(ctrlDetail.callBackFinish,"m_event_type");
@@ -300,6 +307,24 @@ angular.module("ngapp").service("shared", function($http,$localStorage,$sessionS
                     console.log('error to db');
                   };
                   ctrl.insertDB("m_response_type",query,dataDB,callBack,callBackErr);
+                }
+                
+            }
+        }
+        else if(dataField[i]['@name'] == "category"){
+            ctrl.deleteDB("m_category",null,null);
+            for(var j=0;j<dataField[i]['select'][0]['option'].length;j++){
+                if(dataField[i]['select'][0]['option'][j]['@value'] != ""){
+                  var query = "insert into m_category (fvalue, name, server_url_id) values (?,?,?)";
+                  var dataDB = [dataField[i]['select'][0]['option'][j]['@value'],dataField[i]['select'][0]['option'][j]['$'],ctrl.serverUrlId];
+                  var callBack = function(result){
+                    console.log('success insert to db');
+                    ctrl.setBooleanDataLoad(ctrlDetail.callBackFinish,"m_category");
+                  };
+                  var callBackErr = function(error){
+                    console.log('error to db');
+                  };
+                  ctrl.insertDB("m_category",query,dataDB,callBack,callBackErr);
                 }
                 
             }
@@ -413,7 +438,7 @@ angular.module("ngapp").service("shared", function($http,$localStorage,$sessionS
         }
       }
     }, function(reason) {
-      console.log('Failed: ' + reason);
+      console.log('Failed: ' + JSON.stringify(reason));
     });
 
     var promiseLoadDataTemplate = ctrl.loadDataAlert(ctrl.apiUrl+'cap/template.json');

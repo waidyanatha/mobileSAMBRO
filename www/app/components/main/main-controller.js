@@ -18,8 +18,13 @@ angular.module("ngapp")
     ctrl.showProfilePage = false;
     ctrl.showSettingPage = false;
 
-    ctrl.serverUrlId = 1;
+    ctrl.serverUrlId = $localStorage['serverId'];
+    ctrl.serverUrl = $localStorage['serverUrl'];
+    shared.refreshServerUrlId();
 
+    console.log("serverUrlId = "+ctrl.serverUrlId);
+    console.log("serverUrl = "+ctrl.serverUrl);
+    
     ctrl.clickBackBtn = function(){
       ctrl.showAlertListPage = true;
       ctrl.showAlertDetailPage = false;
@@ -33,8 +38,7 @@ angular.module("ngapp")
       if(ctrl.showAlertListPage == false){
         ctrl.clickBackBtn(); 
         console.log("execute back button");
-      }
-        
+      }  
     };
 
     varOutside = ctrl;
@@ -102,8 +106,6 @@ angular.module("ngapp")
     ctrl.evenTypeIcon = function(eventTypeName){
         return "assets/images/disaster/"+ shared.evenTypeIcon(eventTypeName) + ".png";
     }; 
-
-    
 
     ctrl.clickHyperlinkAlert = function(idAlert){
       navigator.app.loadUrl(shared.apiUrl+"cap/alert/"+idAlert.toString()+"/profile", {openExternal : true});
@@ -417,14 +419,6 @@ angular.module("ngapp")
     else{
       ctrl.getDataAlertFromAPI();
     }
-
-    ctrl.serverUrl = shared.apiUrl;
-    ctrl.changeServerUrl = function(){
-      console.log("change server to "+ctrl.serverUrl);
-      shared.updateDB("t_server_url","update t_server_url set server_url=?",[ctrl.serverUrl],null,null);
-      $localStorage['serverUrl'] = ctrl.serverUrl;
-      ctrl.syncFromSetting();
-    };
 
     // listen for Online event
     $rootScope.$on('$cordovaNetwork:online', function(event, networkState){

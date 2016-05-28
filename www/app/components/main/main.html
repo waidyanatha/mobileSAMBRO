@@ -141,13 +141,6 @@
         </div>
 
         <div ng-show="main.showSettingPage">
-          <md-subheader class="md-no-sticky">Server Setting</md-subheader>
-          <md-input-container style="padding-left:15px;" class="md-block">
-              <input type="text" name="serverUrl" ng-model="main.serverUrl" ng-blur="main.changeServerUrl()" placeholder="Server Url"
-                 required>   
-          </md-input-container>
-          <md-divider ></md-divider>
-
           <md-progress-linear md-mode="indeterminate" ng-show="main.isSync"></md-progress-linear>
           <md-button style="width: 95%;" layout-align="center center" class="md-raised md-accent" aria-label="Back"
                    ng-click="main.syncFromSetting()">

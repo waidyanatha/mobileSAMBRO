@@ -45,7 +45,12 @@ angular.module("ngapp")
     ctrl.isNetworkOnline = $cordovaNetwork.isOnline();
     ctrl.isNetworkOffline = $cordovaNetwork.isOffline();
 
-    ctrl.serverUrlId = 1;
+    ctrl.serverUrlId = $localStorage['serverId'];
+    ctrl.serverUrl = $localStorage['serverUrl'];
+    shared.refreshServerUrlId();
+
+    console.log("serverUrlId = "+ctrl.serverUrlId);
+    console.log("serverUrl = "+ctrl.serverUrl);
 
     console.log('network');
     console.log(ctrl.typeNetwork);
@@ -141,7 +146,7 @@ angular.module("ngapp")
     };
 
     ctrl.currPage = 1;
-    ctrl.hidePage = [{'pageName':'event-type','isHide':false,'loadData':true},{'pageName':'status','isHide':true,'loadData':true},{'pageName':'msgType','isHide':true,'loadData':true},{'pageName':'template','isHide':true,'loadData':true},{'pageName':'location','isHide':true,'loadData':true},{'pageName':'response-type','isHide':true,'loadData':true},{'pageName':'warning-priority','isHide':true,'loadData':true},{'pageName':'scope','isHide':true,'loadData':true},{'pageName':'addresses','isHide':true,'loadData':true},{'pageName':'note','isHide':true,'loadData':true},{'pageName':'date','isHide':true,'loadData':true},{'pageName':'parameter','isHide':true,'loadData':true},{'pageName':'submit','isHide':true,'loadData':true}];
+    ctrl.hidePage = [{'pageName':'event-type','isHide':false,'loadData':true},{'pageName':'status','isHide':true,'loadData':true},{'pageName':'msgType','isHide':true,'loadData':true},{'pageName':'template','isHide':true,'loadData':true},{'pageName':'location','isHide':true,'loadData':true},{'pageName':'response-type','isHide':true,'loadData':true},{'pageName':'category','isHide':true,'loadData':true},{'pageName':'warning-priority','isHide':true,'loadData':true},{'pageName':'scope','isHide':true,'loadData':true},{'pageName':'addresses','isHide':true,'loadData':true},{'pageName':'note','isHide':true,'loadData':true},{'pageName':'date','isHide':true,'loadData':true},{'pageName':'parameter','isHide':true,'loadData':true},{'pageName':'submit','isHide':true,'loadData':true}];
     ctrl.progress = 100/ctrl.hidePage.length;
     ctrl.progressText = ctrl.currPage.toString()+"/"+ctrl.hidePage.length.toString();
     ctrl.btnBackName = "< Home";
@@ -256,6 +261,15 @@ angular.module("ngapp")
         else if(ctrl.hidePage[ctrl.currPage-1].pageName == 'response-type'){
             for(var i=0;i<ctrl.dataResponseTypeOptions.length;i++){
                 if(ctrl.dataResponseTypeOptions[i].selected == true){
+
+                    return false;
+                    break;
+                }
+            }
+        }
+        else if(ctrl.hidePage[ctrl.currPage-1].pageName == 'category'){
+            for(var i=0;i<ctrl.dataCategoryOptions.length;i++){
+                if(ctrl.dataCategoryOptions[i].selected == true){
 
                     return false;
                     break;
@@ -403,6 +417,25 @@ angular.module("ngapp")
             responseTypeValXML = responseTypeValXML + ']';
         }
 
+        var categoryVal = '';   //sample [\"AllClear\",\"Prepare\"]
+        var categoryValXML = '';   //sample [\"AllClear\",\"Prepare\"]
+        for(var i=0;i<ctrl.dataCategoryOptions.length;i++){
+            if(ctrl.dataCategoryOptions[i].selected == true){
+                if(categoryVal == ''){
+                    categoryVal = '[\"' + ctrl.dataCategoryOptions[i]['@value'] + '\"';
+                    categoryValXML = '["' + ctrl.dataCategoryOptions[i]['@value'] + '"';
+                }
+                else{
+                    categoryVal = categoryVal + ',\"' + ctrl.dataCategoryOptions[i]['@value'] + '\"';
+                    categoryValXML = categoryValXML + ',"' + ctrl.dataCategoryOptions[i]['@value'] + '"';
+                }
+            }
+        }
+        if(categoryVal != ''){
+            categoryVal = categoryVal + ']';
+            categoryValXML = categoryValXML + ']';
+        }
+
         var capGroupUserValXML = "";
         for(var i=0;i<ctrl.dataGroupUsers.length;i++){
             if(ctrl.dataGroupUsers[i].selected == true){
@@ -468,6 +501,7 @@ angular.module("ngapp")
                       "@value" : ctrl.dataAlertForm.eventType.id.toString()
                     },
                     "response_type" : {"@value": responseTypeVal},
+                    "category" : {"@value": categoryVal},
                     "urgency" : {
                       "@value" : ctrl.dataAlertForm.urgency
                      },
@@ -512,6 +546,7 @@ angular.module("ngapp")
             '        <data field="instruction">'+ctrl.dataAlertForm.instruction+'</data>'+
             '        <data field="event_type_id">'+ctrl.dataAlertForm.eventType.id.toString()+'</data>'+
             '        <data field="response_type">'+responseTypeValXML+'</data>'+
+            '        <data field="category">'+categoryValXML+'</data>'+
             warningPriorityXml+
             '        <data field="expires">'+$filter('date')(ctrl.dataAlertForm.expireDate,"yyyy-MM-ddTHH:mm:ss")+'</data>'+
             '        <data field="onset">'+$filter('date')(ctrl.dataAlertForm.onSetDate,"yyyy-MM-ddTHH:mm:ss")+'</data>'+
@@ -655,6 +690,21 @@ angular.module("ngapp")
 
     ctrl.dataEventTypeOptions = new Array();
 
+    shared.selectDB("m_event_type","SELECT distinct met.* FROM m_event_type met INNER JOIN m_template mt ON met.id = mt.event_event_type_id",[],function(result){
+      if(result.rows.length > 0) {
+
+        for(var i=0;i<result.rows.length;i++){
+            var dataEventTypeOption = {
+                '@value':result.rows.item(i).id,
+                '$':result.rows.item(i).name,
+                'serverUrlId':result.rows.item(i).server_url_id
+            };
+            console.log("-- m_event_type --");
+            console.log(JSON.stringify(dataEventTypeOption));
+            //ctrl.dataEventTypeOptions.push(dataEventTypeOption);   
+        } 
+      } 
+    },null);
 
     //SELECT met.* FROM m_event_type met INNER JOIN m_template mt ON met.id = mt.event_event_type_id
     //select * from m_event_type
@@ -686,6 +736,23 @@ angular.module("ngapp")
                 'selected':false
             };
             ctrl.dataResponseTypeOptions.push(dataResponseTypeOption);   
+        } 
+      } 
+    },null);
+
+    ctrl.dataCategoryOptions = new Array();
+    shared.selectDB("m_category","select * from m_category where server_url_id=?",[ctrl.serverUrlId],function(result){
+      if(result.rows.length > 0) {
+
+        ctrl.hidePage[ctrl.checkPageIdx('category')].loadData = false;
+
+        for(var i=0;i<result.rows.length;i++){
+            var dataCategoryOption = {
+                '@value':result.rows.item(i).fvalue,
+                '$':result.rows.item(i).name,
+                'selected':false
+            };
+            ctrl.dataCategoryOptions.push(dataCategoryOption);   
         } 
       } 
     },null);
@@ -832,20 +899,51 @@ angular.module("ngapp")
 
                 //filter value for parameter value
                 var arrNewVal = new Array();
+                console.log("cap_info.parameter");
+                console.log(dataTemplateOption['cap_info.parameter']);
+                var nextInfoParameter = false;
                 if(dataTemplateOption['cap_info.parameter'] != null){
+                    console.log("1");
                     if(angular.isArray(dataTemplateOption['cap_info.parameter'])){
+                        console.log("2");
                         for(var j=0;j<dataTemplateOption['cap_info.parameter'].length;j++){
+                            console.log("3");
                             var val = JSON.parse(dataTemplateOption['cap_info.parameter'][j]);
                             if(angular.isArray(val)){
+                                console.log("4");
                                 if(val.length>0){
+                                    console.log("5");
                                     var valDetail = new Array();
                                     for(var k=0;k<val.length;k++){
+                                        console.log("6");
                                         if(val[k].key.indexOf("sahana") > -1){
+                                            console.log("7");
                                             valDetail.push(val[k]);
                                         }
                                     }
                                     arrNewVal = valDetail;
                                 }   
+                            }
+                        }
+                        
+                    }
+                    else{
+                        dataTemplateOption['cap_info.parameter'] = JSON.parse(dataTemplateOption['cap_info.parameter']);
+                        console.log("1_");
+                        if(angular.isArray(dataTemplateOption['cap_info.parameter'])){
+                            console.log("1__");
+                            console.log("2");
+                            for(var j=0;j<dataTemplateOption['cap_info.parameter'].length;j++){
+                                console.log("3");
+
+                                var val = dataTemplateOption['cap_info.parameter'][j];
+                                console.log( JSON.stringify(val));
+                                var valDetail = new Array();
+                                if(val.key.indexOf("sahana") > -1){
+                                    console.log("7");
+                                    arrNewVal.push(val);
+                                }
+                            
                             }
                         }
                     }

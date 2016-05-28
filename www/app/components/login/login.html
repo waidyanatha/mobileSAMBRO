@@ -11,7 +11,7 @@
         
 
           <div ng-show="login.loginFormContainer">
-            <form style="margin:1em auto;" name="loginForm" novalidate flex="80">
+            <form style="margin:1em auto;" name="loginForm" novalidate flex="100">
               <md-input-container class="md-block" md-no-float>
                   <input type="email" name="email" ng-model="login.loginForm.email" placeholder="Email"
                          ng-pattern="/^.+@.+\..+$/" required>
@@ -42,7 +42,7 @@
                 <div ng-hide="login.hideErrorMessage" class="msg-wrong-pass md-warn-fg text-center">Username or Password is Wrong</div>   
 
                 <md-button type="submit" class="md-raised md-accent" aria-label="Server Url" style="width:90%;"
-                           ng-click="login.clickChangeServerUrl()">
+                           ng-click="login.clickChangeServerUrlForm()">
                     Change server url
                 </md-button> 
             </form>     
@@ -75,17 +75,17 @@
             
             <md-subheader class="md-no-sticky">Server List</md-subheader>
             <md-radio-group ng-model="login.serverUrl" >
-              <md-list-item ng-repeat="serverUrl in login.listServerUrl" >
+              <md-list-item ng-repeat="serverUrlObj in login.listServerUrl" >
                 <md-radio-button flex
-                    ng-value="serverUrl.serverUrl"
+                    ng-value="serverUrlObj.serverUrl"
                     class="md-primary"
-                    ng-click="alertForm.clickWarningPriority(alertForm.dataWarningPrioritys.indexOf(dataWarningPriority))" >
-                    {{serverUrl.serverName - serverUrl.serverUrl}}
+                    ng-click="login.clickChangeServerUrl(login.listServerUrl.indexOf(serverUrlObj))" >
+                    {{serverUrlObj.serverName}} - {{serverUrlObj.serverUrl}}
                 </md-radio-button>
               </md-list-item>
             </md-radio-group>
 
-            <form style="margin:1em auto;" name="serverForm" novalidate flex="80">
+            <form style="margin:1em auto;" name="serverForm" novalidate flex="100">
             <md-input-container class="md-block" md-no-float>
                 <input type="text" name="serverUrl" ng-model="login.serverUrl" placeholder="Server Url" required>
                 <div ng-messages="serverForm.serverUrl.$error" ng-show="serverForm.serverUrl.$touched" role="alert" multiple>
@@ -122,7 +122,7 @@
                 Cancel
               </md-button>  
               <md-button type="submit" class="md-raised md-accent" aria-label="LOG IN" style="width:90%;" ng-click="login.submitChangeServerUrl();">
-                  Change
+                  Add
               </md-button>
             </div>
             </form>
