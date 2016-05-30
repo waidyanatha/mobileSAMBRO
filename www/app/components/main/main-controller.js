@@ -108,7 +108,7 @@ angular.module("ngapp")
     }; 
 
     ctrl.clickHyperlinkAlert = function(idAlert){
-      navigator.app.loadUrl(shared.apiUrl+"cap/alert/"+idAlert.toString()+"/profile", {openExternal : true});
+      navigator.app.loadUrl($localStorage['serverUrl']+"cap/alert/"+idAlert.toString()+"/profile", {openExternal : true});
     }
 
     ctrl.clickAlertDetail = function(idx){
@@ -296,7 +296,7 @@ angular.module("ngapp")
 
     ctrl.getDataAlertFromAPI = function(){
       ctrl.loadDataAlert = true;
-      var promiseLoadData = shared.loadDataAlert(shared.apiUrl+'cap/alert.json');
+      var promiseLoadData = shared.loadDataAlert($localStorage['serverUrl']+'cap/alert.json');
       promiseLoadData.then(function(response) {
         //console.log(response);
         ctrl.deleteAlert();
@@ -328,7 +328,7 @@ angular.module("ngapp")
     };
 
     ctrl.getDataAlertGeoFromAPI = function(){
-      var promiseLoadData = shared.loadDataAlert(shared.apiUrl+'cap/alert.geojson');
+      var promiseLoadData = shared.loadDataAlert($localStorage['serverUrl']+'cap/alert.geojson');
       promiseLoadData.then(function(response) {
         var currentId = 0;
         var currentSpatial = new Array();
@@ -379,6 +379,7 @@ angular.module("ngapp")
           console.log(periodicSyncDate);
           if(dateDiff >= periodicSyncDate && ctrl.isNetworkOnline ){
             shared.loadAllMasterData(function(){
+              console.log("loadAllMasterData done and update table");
               shared.updateDB("sync_data_master","update sync_data_master set time_sync=? where server_url_id=?",[new Date(),ctrl.serverUrlId],null,null);
 
               //enabled button add alert
@@ -394,6 +395,7 @@ angular.module("ngapp")
       } else {
           //sync and insert new data
           shared.loadAllMasterData(function(){
+            console.log("loadAllMasterData done and insert to table");
             var periodicSyncDate = 1*24*60; //default periodic 1 day
             shared.insertDB("sync_data_master","insert into sync_data_master (periodic_sync,time_sync,server_url_id) values (?,?,?)",[periodicSyncDate,new Date(),ctrl.serverUrlId],null,null);
 

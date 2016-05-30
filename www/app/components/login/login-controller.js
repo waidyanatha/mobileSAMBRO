@@ -5,7 +5,7 @@ angular.module("ngapp")
     var ctrl = this;
 
     //version 1.1
-    var databaseVersion = "1.3";
+    var databaseVersion = "1.4";
     $localStorage['databaseVersion'] = databaseVersion;
     var databaseSchema = {
       "tables": [{
@@ -338,6 +338,18 @@ angular.module("ngapp")
               "name": "server_url_id",
               "type": "integer"
           }]
+      }, {
+          "name": "db_info",
+          "columns": [{
+              "name": "id",
+              "type": "integer primary key AUTOINCREMENT"
+          }, {
+              "name": "database_version",
+              "type": "text"
+          }, {
+              "name": "database_schema",
+              "type": "text"
+          }]
       }]
     };
 
@@ -412,7 +424,17 @@ angular.module("ngapp")
 
     ctrl.customInsertForNewDBSchema = function(){
       console.log("customInsertForNewDBSchema 1");
-      shared.updateDB("sync_data_master","update sync_data_master set database_version='1.2',database_schema='"+JSON.stringify(databaseSchema)+"',curr_location='POINT(100.612952 14.082130)',server_url_id=1 ",[]
+
+      shared.insertDB("db_info","insert into db_info (database_version,database_schema) values (?,?)",[databaseVersion,JSON.stringify(databaseSchema)],     //[new Date(),JSON.stringify(submitFormVal)],
+      function(result){
+      
+          console.log('success insert to db_info');
+      },function(error){
+          
+          console.log('error to db_info');
+      });
+
+      shared.updateDB("sync_data_master","update sync_data_master set database_version=?,database_schema='"+JSON.stringify(databaseSchema)+"',curr_location='POINT(100.612952 14.082130)',server_url_id=1 ",[databaseVersion]
       ,function(result){
         console.log("success update");
 
@@ -564,8 +586,8 @@ angular.module("ngapp")
     };
 
     var checkDBVersion = function(){
-      shared.selectDB("sync_data_master","SELECT * FROM sync_data_master",[],function(result){
-        console.log("result sync_data_master");
+      shared.selectDB("db_info","SELECT * FROM db_info",[],function(result){
+        console.log("result db_info");
         if(result.rows.length > 0) {
           if(result.rows.item(0).database_version != undefined){
             if(databaseVersion != result.rows.item(0).database_version){
@@ -624,6 +646,8 @@ angular.module("ngapp")
             arrNewTableCreate[i].created = true; 
           }
 
+          ctrl.newAppInstalled();
+
           //init run
           ctrl.setServerUrl();
 
@@ -639,11 +663,24 @@ angular.module("ngapp")
           arrNewTableCreate[i].created = true; 
         }
 
+        ctrl.newAppInstalled();
+
         //init run
         ctrl.setServerUrl();
 
         //init run
         ctrl.selectAllUser();
+      });
+    };
+
+    ctrl.newAppInstalled = function(){
+      shared.insertDB("db_info","insert into db_info (database_version,database_schema) values (?,?)",[databaseVersion,JSON.stringify(databaseSchema)],     //[new Date(),JSON.stringify(submitFormVal)],
+      function(result){
+      
+          console.log('success insert to db_info');
+      },function(error){
+          
+          console.log('error to db_info');
       });
     };
 
@@ -775,7 +812,7 @@ angular.module("ngapp")
     ctrl.title = shared.info.title;
     ctrl.hideErrorMessage = true;
     ctrl.shared = shared;
-    ctrl.serverUrl = shared.apiUrl;
+    ctrl.serverUrl = $localStorage['serverUrl'];
     ctrl.serverLocation = "POINT(100.612952 14.082130)";
     ctrl.serverName = "AIT";
 
@@ -793,7 +830,7 @@ angular.module("ngapp")
         var serverUrl = $localStorage['serverUrl'];
         if(result.rows.length > 0) {
           ctrl.isOfflineDataExist = true;
-          
+          ctrl.listServerUrl = new Array();
           var isActive = false;
           for(var i=0;i<result.rows.length;i++){
             var dataServerUrl = {serverId:result.rows.item(i).id,serverUrl:result.rows.item(i).server_url,serverName:result.rows.item(i).server_name,activeServer:result.rows.item(i).active_server};
@@ -956,17 +993,19 @@ angular.module("ngapp")
       ctrl.selectAllUser();
     };
     ctrl.submitChangeServerUrl = function(){
-      var apiUrl = shared.apiUrl;
+      //var apiUrl = shared.apiUrl;
       //console.log(apiUrl);
 
-      shared.apiUrl = ctrl.serverUrl;
-      $localStorage['serverUrl'] = ctrl.serverUrl;
+      //shared.apiUrl = ctrl.serverUrl;
+      //$localStorage['serverUrl'] = ctrl.serverUrl;
 
       console.log("add server "+ctrl.serverUrl);
-      shared.insertDB("t_server_url","insert into t_server_url (server_location,server_name,server_url,active_server) values (?,?,?,?)",[ctrl.serverLocation,ctrl.serverName,ctrl.serverUrl,'false'],null,null);
+      shared.insertDB("t_server_url","insert into t_server_url (server_location,server_name,server_url,active_server) values (?,?,?,?)",[ctrl.serverLocation,ctrl.serverName,ctrl.serverUrl,'false'],function(){
+        ctrl.setServerUrl();
+      },null);
 
       //shared.deleteDBWithFilter("sync_data_master","where server_url_id=?",[ctrl.serverUrlId],null,null);
-      ctrl.cancelChangeServerUrl();
+      //ctrl.cancelChangeServerUrl();
     };
 
     ctrl.userRole = "";
@@ -979,7 +1018,7 @@ angular.module("ngapp")
               if($localStorage['deviceTokenId'] != '' && $localStorage['deviceTokenId'] != result.rows.item(0).device_token_id){
                 deviceTokenId = $localStorage['deviceTokenId'];
               }
-              ctrl.userId = esult.rows.item(0).user_id;
+              ctrl.userId = result.rows.item(0).user_id;
               ctrl.updateUser(email,pwd,deviceTokenId);
           } else {
               ctrl.insertUser(email,pwd);
@@ -1034,16 +1073,16 @@ angular.module("ngapp")
       console.log('call this sendform');
 
       shared.clearCache();
-      var apiUrl = shared.apiUrl;
+      var apiUrl = $localStorage['serverUrl'];
       console.log(apiUrl);
       if(apiUrl == null){
         apiUrl = "http://sambro.geoinfo.ait.ac.th/eden/";
-        shared.apiUrl = apiUrl;
+        $localStorage['serverUrl'] = apiUrl;
       }
 
       var promiseLoadData = shared.loadDataLogin(apiUrl+'default/index/user_info',ctrl.loginForm.email,ctrl.loginForm.password);
       promiseLoadData.then(function(response) {
-        console.log('success');
+        console.log('success login from url');
         console.log(response);  
 
         //ctrl.userId = response.userId;
@@ -1086,7 +1125,7 @@ angular.module("ngapp")
         console.log('get user profile = '+ userId.toString());
         var ctrlDetail = this;
         ctrlDetail.email = email;
-        var promiseLoadData = shared.loadDataAlert(shared.apiUrl+'pr/person/'+userId.toString()+'.s3json');
+        var promiseLoadData = shared.loadDataAlert($localStorage['serverUrl']+'pr/person/'+userId.toString()+'.s3json');
         promiseLoadData.then(function(response) {
           console.log('saving content to DB');
           var query = "update m_user set profile_json=? where email=? and server_url_id=?";
@@ -1158,7 +1197,7 @@ angular.module("ngapp")
             }]
           }]
         };
-      var url = shared.apiUrl+'pr/person/'+userId.toString()+'.s3json';
+      var url = $localStorage['serverUrl']+'pr/person/'+userId.toString()+'.s3json';
       var promiseSendDataForm = shared.sendDataForm(url,JSON.stringify(dataJsonToken));
       promiseSendDataForm.then(function(response) {
           console.log("success Save token id");
@@ -1176,12 +1215,15 @@ angular.module("ngapp")
       shared.sendFormViaDBFnc(email,ctrlDetail.passEncrypt
       ,function(result){
           if(result.rows.length > 0) {
+            console.log('success login from db');
               ctrl.userId = parseInt(result.rows.item(0).user_id);
 
               $localStorage['username'] = ctrlDetail.email;
               $localStorage['password'] = ctrlDetail.passEncrypt;
               $localStorage['userId'] = ctrl.userId;
               $localStorage['userRole'] = result.rows.item(0).user_role;
+
+              console.log('userRole = '+ $localStorage['userRole']);
               
               $location.path("/main");
           } else {
@@ -1192,7 +1234,7 @@ angular.module("ngapp")
     };
 
     ctrl.getAllUserData = function(success,failed){
-      var promiseLoadData = shared.loadDataAlert(shared.apiUrl+'pr/person.s3json');
+      var promiseLoadData = shared.loadDataAlert($localStorage['serverUrl']+'pr/person.s3json');
       promiseLoadData.then(function(response) {
         console.log('get all data profile');
         var urlContentId = "";
@@ -1228,6 +1270,7 @@ angular.module("ngapp")
       console.log(idx);
       ctrl.serverUrlId = ctrl.listServerUrl[idx].serverId;
       $localStorage['serverUrl'] = ctrl.listServerUrl[idx].serverUrl;
+      $localStorage['serverId'] = ctrl.serverUrlId;
       shared.updateDB("t_server_url","update t_server_url set active_server='false'",[]
       ,function(result){
         console.log("success update t_server_url active_server = false");

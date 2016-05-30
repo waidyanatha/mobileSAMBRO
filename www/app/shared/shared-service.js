@@ -62,9 +62,9 @@ angular.module("ngapp").service("shared", function($http,$localStorage,$sessionS
             url: url,
             beforeSend: function(xhr) {
               console.log('123');
-              console.log(xhr);
-              console.log(xhr.headers);
-              console.log(ctrl.setHTTPHeaderAuth(username,password));
+              console.log(JSON.stringify(xhr));
+              console.log(JSON.stringify(xhr.headers));
+              console.log(JSON.stringify(ctrl.setHTTPHeaderAuth(username,password)));
 
               //return ctrl.setHTTPHeaderAuth(username,password);
             },
@@ -221,7 +221,7 @@ angular.module("ngapp").service("shared", function($http,$localStorage,$sessionS
   }
 
   //
-  ctrl.booleanAllDataLoad = [{tblName:"m_event_type",isDataLoad:false},{tblName:"m_urgency",isDataLoad:false},{tblName:"m_certainty",isDataLoad:false},{tblName:"m_severity",isDataLoad:false},{tblName:"m_scope",isDataLoad:false},{tblName:"m_template",isDataLoad:false},{tblName:"m_warning_priority",isDataLoad:false},{tblName:"m_predefined_area",isDataLoad:false}];
+  ctrl.booleanAllDataLoad = [{tblName:"m_event_type",isDataLoad:false},{tblName:"m_urgency",isDataLoad:false},{tblName:"m_certainty",isDataLoad:false},{tblName:"m_severity",isDataLoad:false},{tblName:"m_scope",isDataLoad:false},{tblName:"m_template",isDataLoad:false},{tblName:"m_warning_priority",isDataLoad:false},{tblName:"m_predefined_area",isDataLoad:false},{tblName:"m_response_type",isDataLoad:false},{tblName:"m_category",isDataLoad:false},{tblName:"m_status",isDataLoad:false},{tblName:"m_msg_type",isDataLoad:false},{tblName:"m_group_user",isDataLoad:false}];
   ctrl.setBooleanDataLoad = function (callBackFinish,tblName){
     var countBoolLoadData = 0;
     for(var i=0;i<ctrl.booleanAllDataLoad.length;i++){
@@ -292,6 +292,7 @@ angular.module("ngapp").service("shared", function($http,$localStorage,$sessionS
                 }
                 
             }
+
         }
         else if(dataField[i]['@name'] == "response_type"){
             ctrl.deleteDB("m_response_type",null,null);
@@ -310,6 +311,7 @@ angular.module("ngapp").service("shared", function($http,$localStorage,$sessionS
                 }
                 
             }
+
         }
         else if(dataField[i]['@name'] == "category"){
             ctrl.deleteDB("m_category",null,null);
@@ -328,6 +330,8 @@ angular.module("ngapp").service("shared", function($http,$localStorage,$sessionS
                 }
                 
             }
+
+
         }
         else if(dataField[i]['@name'] == "urgency"){
             ctrl.deleteDB("m_urgency",null,null);
@@ -461,6 +465,11 @@ angular.module("ngapp").service("shared", function($http,$localStorage,$sessionS
         ctrl.insertDB("m_template",query,dataDB,callBack,callBackErr);
         
       }
+
+      if(response.length == 0){
+        console.log('data empty m_template');
+        ctrl.setBooleanDataLoad(ctrlDetail.callBackFinish,"m_template");
+      }
     }, function(reason) {
       console.log('Failed: ' + reason);
     });
@@ -482,6 +491,12 @@ angular.module("ngapp").service("shared", function($http,$localStorage,$sessionS
         ctrl.insertDB("m_group_user",query,dataDB,callBack,callBackErr);
         
       }
+
+      if(response.length == 0){
+        console.log('data empty m_group_user');
+        ctrl.setBooleanDataLoad(ctrlDetail.callBackFinish,"m_group_user");
+      }
+
     }, function(reason) {
       console.log('Failed: ' + reason);
     });
@@ -504,6 +519,11 @@ angular.module("ngapp").service("shared", function($http,$localStorage,$sessionS
         ctrl.insertDB("m_warning_priority",query,dataDB,callBack,callBackErr);
         
       }
+
+      if(response.length == 0){
+        console.log('data empty m_warning_priority');
+        ctrl.setBooleanDataLoad(ctrlDetail.callBackFinish,"m_warning_priority");
+      }
     }, function(reason) {
       console.log('Failed: ' + reason);
     });
@@ -523,6 +543,11 @@ angular.module("ngapp").service("shared", function($http,$localStorage,$sessionS
           console.log('error to db');
         };
         ctrl.insertDB("m_predefined_area",query,dataDB,callBack,callBackErr);
+      }
+
+      if(response.length == 0){
+        console.log('data empty m_predefined_area');
+        ctrl.setBooleanDataLoad(ctrlDetail.callBackFinish,"m_predefined_area");
       }
       ctrl.getDataPredefinedAreaGeo();
       //ctrl.dataPredefinedAreaOptions = response;
