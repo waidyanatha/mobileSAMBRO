@@ -579,10 +579,9 @@ angular.module("ngapp")
       });
 
       //init run
-      ctrl.setServerUrl();
-
-      //init run
-      ctrl.selectAllUser();
+      ctrl.setServerUrl(function(){
+        ctrl.selectAllUser();
+      });
     };
 
     var checkDBVersion = function(){
@@ -615,10 +614,9 @@ angular.module("ngapp")
                     console.log("error update");
                   });
                   //init run
-                  ctrl.setServerUrl();
-
-                  //init run
-                  ctrl.selectAllUser();
+                  ctrl.setServerUrl(function(){
+                    ctrl.selectAllUser();
+                  });
                 };
                 getTablesName();
               }
@@ -626,10 +624,9 @@ angular.module("ngapp")
             else{
               console.log("same database version");
               //init run
-              ctrl.setServerUrl();
-
-              //init run
-              ctrl.selectAllUser();
+              ctrl.setServerUrl(function(){
+                ctrl.selectAllUser();
+              });
             }
           }
           else{
@@ -649,10 +646,9 @@ angular.module("ngapp")
           ctrl.newAppInstalled();
 
           //init run
-          ctrl.setServerUrl();
-
-          //init run
-          ctrl.selectAllUser();
+          ctrl.setServerUrl(function(){
+            ctrl.selectAllUser();
+          });
         } 
       },function(result){
         //new application
@@ -666,10 +662,9 @@ angular.module("ngapp")
         ctrl.newAppInstalled();
 
         //init run
-        ctrl.setServerUrl();
-
-        //init run
-        ctrl.selectAllUser();
+        ctrl.setServerUrl(function(){
+          ctrl.selectAllUser();
+        });
       });
     };
 
@@ -823,7 +818,7 @@ angular.module("ngapp")
     $localStorage['userRole'] = "";
 
     ctrl.listServerUrl = new Array();
-    ctrl.setServerUrl = function(){
+    ctrl.setServerUrl = function(obj){
       shared.selectDB("t_server_url","select * from t_server_url",[],function(result){
         console.log('get server url');
         console.log(result.rows.length);
@@ -873,7 +868,17 @@ angular.module("ngapp")
         ctrl.serverUrl = serverUrl;
         console.log("[login] serverUrl = " + $localStorage['serverUrl']);
         console.log("[login] serverId = " + $localStorage['serverId']);
-      },null);
+
+        if(obj != undefined){
+          console.log("call function obj");
+          obj();
+        }
+      },function(){
+        if(obj != undefined){
+          console.log("call function obj");
+          obj();
+        }
+      });
     };
 
     var typeNetwork = $cordovaNetwork.getNetwork();
@@ -1083,7 +1088,7 @@ angular.module("ngapp")
       var promiseLoadData = shared.loadDataLogin(apiUrl+'default/index/user_info',ctrl.loginForm.email,ctrl.loginForm.password);
       promiseLoadData.then(function(response) {
         console.log('success login from url');
-        console.log(response);  
+        console.log(JSON.stringify(response));  
 
         //ctrl.userId = response.userId;
         ctrl.userId = 34;
@@ -1145,7 +1150,7 @@ angular.module("ngapp")
             }
           });
         }, function(reason) {
-          console.log('Failed: ' + reason);
+          console.log('Failed: ' + JSON.stringify(reason));
           if(failed != undefined){
               failed();  
             }
@@ -1243,6 +1248,7 @@ angular.module("ngapp")
           if(response['$_pr_person'][i]['$_pr_email_contact'] != undefined){
             if(response['$_pr_person'][i]['$_pr_email_contact'][0].value['@value'] == ctrl.loginForm.email){
               urlContentId = response['$_pr_person'][i]['$_pr_email_contact'][0]['@url'];
+              console.log("urlContentId = "+urlContentId);
               var resArr = urlContentId.split("/person/");
               if(resArr.length>1){
                 resArr = resArr[1].split("/");
@@ -1253,7 +1259,7 @@ angular.module("ngapp")
             }  
           }
         }
-
+        console.log("getUserId = "+getUserId);
         if(getUserId != "0"){
           ctrl.userId = parseInt(getUserId);
         }

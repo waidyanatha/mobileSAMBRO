@@ -512,7 +512,7 @@ angular.module("ngapp")
                       "@value" : ctrl.dataAlertForm.certainty
                      },
                     "expires": {
-                        "@value" : $filter('date')(ctrl.dataAlertForm.expireDate,"yyyy-MM-ddTHH:mm:ss")  
+                        "@value" : $filter('date')(ctrl.dataAlertForm.onSetDate,"yyyy-MM-ddTHH:mm:ss")  
                     },
                     "onset": {
                         "@value" : $filter('date')(ctrl.dataAlertForm.onSetDate,"yyyy-MM-ddTHH:mm:ss")  
@@ -548,7 +548,7 @@ angular.module("ngapp")
             '        <data field="response_type">'+responseTypeValXML+'</data>'+
             '        <data field="category">'+categoryValXML+'</data>'+
             warningPriorityXml+
-            '        <data field="expires">'+$filter('date')(ctrl.dataAlertForm.expireDate,"yyyy-MM-ddTHH:mm:ss")+'</data>'+
+            '        <data field="expires">'+$filter('date')(ctrl.dataAlertForm.onSetDate,"yyyy-MM-ddTHH:mm:ss")+'</data>'+
             '        <data field="onset">'+$filter('date')(ctrl.dataAlertForm.onSetDate,"yyyy-MM-ddTHH:mm:ss")+'</data>'+
             '        <data field="effective">'+$filter('date')(ctrl.dataAlertForm.effectiveDate,"yyyy-MM-ddTHH:mm:ss")+'</data>'+
             '        <data field="is_template" value="false"/>'+
@@ -577,7 +577,7 @@ angular.module("ngapp")
                 });
             }
             else{
-                var url = shared.sendAlertApiUrl;
+                var url = $localStorage['serverUrl']+'cap/alert.xml';
                 var promiseSendDataForm = shared.sendDataForm(url,strXML);   //JSON.stringify(submitFormVal)
                 promiseSendDataForm.then(function(response) {
                     $cordovaDialogs.alert('Success send alert to server','Success', 'OK');
