@@ -54,3 +54,9 @@ add table m_category
 add fvalue text
 add name text
 add server_url_id integer
+
+v1.4 (30, May 2016)
+add table db_info
+add id integer primary key AUTOINCREMENT
+add database_version text
+add database_schema text
