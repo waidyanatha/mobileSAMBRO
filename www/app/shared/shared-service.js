@@ -242,6 +242,7 @@ angular.module("ngapp").service("shared", function($http,$localStorage,$sessionS
 
   //cap/notify_approver?cap_alert.id=
   ctrl.sendNotif = function(alertId,success,failed){
+    ctrl.apiUrl = $localStorage['serverUrl'];
     var ctrlDetail = this;
     ctrlDetail.success = success;
     ctrlDetail.failed = failed;

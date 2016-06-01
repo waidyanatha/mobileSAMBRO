@@ -577,7 +577,7 @@ angular.module("ngapp")
                 });
             }
             else{
-                var url = shared.sendAlertApiUrl;
+                var url = $localStorage['serverUrl']+'cap/alert.xml';
                 var promiseSendDataForm = shared.sendDataForm(url,strXML);   //JSON.stringify(submitFormVal)
                 promiseSendDataForm.then(function(response) {
                     $cordovaDialogs.alert('Success send alert to server','Success', 'OK');

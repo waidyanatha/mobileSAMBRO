@@ -152,7 +152,7 @@ angular.module("ngapp")
     ctrl.sendAlertToServer = function(idx){
         console.log('sendAlertToServer');
         console.log(idx);
-        var url = shared.sendAlertApiUrl;
+        var url = $localStorage['serverUrl']+'cap/alert.xml';
         if(idx < ctrl.dataOfflineAlerts.length){
           ctrl.dataOfflineAlerts[idx].is_progress = true;
           var promiseSendDataForm = shared.sendDataForm(url,ctrl.dataOfflineAlerts[idx].data_form_str);
