@@ -13,9 +13,38 @@ angular.module("ngapp")
     console.log(ctrl.isNetworkOnline);
     console.log(ctrl.isNetworkOffline);
 
+    ctrl.showAlertListPage = true;
+    ctrl.showAlertDetailPage = false;
+    ctrl.showProfilePage = false;
+    ctrl.showSettingPage = false;
+
+    ctrl.serverUrlId = $localStorage['serverId'];
+    ctrl.serverUrl = $localStorage['serverUrl'];
+    shared.refreshServerUrlId();
+
+    console.log("serverUrlId = "+ctrl.serverUrlId);
+    console.log("serverUrl = "+ctrl.serverUrl);
+    
+    ctrl.clickBackBtn = function(){
+      ctrl.showAlertListPage = true;
+      ctrl.showAlertDetailPage = false;
+      ctrl.showProfilePage = false;
+      ctrl.showSettingPage = false;
+    };
+
+    ctrl.goBack = function(){
+      console.log("go back main");
+      console.log(ctrl.showAlertListPage);
+      if(ctrl.showAlertListPage == false){
+        ctrl.clickBackBtn(); 
+        console.log("execute back button");
+      }  
+    };
+
+    varOutside = ctrl;
     callBackButton = function(){
         console.log("call inside controller main");
-        //ctrl.goBack();
+        varOutside.goBack();
     };
 
     //$cordovaStatusbar.overlaysWebView(true); // Always Show Status Bar = false
@@ -78,20 +107,8 @@ angular.module("ngapp")
         return "assets/images/disaster/"+ shared.evenTypeIcon(eventTypeName) + ".png";
     }; 
 
-    ctrl.showAlertListPage = true;
-    ctrl.showAlertDetailPage = false;
-    ctrl.showProfilePage = false;
-    ctrl.showSettingPage = false;
-
-    ctrl.clickBackBtn = function(){
-      ctrl.showAlertListPage = true;
-      ctrl.showAlertDetailPage = false;
-      ctrl.showProfilePage = false;
-      ctrl.showSettingPage = false;
-    };
-
     ctrl.clickHyperlinkAlert = function(idAlert){
-      navigator.app.loadUrl(shared.apiUrl+"cap/alert/"+idAlert.toString()+"/profile", {openExternal : true});
+      navigator.app.loadUrl($localStorage['serverUrl']+"cap/alert/"+idAlert.toString()+"/profile", {openExternal : true});
     }
 
     ctrl.clickAlertDetail = function(idx){
@@ -135,7 +152,7 @@ angular.module("ngapp")
     ctrl.sendAlertToServer = function(idx){
         console.log('sendAlertToServer');
         console.log(idx);
-        var url = shared.sendAlertApiUrl;
+        var url = $localStorage['serverUrl']+'cap/alert.xml';
         if(idx < ctrl.dataOfflineAlerts.length){
           ctrl.dataOfflineAlerts[idx].is_progress = true;
           var promiseSendDataForm = shared.sendDataForm(url,ctrl.dataOfflineAlerts[idx].data_form_str);
@@ -177,7 +194,7 @@ angular.module("ngapp")
     ctrl.isOfflineDataExist = false;
     ctrl.dataOfflineAlerts = new Array();
     ctrl.getOfflineData = function(){
-      shared.selectDB("t_alert_offline","select * from t_alert_offline",[],function(result){
+      shared.selectDB("t_alert_offline","select * from t_alert_offline where server_url_id=?",[ctrl.serverUrlId],function(result){
         console.log('getOfflineData');
         console.log(result.rows.length);
         if(result.rows.length > 0) {
@@ -231,8 +248,8 @@ angular.module("ngapp")
     ctrl.dataAlert = {};
     ctrl.loadDataAlert = true;
     ctrl.insertAlert = function(dataAlert) {
-      var query = "insert into t_alert (id, cap_info_headline, cap_area_name, cap_scope,event_event_type_name,sent) values (?,?,?,?,?,?)";
-      $cordovaSQLite.execute(dbShared, query, [dataAlert.id, JSON.stringify(dataAlert['cap_info.headline']),JSON.stringify(dataAlert['cap_area.name']),dataAlert['scope'],JSON.stringify(dataAlert['event_event_type.name']),dataAlert['sent']]).then(function(result) {
+      var query = "insert into t_alert (id, cap_info_headline, cap_area_name, cap_scope,event_event_type_name,sent,server_url_id) values (?,?,?,?,?,?,?)";
+      $cordovaSQLite.execute(dbShared, query, [dataAlert.id, JSON.stringify(dataAlert['cap_info.headline']),JSON.stringify(dataAlert['cap_area.name']),dataAlert['scope'],JSON.stringify(dataAlert['event_event_type.name']),dataAlert['sent'],ctrl.serverUrlId]).then(function(result) {
         console.log("insert alert");
         
       }, function (err) {
@@ -241,8 +258,8 @@ angular.module("ngapp")
       });
     };
     ctrl.deleteAlert = function() {
-      var query = "delete from t_alert";
-      $cordovaSQLite.execute(dbShared, query).then(function(result) {
+      var query = "delete from t_alert where server_url_id=?";
+      $cordovaSQLite.execute(dbShared, query,[ctrl.serverUrlId]).then(function(result) {
         console.log("delete alert");
         
       }, function (err) {
@@ -252,8 +269,8 @@ angular.module("ngapp")
     };
     ctrl.selectAlert = function() {
       ctrl.loadDataAlert = true;
-      var query = "SELECT distinct * FROM t_alert order by datetime(sent) desc";
-      $cordovaSQLite.execute(dbShared,query).then(function(result) {
+      var query = "SELECT distinct * FROM t_alert where server_url_id=? order by datetime(sent) desc";
+      $cordovaSQLite.execute(dbShared,query,[ctrl.serverUrlId]).then(function(result) {
         if(result.rows.length > 0) {
           ctrl.loadDataAlert = false;
           ctrl.dataAlerts = new Array();
@@ -279,7 +296,7 @@ angular.module("ngapp")
 
     ctrl.getDataAlertFromAPI = function(){
       ctrl.loadDataAlert = true;
-      var promiseLoadData = shared.loadDataAlert(shared.apiUrl+'cap/alert.json');
+      var promiseLoadData = shared.loadDataAlert($localStorage['serverUrl']+'cap/alert.json');
       promiseLoadData.then(function(response) {
         //console.log(response);
         ctrl.deleteAlert();
@@ -311,7 +328,7 @@ angular.module("ngapp")
     };
 
     ctrl.getDataAlertGeoFromAPI = function(){
-      var promiseLoadData = shared.loadDataAlert(shared.apiUrl+'cap/alert.geojson');
+      var promiseLoadData = shared.loadDataAlert($localStorage['serverUrl']+'cap/alert.geojson');
       promiseLoadData.then(function(response) {
         var currentId = 0;
         var currentSpatial = new Array();
@@ -349,7 +366,7 @@ angular.module("ngapp")
 
     //logic sync data master
     ctrl.isSync = true;
-    shared.selectDB("sync_data_master","select * from sync_data_master",[],function(result){
+    shared.selectDB("sync_data_master","select * from sync_data_master where server_url_id=?",[ctrl.serverUrlId],function(result){
       if(result.rows.length > 0) {
           var dateLastSync = new Date(result.rows.item(0).time_sync);
           var currentDate = new Date();
@@ -362,7 +379,8 @@ angular.module("ngapp")
           console.log(periodicSyncDate);
           if(dateDiff >= periodicSyncDate && ctrl.isNetworkOnline ){
             shared.loadAllMasterData(function(){
-              shared.updateDB("sync_data_master","update sync_data_master set time_sync=?",[new Date()],null,null);
+              console.log("loadAllMasterData done and update table");
+              shared.updateDB("sync_data_master","update sync_data_master set time_sync=? where server_url_id=?",[new Date(),ctrl.serverUrlId],null,null);
 
               //enabled button add alert
               ctrl.isSync = false;
@@ -377,8 +395,9 @@ angular.module("ngapp")
       } else {
           //sync and insert new data
           shared.loadAllMasterData(function(){
+            console.log("loadAllMasterData done and insert to table");
             var periodicSyncDate = 1*24*60; //default periodic 1 day
-            shared.insertDB("sync_data_master","insert into sync_data_master (periodic_sync,time_sync) values (?,?)",[periodicSyncDate,new Date()],null,null);
+            shared.insertDB("sync_data_master","insert into sync_data_master (periodic_sync,time_sync,server_url_id) values (?,?,?)",[periodicSyncDate,new Date(),ctrl.serverUrlId],null,null);
 
             //enabled button add alert
             ctrl.isSync = false;
@@ -389,7 +408,7 @@ angular.module("ngapp")
     ctrl.syncFromSetting = function(){
       ctrl.isSync = true;
       shared.loadAllMasterData(function(){
-        shared.updateDB("sync_data_master","update sync_data_master set time_sync=?",[new Date()],null,null);
+        shared.updateDB("sync_data_master","update sync_data_master set time_sync=? where server_url_id=?",[new Date(),ctrl.serverUrlId],null,null);
 
         //enabled button add alert
         ctrl.isSync = false;
@@ -402,14 +421,6 @@ angular.module("ngapp")
     else{
       ctrl.getDataAlertFromAPI();
     }
-
-    ctrl.serverUrl = shared.apiUrl;
-    ctrl.changeServerUrl = function(){
-      console.log("change server to "+ctrl.serverUrl);
-      shared.updateDB("t_server_url","update t_server_url set server_url=?",[ctrl.serverUrl],null,null);
-      $localStorage['serverUrl'] = ctrl.serverUrl;
-      ctrl.syncFromSetting();
-    };
 
     // listen for Online event
     $rootScope.$on('$cordovaNetwork:online', function(event, networkState){

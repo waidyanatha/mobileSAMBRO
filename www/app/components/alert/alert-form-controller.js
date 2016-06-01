@@ -1,16 +1,5 @@
 "use strict";
 
-angular.element(document).ready(function () {
-  if (window.cordova) {
-    console.log("Running in Cordova, Back button.");
-    document.addEventListener("backbutton", function(){
-        callBackButton();
-    }, false);
-
-   
-  } 
-});
-
 angular.module("ngapp")
 .controller("AlertFormController", function(shared, $state, $scope, $compile,$rootScope, $mdSidenav, $mdComponentRegistry, $http, $cordovaDevice, $cordovaStatusbar,$cordovaGeolocation,$cordovaDialogs,$location,$localStorage,$cordovaSQLite,$filter,$timeout,$cordovaNetwork){
     shared.checkUserCached();
@@ -55,6 +44,13 @@ angular.module("ngapp")
     ctrl.typeNetwork = $cordovaNetwork.getNetwork();
     ctrl.isNetworkOnline = $cordovaNetwork.isOnline();
     ctrl.isNetworkOffline = $cordovaNetwork.isOffline();
+
+    ctrl.serverUrlId = $localStorage['serverId'];
+    ctrl.serverUrl = $localStorage['serverUrl'];
+    shared.refreshServerUrlId();
+
+    console.log("serverUrlId = "+ctrl.serverUrlId);
+    console.log("serverUrl = "+ctrl.serverUrl);
 
     console.log('network');
     console.log(ctrl.typeNetwork);
@@ -150,7 +146,7 @@ angular.module("ngapp")
     };
 
     ctrl.currPage = 1;
-    ctrl.hidePage = [{'pageName':'event-type','isHide':false,'loadData':true},{'pageName':'status','isHide':true,'loadData':true},{'pageName':'msgType','isHide':true,'loadData':true},{'pageName':'template','isHide':true,'loadData':true},{'pageName':'location','isHide':true,'loadData':true},{'pageName':'response-type','isHide':true,'loadData':true},{'pageName':'warning-priority','isHide':true,'loadData':true},{'pageName':'scope','isHide':true,'loadData':true},{'pageName':'addresses','isHide':true,'loadData':true},{'pageName':'note','isHide':true,'loadData':true},{'pageName':'date','isHide':true,'loadData':true},{'pageName':'parameter','isHide':true,'loadData':true},{'pageName':'submit','isHide':true,'loadData':true}];
+    ctrl.hidePage = [{'pageName':'event-type','isHide':false,'loadData':true},{'pageName':'status','isHide':true,'loadData':true},{'pageName':'msgType','isHide':true,'loadData':true},{'pageName':'template','isHide':true,'loadData':true},{'pageName':'location','isHide':true,'loadData':true},{'pageName':'response-type','isHide':true,'loadData':true},{'pageName':'category','isHide':true,'loadData':true},{'pageName':'warning-priority','isHide':true,'loadData':true},{'pageName':'scope','isHide':true,'loadData':true},{'pageName':'addresses','isHide':true,'loadData':true},{'pageName':'note','isHide':true,'loadData':true},{'pageName':'date','isHide':true,'loadData':true},{'pageName':'parameter','isHide':true,'loadData':true},{'pageName':'submit','isHide':true,'loadData':true}];
     ctrl.progress = 100/ctrl.hidePage.length;
     ctrl.progressText = ctrl.currPage.toString()+"/"+ctrl.hidePage.length.toString();
     ctrl.btnBackName = "< Home";
@@ -208,6 +204,7 @@ angular.module("ngapp")
     }
 
     ctrl.goBack = function(){
+        console.log("go back alert form");
         if(ctrl.currPage == 1){
             ctrl.goHome();
         }
@@ -264,6 +261,15 @@ angular.module("ngapp")
         else if(ctrl.hidePage[ctrl.currPage-1].pageName == 'response-type'){
             for(var i=0;i<ctrl.dataResponseTypeOptions.length;i++){
                 if(ctrl.dataResponseTypeOptions[i].selected == true){
+
+                    return false;
+                    break;
+                }
+            }
+        }
+        else if(ctrl.hidePage[ctrl.currPage-1].pageName == 'category'){
+            for(var i=0;i<ctrl.dataCategoryOptions.length;i++){
+                if(ctrl.dataCategoryOptions[i].selected == true){
 
                     return false;
                     break;
@@ -411,6 +417,25 @@ angular.module("ngapp")
             responseTypeValXML = responseTypeValXML + ']';
         }
 
+        var categoryVal = '';   //sample [\"AllClear\",\"Prepare\"]
+        var categoryValXML = '';   //sample [\"AllClear\",\"Prepare\"]
+        for(var i=0;i<ctrl.dataCategoryOptions.length;i++){
+            if(ctrl.dataCategoryOptions[i].selected == true){
+                if(categoryVal == ''){
+                    categoryVal = '[\"' + ctrl.dataCategoryOptions[i]['@value'] + '\"';
+                    categoryValXML = '["' + ctrl.dataCategoryOptions[i]['@value'] + '"';
+                }
+                else{
+                    categoryVal = categoryVal + ',\"' + ctrl.dataCategoryOptions[i]['@value'] + '\"';
+                    categoryValXML = categoryValXML + ',"' + ctrl.dataCategoryOptions[i]['@value'] + '"';
+                }
+            }
+        }
+        if(categoryVal != ''){
+            categoryVal = categoryVal + ']';
+            categoryValXML = categoryValXML + ']';
+        }
+
         var capGroupUserValXML = "";
         for(var i=0;i<ctrl.dataGroupUsers.length;i++){
             if(ctrl.dataGroupUsers[i].selected == true){
@@ -476,6 +501,7 @@ angular.module("ngapp")
                       "@value" : ctrl.dataAlertForm.eventType.id.toString()
                     },
                     "response_type" : {"@value": responseTypeVal},
+                    "category" : {"@value": categoryVal},
                     "urgency" : {
                       "@value" : ctrl.dataAlertForm.urgency
                      },
@@ -520,6 +546,7 @@ angular.module("ngapp")
             '        <data field="instruction">'+ctrl.dataAlertForm.instruction+'</data>'+
             '        <data field="event_type_id">'+ctrl.dataAlertForm.eventType.id.toString()+'</data>'+
             '        <data field="response_type">'+responseTypeValXML+'</data>'+
+            '        <data field="category">'+categoryValXML+'</data>'+
             warningPriorityXml+
             '        <data field="expires">'+$filter('date')(ctrl.dataAlertForm.expireDate,"yyyy-MM-ddTHH:mm:ss")+'</data>'+
             '        <data field="onset">'+$filter('date')(ctrl.dataAlertForm.onSetDate,"yyyy-MM-ddTHH:mm:ss")+'</data>'+
@@ -536,8 +563,8 @@ angular.module("ngapp")
         console.log($localStorage['password']);
         if(CryptoJS.AES.decrypt($localStorage['password'], "Secret Passphrase").toString(CryptoJS.enc.Utf8) == ctrl.password){
             if(ctrl.isNetworkOffline){
-                shared.insertDB("t_alert_offline","insert into t_alert_offline (created_time, data_form,data_form_json) values (?,?,?)",
-                [new Date(),strXML,JSON.stringify(submitFormVal)],     //[new Date(),JSON.stringify(submitFormVal)],
+                shared.insertDB("t_alert_offline","insert into t_alert_offline (created_time, data_form,data_form_json,server_url_id) values (?,?,?,?)",
+                [new Date(),strXML,JSON.stringify(submitFormVal),ctrl.serverUrlId],     //[new Date(),JSON.stringify(submitFormVal)],
                 function(result){
                     $cordovaDialogs.alert('The alert could not be sent to the server because you are offline at the moment.\nPlease check your network settings.\nThe alert will be sent as soon you are online again.','Stored alert in local', 'OK');
                     
@@ -550,7 +577,7 @@ angular.module("ngapp")
                 });
             }
             else{
-                var url = shared.sendAlertApiUrl;
+                var url = $localStorage['serverUrl']+'cap/alert.xml';
                 var promiseSendDataForm = shared.sendDataForm(url,strXML);   //JSON.stringify(submitFormVal)
                 promiseSendDataForm.then(function(response) {
                     $cordovaDialogs.alert('Success send alert to server','Success', 'OK');
@@ -588,15 +615,15 @@ angular.module("ngapp")
         
         //filter template
         ctrl.dataTemplateOptions = new Array();
-        ctrl.getTemplateData("where event_event_type_id = ?",[eventTypeObj['@value']]);
+        ctrl.getTemplateData("where event_event_type_id = ? and server_url_id=?",[eventTypeObj['@value'],ctrl.serverUrlId]);
 
         //predefined area
         ctrl.dataPredefinedAreaOptions = new Array();
-        ctrl.getPredefinedAreaData("where event_type_id = ?",[eventTypeObj['@value']]);
+        ctrl.getPredefinedAreaData("where event_type_id = ? and server_url_id=?",[eventTypeObj['@value'],ctrl.serverUrlId]);
 
         //warning priority
         ctrl.dataWarningPrioritys = new Array();
-        ctrl.getWarningPriorityData("where event_type_id = ?",[eventTypeObj['@value']]);
+        ctrl.getWarningPriorityData("where event_type_id = ? and server_url_id=?",[eventTypeObj['@value'],ctrl.serverUrlId]);
 
         angular.element( ".event-type-opt" ).removeClass('selectedList').addClass( "unSelectedList" );
         angular.element( "#event-type-opt_"+eventTypeObj['@value'] ).removeClass('unSelectedList').addClass( "selectedList" );
@@ -663,10 +690,25 @@ angular.module("ngapp")
 
     ctrl.dataEventTypeOptions = new Array();
 
+    shared.selectDB("m_event_type","SELECT distinct met.* FROM m_event_type met INNER JOIN m_template mt ON met.id = mt.event_event_type_id",[],function(result){
+      if(result.rows.length > 0) {
+
+        for(var i=0;i<result.rows.length;i++){
+            var dataEventTypeOption = {
+                '@value':result.rows.item(i).id,
+                '$':result.rows.item(i).name,
+                'serverUrlId':result.rows.item(i).server_url_id
+            };
+            console.log("-- m_event_type --");
+            console.log(JSON.stringify(dataEventTypeOption));
+            //ctrl.dataEventTypeOptions.push(dataEventTypeOption);   
+        } 
+      } 
+    },null);
 
     //SELECT met.* FROM m_event_type met INNER JOIN m_template mt ON met.id = mt.event_event_type_id
     //select * from m_event_type
-    shared.selectDB("m_event_type","SELECT distinct met.* FROM m_event_type met INNER JOIN m_template mt ON met.id = mt.event_event_type_id",[],function(result){
+    shared.selectDB("m_event_type","SELECT distinct met.* FROM m_event_type met INNER JOIN m_template mt ON met.id = mt.event_event_type_id where met.server_url_id=?",[ctrl.serverUrlId],function(result){
       if(result.rows.length > 0) {
 
         ctrl.hidePage[ctrl.checkPageIdx('event-type')].loadData = false;
@@ -682,7 +724,7 @@ angular.module("ngapp")
     },null);
 
     ctrl.dataResponseTypeOptions = new Array();
-    shared.selectDB("m_response_type","select * from m_response_type",[],function(result){
+    shared.selectDB("m_response_type","select * from m_response_type where server_url_id=?",[ctrl.serverUrlId],function(result){
       if(result.rows.length > 0) {
 
         ctrl.hidePage[ctrl.checkPageIdx('response-type')].loadData = false;
@@ -698,8 +740,25 @@ angular.module("ngapp")
       } 
     },null);
 
+    ctrl.dataCategoryOptions = new Array();
+    shared.selectDB("m_category","select * from m_category where server_url_id=?",[ctrl.serverUrlId],function(result){
+      if(result.rows.length > 0) {
+
+        ctrl.hidePage[ctrl.checkPageIdx('category')].loadData = false;
+
+        for(var i=0;i<result.rows.length;i++){
+            var dataCategoryOption = {
+                '@value':result.rows.item(i).fvalue,
+                '$':result.rows.item(i).name,
+                'selected':false
+            };
+            ctrl.dataCategoryOptions.push(dataCategoryOption);   
+        } 
+      } 
+    },null);
+
     ctrl.dataUrgencyOptions = new Array();
-    shared.selectDB("m_urgency","select * from m_urgency",[],function(result){
+    shared.selectDB("m_urgency","select * from m_urgency where server_url_id=?",[ctrl.serverUrlId],function(result){
       if(result.rows.length > 0) {
 
         for(var i=0;i<result.rows.length;i++){
@@ -713,7 +772,7 @@ angular.module("ngapp")
     },null);
 
     ctrl.dataCertaintyOptions = new Array();
-    shared.selectDB("m_certainty","select * from m_certainty",[],function(result){
+    shared.selectDB("m_certainty","select * from m_certainty where server_url_id=?",[ctrl.serverUrlId],function(result){
       if(result.rows.length > 0) {
         for(var i=0;i<result.rows.length;i++){
             var dataCertaintyOption = {
@@ -726,7 +785,7 @@ angular.module("ngapp")
     },null);
 
     ctrl.dataSeverityOptions = new Array();
-    shared.selectDB("m_severity","select * from m_severity",[],function(result){
+    shared.selectDB("m_severity","select * from m_severity where server_url_id=?",[ctrl.serverUrlId],function(result){
       if(result.rows.length > 0) {
         for(var i=0;i<result.rows.length;i++){
             var dataSeverityOption = {
@@ -739,7 +798,7 @@ angular.module("ngapp")
     },null);
 
     ctrl.dataScopeOptions = new Array();
-    shared.selectDB("m_scope","select * from m_scope",[],function(result){
+    shared.selectDB("m_scope","select * from m_scope where server_url_id=?",[ctrl.serverUrlId],function(result){
       if(result.rows.length > 0) {
 
         ctrl.hidePage[ctrl.checkPageIdx('scope')].loadData = false;
@@ -756,7 +815,7 @@ angular.module("ngapp")
 
     ctrl.dataGroupUsers = new Array();
     ctrl.showNoAvailableGroupUsers = false;
-    shared.selectDB("m_group_user","select * from m_group_user",[],function(result){
+    shared.selectDB("m_group_user","select * from m_group_user where server_url_id=?",[ctrl.serverUrlId],function(result){
       if(result.rows.length > 0) {
 
         ctrl.hidePage[ctrl.checkPageIdx('addresses')].loadData = false;
@@ -781,7 +840,7 @@ angular.module("ngapp")
     },null);
 
     ctrl.dataStatusOptions = new Array();
-    shared.selectDB("m_status","select * from m_status",[],function(result){
+    shared.selectDB("m_status","select * from m_status where server_url_id=?",[ctrl.serverUrlId],function(result){
       if(result.rows.length > 0) {
 
         ctrl.hidePage[ctrl.checkPageIdx('status')].loadData = false;
@@ -797,7 +856,7 @@ angular.module("ngapp")
     },null);
 
     ctrl.dataMsgTypeOptions = new Array();
-    shared.selectDB("m_msg_type","select * from m_msg_type",[],function(result){
+    shared.selectDB("m_msg_type","select * from m_msg_type where server_url_id=?",[ctrl.serverUrlId],function(result){
       if(result.rows.length > 0) {
 
         ctrl.hidePage[ctrl.checkPageIdx('msgType')].loadData = false;
@@ -840,20 +899,51 @@ angular.module("ngapp")
 
                 //filter value for parameter value
                 var arrNewVal = new Array();
+                console.log("cap_info.parameter");
+                console.log(dataTemplateOption['cap_info.parameter']);
+                var nextInfoParameter = false;
                 if(dataTemplateOption['cap_info.parameter'] != null){
+                    console.log("1");
                     if(angular.isArray(dataTemplateOption['cap_info.parameter'])){
+                        console.log("2");
                         for(var j=0;j<dataTemplateOption['cap_info.parameter'].length;j++){
+                            console.log("3");
                             var val = JSON.parse(dataTemplateOption['cap_info.parameter'][j]);
                             if(angular.isArray(val)){
+                                console.log("4");
                                 if(val.length>0){
+                                    console.log("5");
                                     var valDetail = new Array();
                                     for(var k=0;k<val.length;k++){
+                                        console.log("6");
                                         if(val[k].key.indexOf("sahana") > -1){
+                                            console.log("7");
                                             valDetail.push(val[k]);
                                         }
                                     }
                                     arrNewVal = valDetail;
                                 }   
+                            }
+                        }
+                        
+                    }
+                    else{
+                        dataTemplateOption['cap_info.parameter'] = JSON.parse(dataTemplateOption['cap_info.parameter']);
+                        console.log("1_");
+                        if(angular.isArray(dataTemplateOption['cap_info.parameter'])){
+                            console.log("1__");
+                            console.log("2");
+                            for(var j=0;j<dataTemplateOption['cap_info.parameter'].length;j++){
+                                console.log("3");
+
+                                var val = dataTemplateOption['cap_info.parameter'][j];
+                                console.log( JSON.stringify(val));
+                                var valDetail = new Array();
+                                if(val.key.indexOf("sahana") > -1){
+                                    console.log("7");
+                                    arrNewVal.push(val);
+                                }
+                            
                             }
                         }
                     }
@@ -903,7 +993,6 @@ angular.module("ngapp")
         },null);
     };   
     
-
     ctrl.dataPredefinedAreaOptions = new Array();
     ctrl.getPredefinedAreaData = function(filter,dataDB){
 
@@ -1275,7 +1364,7 @@ angular.module("ngapp")
             $(contain).addClass('leaflet-bar');
             $(contain).html('<button id="leaflet_myLocation" class="leaflet-control" '+
             'style="margin:0px;width: 30px;height: 30px;padding-bottom: 0px;padding-top: 0px;padding-right: 0px;border-left-width: 0px;padding-left: 0px;border-top-width: 0px;border-bottom-width: 0px;border-right-width: 0px;background: white;border-radius: 5px;" >'+
-            '<ng-md-icon icon="near-me"></ng-md-icon></button>');
+            '<ng-md-icon icon="target"></ng-md-icon></button>');
 
             return contain;
         }

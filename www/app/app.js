@@ -15,6 +15,10 @@ angular.element(document).ready(function () {
     document.addEventListener("pause", function(){
       console.log("Device pause event has fired");
     }, false);
+
+    document.addEventListener("backbutton", function(){
+        callBackButton();
+    }, false);
   } else {
     console.log("Running in browser, bootstrapping AngularJS now.");
     angular.bootstrap(document.body, ['ngapp']);
@@ -33,6 +37,7 @@ angular.module("ngapp", [ "ngTouch", "ui.router", "ngMdIcons", "ngMaterial", "ng
   //http://203.159.29.15:8181/eden/
   //http://sambro.geoinfo.ait.ac.th/eden/
   $localStorage['serverUrl'] = "http://sambro.geoinfo.ait.ac.th/eden/";
+  $localStorage['serverId'] = 1;
 
   if($localStorage['username'] == ""){
     $location.path("/login");
@@ -56,27 +61,8 @@ angular.module("ngapp", [ "ngTouch", "ui.router", "ngMdIcons", "ngMaterial", "ng
   //sqlite
   console.log('TEST MOBILE');
 
-  dbShared = $cordovaSQLite.openDB({name: "offline_data.db" });
-  $cordovaSQLite.execute(dbShared,"CREATE TABLE IF NOT EXISTS m_user (email text, pwd text,expired integer,active_user integer,device_token_id text,user_id integer,profile_json text,user_role text)");
-  $cordovaSQLite.execute(dbShared,"CREATE TABLE IF NOT EXISTS t_alert (id integer primary key, cap_info_headline text, cap_area_name text, cap_scope text,event_event_type_name text,sent TEXT,spatial_val text)");
-  $cordovaSQLite.execute(dbShared,"CREATE TABLE IF NOT EXISTS t_alert_offline (id INTEGER PRIMARY KEY AUTOINCREMENT, created_time text, data_form text, data_form_json text);");
-  $cordovaSQLite.execute(dbShared,"CREATE TABLE IF NOT EXISTS m_event_type (id integer primary key, name text,icon text)");
-  $cordovaSQLite.execute(dbShared,"CREATE TABLE IF NOT EXISTS m_response_type (fvalue text, name text)");
-  $cordovaSQLite.execute(dbShared,"CREATE TABLE IF NOT EXISTS m_urgency (fvalue text, name text)");
-  $cordovaSQLite.execute(dbShared,"CREATE TABLE IF NOT EXISTS m_certainty (fvalue text, name text)");
-  $cordovaSQLite.execute(dbShared,"CREATE TABLE IF NOT EXISTS m_severity (fvalue text, name text)");
-  $cordovaSQLite.execute(dbShared,"CREATE TABLE IF NOT EXISTS m_scope (fvalue text, name text)");
-  $cordovaSQLite.execute(dbShared,"CREATE TABLE IF NOT EXISTS m_msg_type (fvalue text, name text)");
-  $cordovaSQLite.execute(dbShared,"CREATE TABLE IF NOT EXISTS m_group_user (id integer, name text , group_type text,comments text, description text)");
-  $cordovaSQLite.execute(dbShared,"CREATE TABLE IF NOT EXISTS m_status (fvalue text, name text)");
-  $cordovaSQLite.execute(dbShared,"CREATE TABLE IF NOT EXISTS m_warning_priority (id integer primary key, name text,priority_rank text, color_code text, severity text, certainty text, urgency text, event_type_id integer)");
-  $cordovaSQLite.execute(dbShared,"CREATE TABLE IF NOT EXISTS m_template (id integer primary key, template_title text, cap_scope text, cap_info_category text, cap_info_response_type text, event_event_type_id integer,cap_info_description text,cap_info_headline text,cap_info_parameter text)");
-  $cordovaSQLite.execute(dbShared,"CREATE TABLE IF NOT EXISTS m_predefined_area (id integer primary key, name text, event_type_id integer,location_id integer,spatial_val text)");
-  $cordovaSQLite.execute(dbShared,"CREATE TABLE IF NOT EXISTS sync_data_master (periodic_sync integer, time_sync text)"); 
-  $cordovaSQLite.execute(dbShared,"CREATE TABLE IF NOT EXISTS t_server_url (id integer primary key,server_url text)"); 
-
   var androidConfig = {
-    "senderID": "70029886742",
+    "senderID": "70029886742"
   };
 
   var isNetworkOnline = $cordovaNetwork.isOnline();
@@ -91,60 +77,57 @@ angular.module("ngapp", [ "ngTouch", "ui.router", "ngMdIcons", "ngMaterial", "ng
       // Error
     });
   }
-    var srcSound = "/android_asset/www/assets/sound/sound.mp3";
-    //file:///android_asset/www/app/app.js
-    mediaSound = $cordovaMedia.newMedia(srcSound);
-    mediaSound.setVolume(1.0);
-    //mediaSound.play(); 
 
-    $localStorage['deviceTokenId'] = "";
-    $rootScope.$on('$cordovaPush:notificationReceived', function(event, notification) {
-      console.log('listener cordovaPush');
-      console.log(notification.event);
-      switch(notification.event) {
-        case 'registered':
-          if (notification.regid.length > 0 ) {
-            $localStorage['deviceTokenId'] = notification.regid;
-            console.log('registration ID = ' + notification.regid);
-          }
-          break;
+  var srcSound = "/android_asset/www/assets/sound/sound.mp3";
+  //file:///android_asset/www/app/app.js
+  mediaSound = $cordovaMedia.newMedia(srcSound);
+  mediaSound.setVolume(1.0);
+  //mediaSound.play(); 
 
-        case 'message':
-          mediaSound.play(); 
-          // this is the actual push notification. its format depends on the data model from the push server
-          console.log('message = ' + notification.message + ' msgCount = ' + notification.msgcnt);
-          break;
+  $localStorage['deviceTokenId'] = "";
+  $rootScope.$on('$cordovaPush:notificationReceived', function(event, notification) {
+    console.log('listener cordovaPush');
+    console.log(notification.event);
+    switch(notification.event) {
+      case 'registered':
+        if (notification.regid.length > 0 ) {
+          $localStorage['deviceTokenId'] = notification.regid;
+          console.log('registration ID = ' + notification.regid);
+        }
+        break;
 
-        case 'error':
-          console.log('GCM error = ' + notification.msg);
-          break;
+      case 'message':
+        mediaSound.play(); 
+        // this is the actual push notification. its format depends on the data model from the push server
+        console.log('message = ' + notification.message + ' msgCount = ' + notification.msgcnt);
+        break;
 
-        default:
-          alert('An unknown GCM event has occurred');
-          break;
-      }
-    });
+      case 'error':
+        console.log('GCM error = ' + notification.msg);
+        break;
 
-    // WARNING: dangerous to unregister (results in loss of tokenID)
-    //$cordovaPush.unregister(options).then(function(result) {
-      // Success!
-    //}, function(err) {
-      // Error
-    //})
+      default:
+        alert('An unknown GCM event has occurred');
+        break;
+    }
+  });
 
-    //background service always running
-    //myService = cordova.plugins.myService;
-    //getStatus();
+  // WARNING: dangerous to unregister (results in loss of tokenID)
+  //$cordovaPush.unregister(options).then(function(result) {
+    // Success!
+  //}, function(err) {
+    // Error
+  //})
 
-    
+  //background service always running
+  //myService = cordova.plugins.myService;
+  //getStatus();
 
-
-    console.log('end controller app.js');
-    //var timerCount = 0;
-    // window.plugins.BackgroundJS.LockBackgroundTime(function(){}, function(msg){console.log(msg);});
-    // setInterval(function() {
-    // console.log(timerCount++);
-    // },1000);
+  //var timerCount = 0;
+  // window.plugins.BackgroundJS.LockBackgroundTime(function(){}, function(msg){console.log(msg);});
+  // setInterval(function() {
+  // console.log(timerCount++);
+  // },1000);
 
 })
 .factory("interceptors_", [function() {

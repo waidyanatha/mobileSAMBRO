@@ -89,6 +89,17 @@
        console.log("Service now running");
     }
 
+    function findFilterAttr(array, value, obj) {
+        for (var i = 0; i < array.length; i += 1) {
+
+            if (eval("array[i]" + obj) === value) {
+                return i;
+            }
+        }
+
+        return -1;
+    }
+
     var varOutside = null;
     var callBackButton = function(){
         console.log("empty value");

@@ -62,9 +62,9 @@ angular.module("ngapp").service("shared", function($http,$localStorage,$sessionS
             url: url,
             beforeSend: function(xhr) {
               console.log('123');
-              console.log(xhr);
-              console.log(xhr.headers);
-              console.log(ctrl.setHTTPHeaderAuth(username,password));
+              console.log(JSON.stringify(xhr));
+              console.log(JSON.stringify(xhr.headers));
+              console.log(JSON.stringify(ctrl.setHTTPHeaderAuth(username,password)));
 
               //return ctrl.setHTTPHeaderAuth(username,password);
             },
@@ -95,11 +95,16 @@ angular.module("ngapp").service("shared", function($http,$localStorage,$sessionS
     } );
   };
 
+  ctrl.serverUrlId = $localStorage['serverId'];
+  ctrl.refreshServerUrlId = function(){
+    ctrl.serverUrlId = $localStorage['serverId'];
+  };
+
   this.sendFormViaDBFnc = function(email,password,success,failed)
     {
       console.log('call this sendform via DB');
-      var query = "SELECT * FROM m_user where email=? and pwd=?";
-      $cordovaSQLite.execute(dbShared,query,[email, password]).then(function(result) {
+      var query = "SELECT * FROM m_user where email=? and pwd=? and server_url_id=?";
+      $cordovaSQLite.execute(dbShared,query,[email, password,ctrl.serverUrlId]).then(function(result) {
           
           if(success != undefined){
               success(result);
@@ -128,12 +133,12 @@ angular.module("ngapp").service("shared", function($http,$localStorage,$sessionS
     $cordovaSQLite.execute(dbShared, query, dataDB).then(function(result) {
       console.log("insert "+tblName );  
       if(callBack != null){
-        callBack(result);
+        callBack(result,tblName);
       }
     }, function (err) {
       //$cordovaDialogs.alert('err', err, 'OK');
       console.error("error " + tblName);
-      console.error(err);
+      console.error(JSON.stringify(err));
       if(callBackErr != null){
         callBackErr(err);
       }
@@ -144,12 +149,12 @@ angular.module("ngapp").service("shared", function($http,$localStorage,$sessionS
     $cordovaSQLite.execute(dbShared, query, dataDB).then(function(result) {
       console.log("update "+tblName );  
       if(callBack != null){
-        callBack(result);
+        callBack(result,tblName);
       }
     }, function (err) {
       //$cordovaDialogs.alert('err', err, 'OK');
       console.error("error " + tblName);
-      console.error(err);
+      console.error(JSON.stringify(err));
       if(callBackErr != null){
         callBackErr(err);
       }
@@ -160,12 +165,12 @@ angular.module("ngapp").service("shared", function($http,$localStorage,$sessionS
     $cordovaSQLite.execute(dbShared, query).then(function(result) {
       console.log("delete "+tblName);
       if(callBack != null){
-        callBack(result);
+        callBack(result,tblName);
       }
     }, function (err) {
       //$cordovaDialogs.alert('err', err, 'OK');
       console.error("error " + tblName);
-      console.error(err);
+      console.error(JSON.stringify(err));
       if(callBackErr != null){
         callBackErr(err);
       }
@@ -182,7 +187,7 @@ angular.module("ngapp").service("shared", function($http,$localStorage,$sessionS
     }, function (err) {
       //$cordovaDialogs.alert('err', err, 'OK');
       console.error("error " + tblName);
-      console.error(err);
+      console.error(JSON.stringify(err));
       if(callBackErr != null){
         callBackErr(err);
       }
@@ -205,8 +210,8 @@ angular.module("ngapp").service("shared", function($http,$localStorage,$sessionS
   };
 
   ctrl.updateActiveUser = function(){
-    var query = "update m_user set active_user=?";
-    $cordovaSQLite.execute(dbShared, query, [0]).then(function(result) {
+    var query = "update m_user set active_user=? where server_url_id=?";
+    $cordovaSQLite.execute(dbShared, query, [0,ctrl.serverUrlId]).then(function(result) {
       console.log("update active user");
       
     }, function (err) {
@@ -216,7 +221,7 @@ angular.module("ngapp").service("shared", function($http,$localStorage,$sessionS
   }
 
   //
-  ctrl.booleanAllDataLoad = [{tblName:"m_event_type",isDataLoad:false},{tblName:"m_urgency",isDataLoad:false},{tblName:"m_certainty",isDataLoad:false},{tblName:"m_severity",isDataLoad:false},{tblName:"m_scope",isDataLoad:false},{tblName:"m_template",isDataLoad:false},{tblName:"m_warning_priority",isDataLoad:false},{tblName:"m_predefined_area",isDataLoad:false}];
+  ctrl.booleanAllDataLoad = [{tblName:"m_event_type",isDataLoad:false},{tblName:"m_urgency",isDataLoad:false},{tblName:"m_certainty",isDataLoad:false},{tblName:"m_severity",isDataLoad:false},{tblName:"m_scope",isDataLoad:false},{tblName:"m_template",isDataLoad:false},{tblName:"m_warning_priority",isDataLoad:false},{tblName:"m_predefined_area",isDataLoad:false},{tblName:"m_response_type",isDataLoad:false},{tblName:"m_category",isDataLoad:false},{tblName:"m_status",isDataLoad:false},{tblName:"m_msg_type",isDataLoad:false},{tblName:"m_group_user",isDataLoad:false}];
   ctrl.setBooleanDataLoad = function (callBackFinish,tblName){
     var countBoolLoadData = 0;
     for(var i=0;i<ctrl.booleanAllDataLoad.length;i++){
@@ -237,6 +242,7 @@ angular.module("ngapp").service("shared", function($http,$localStorage,$sessionS
 
   //cap/notify_approver?cap_alert.id=
   ctrl.sendNotif = function(alertId,success,failed){
+    ctrl.apiUrl = $localStorage['serverUrl'];
     var ctrlDetail = this;
     ctrlDetail.success = success;
     ctrlDetail.failed = failed;
@@ -257,6 +263,10 @@ angular.module("ngapp").service("shared", function($http,$localStorage,$sessionS
   };
   
   ctrl.loadAllMasterData = function(callBackFinish){
+    ctrl.apiUrl = $localStorage['serverUrl'];
+    ctrl.serverUrlId = $localStorage['serverId'];
+    console.log("loadAllMasterData");
+    console.log(ctrl.serverUrlId);
     var ctrlDetail = this;
     ctrlDetail.callBackFinish = callBackFinish;
     var promiseLoadData = ctrl.loadDataAlert(ctrl.apiUrl+'cap/alert/create.s3json?options=true&references=true');
@@ -270,8 +280,8 @@ angular.module("ngapp").service("shared", function($http,$localStorage,$sessionS
             ctrl.deleteDB("m_event_type",null,null);
             for(var j=0;j<dataField[i]['select'][0]['option'].length;j++){
                 if(dataField[i]['select'][0]['option'][j]['@value'] != ""){
-                  var query = "insert into m_event_type (id, name,icon) values (?,?,?)";
-                  var dataDB = [parseInt(dataField[i]['select'][0]['option'][j]['@value']),dataField[i]['select'][0]['option'][j]['$'],''];
+                  var query = "insert into m_event_type (id, name,icon,server_url_id) values (?,?,?,?)";
+                  var dataDB = [parseInt(dataField[i]['select'][0]['option'][j]['@value']),dataField[i]['select'][0]['option'][j]['$'],'',ctrl.serverUrlId];
                   var callBack = function(result){
                     console.log('success insert to db');
                     ctrl.setBooleanDataLoad(ctrlDetail.callBackFinish,"m_event_type");
@@ -283,13 +293,14 @@ angular.module("ngapp").service("shared", function($http,$localStorage,$sessionS
                 }
                 
             }
+
         }
         else if(dataField[i]['@name'] == "response_type"){
             ctrl.deleteDB("m_response_type",null,null);
             for(var j=0;j<dataField[i]['select'][0]['option'].length;j++){
                 if(dataField[i]['select'][0]['option'][j]['@value'] != ""){
-                  var query = "insert into m_response_type (fvalue, name) values (?,?)";
-                  var dataDB = [dataField[i]['select'][0]['option'][j]['@value'],dataField[i]['select'][0]['option'][j]['$']];
+                  var query = "insert into m_response_type (fvalue, name, server_url_id) values (?,?,?)";
+                  var dataDB = [dataField[i]['select'][0]['option'][j]['@value'],dataField[i]['select'][0]['option'][j]['$'],ctrl.serverUrlId];
                   var callBack = function(result){
                     console.log('success insert to db');
                     ctrl.setBooleanDataLoad(ctrlDetail.callBackFinish,"m_response_type");
@@ -301,13 +312,34 @@ angular.module("ngapp").service("shared", function($http,$localStorage,$sessionS
                 }
                 
             }
+
+        }
+        else if(dataField[i]['@name'] == "category"){
+            ctrl.deleteDB("m_category",null,null);
+            for(var j=0;j<dataField[i]['select'][0]['option'].length;j++){
+                if(dataField[i]['select'][0]['option'][j]['@value'] != ""){
+                  var query = "insert into m_category (fvalue, name, server_url_id) values (?,?,?)";
+                  var dataDB = [dataField[i]['select'][0]['option'][j]['@value'],dataField[i]['select'][0]['option'][j]['$'],ctrl.serverUrlId];
+                  var callBack = function(result){
+                    console.log('success insert to db');
+                    ctrl.setBooleanDataLoad(ctrlDetail.callBackFinish,"m_category");
+                  };
+                  var callBackErr = function(error){
+                    console.log('error to db');
+                  };
+                  ctrl.insertDB("m_category",query,dataDB,callBack,callBackErr);
+                }
+                
+            }
+
+
         }
         else if(dataField[i]['@name'] == "urgency"){
             ctrl.deleteDB("m_urgency",null,null);
             for(var j=0;j<dataField[i]['select'][0]['option'].length;j++){
                 if(dataField[i]['select'][0]['option'][j]['@value'] != ""){
-                  var query = "insert into m_urgency (fvalue, name) values (?,?)";
-                  var dataDB = [dataField[i]['select'][0]['option'][j]['@value'],dataField[i]['select'][0]['option'][j]['$']];
+                  var query = "insert into m_urgency (fvalue, name,server_url_id) values (?,?,?)";
+                  var dataDB = [dataField[i]['select'][0]['option'][j]['@value'],dataField[i]['select'][0]['option'][j]['$'],ctrl.serverUrlId];
                   var callBack = function(result){
                     console.log('success insert to db');
                     ctrl.setBooleanDataLoad(ctrlDetail.callBackFinish,"m_urgency");
@@ -323,8 +355,8 @@ angular.module("ngapp").service("shared", function($http,$localStorage,$sessionS
             ctrl.deleteDB("m_certainty",null,null);
             for(var j=0;j<dataField[i]['select'][0]['option'].length;j++){
                 if(dataField[i]['select'][0]['option'][j]['@value'] != ""){
-                  var query = "insert into m_certainty (fvalue, name) values (?,?)";
-                  var dataDB = [dataField[i]['select'][0]['option'][j]['@value'],dataField[i]['select'][0]['option'][j]['$']];
+                  var query = "insert into m_certainty (fvalue, name,server_url_id) values (?,?,?)";
+                  var dataDB = [dataField[i]['select'][0]['option'][j]['@value'],dataField[i]['select'][0]['option'][j]['$'],ctrl.serverUrlId];
                   var callBack = function(result){
                     console.log('success insert to db');
                     ctrl.setBooleanDataLoad(ctrlDetail.callBackFinish,"m_certainty");
@@ -341,8 +373,8 @@ angular.module("ngapp").service("shared", function($http,$localStorage,$sessionS
             ctrl.deleteDB("m_severity",null,null);
             for(var j=0;j<dataField[i]['select'][0]['option'].length;j++){
                 if(dataField[i]['select'][0]['option'][j]['@value'] != ""){
-                  var query = "insert into m_severity (fvalue, name) values (?,?)";
-                  var dataDB = [dataField[i]['select'][0]['option'][j]['@value'],dataField[i]['select'][0]['option'][j]['$']];
+                  var query = "insert into m_severity (fvalue, name,server_url_id) values (?,?,?)";
+                  var dataDB = [dataField[i]['select'][0]['option'][j]['@value'],dataField[i]['select'][0]['option'][j]['$'],ctrl.serverUrlId];
                   var callBack = function(result){
                     console.log('success insert to db');
                     ctrl.setBooleanDataLoad(ctrlDetail.callBackFinish,"m_severity");
@@ -362,8 +394,8 @@ angular.module("ngapp").service("shared", function($http,$localStorage,$sessionS
             ctrl.deleteDB("m_scope",null,null);
             for(var j=0;j<dataField[i]['select'][0]['option'].length;j++){
                 if(dataField[i]['select'][0]['option'][j]['@value'] != ""){
-                  var query = "insert into m_scope (fvalue, name) values (?,?)";
-                  var dataDB = [dataField[i]['select'][0]['option'][j]['@value'],dataField[i]['select'][0]['option'][j]['$']];
+                  var query = "insert into m_scope (fvalue, name,server_url_id) values (?,?,?)";
+                  var dataDB = [dataField[i]['select'][0]['option'][j]['@value'],dataField[i]['select'][0]['option'][j]['$'],ctrl.serverUrlId];
                   var callBack = function(result){
                     console.log('success insert to db');
                     ctrl.setBooleanDataLoad(ctrlDetail.callBackFinish,"m_scope");
@@ -379,8 +411,8 @@ angular.module("ngapp").service("shared", function($http,$localStorage,$sessionS
             ctrl.deleteDB("m_status",null,null);
             for(var j=0;j<dataField[i]['select'][0]['option'].length;j++){
                 if(dataField[i]['select'][0]['option'][j]['@value'] != ""){
-                  var query = "insert into m_status (fvalue, name) values (?,?)";
-                  var dataDB = [dataField[i]['select'][0]['option'][j]['@value'],dataField[i]['select'][0]['option'][j]['$']];
+                  var query = "insert into m_status (fvalue, name,server_url_id) values (?,?,?)";
+                  var dataDB = [dataField[i]['select'][0]['option'][j]['@value'],dataField[i]['select'][0]['option'][j]['$'],ctrl.serverUrlId];
                   var callBack = function(result){
                     console.log('success insert to db');
                     ctrl.setBooleanDataLoad(ctrlDetail.callBackFinish,"m_status");
@@ -396,8 +428,8 @@ angular.module("ngapp").service("shared", function($http,$localStorage,$sessionS
             ctrl.deleteDB("m_msg_type",null,null);
             for(var j=0;j<dataField[i]['select'][0]['option'].length;j++){
                 if(dataField[i]['select'][0]['option'][j]['@value'] != ""){
-                  var query = "insert into m_msg_type (fvalue, name) values (?,?)";
-                  var dataDB = [dataField[i]['select'][0]['option'][j]['@value'],dataField[i]['select'][0]['option'][j]['$']];
+                  var query = "insert into m_msg_type (fvalue, name,server_url_id) values (?,?,?)";
+                  var dataDB = [dataField[i]['select'][0]['option'][j]['@value'],dataField[i]['select'][0]['option'][j]['$'],ctrl.serverUrlId];
                   var callBack = function(result){
                     console.log('success insert to db');
                     ctrl.setBooleanDataLoad(ctrlDetail.callBackFinish,"m_msg_type");
@@ -411,7 +443,7 @@ angular.module("ngapp").service("shared", function($http,$localStorage,$sessionS
         }
       }
     }, function(reason) {
-      console.log('Failed: ' + reason);
+      console.log('Failed: ' + JSON.stringify(reason));
     });
 
     var promiseLoadDataTemplate = ctrl.loadDataAlert(ctrl.apiUrl+'cap/template.json');
@@ -420,10 +452,10 @@ angular.module("ngapp").service("shared", function($http,$localStorage,$sessionS
       for(var j=0;j<response.length;j++){
         
         //this is only just a dummy data
-        response[j]['cap_info.parameter'] = ['[]','[{"value":"","key":"sahana:tsunami-wave-heigh-meters"},{"value":"","key":"FallingCondition"}]'];
+        //response[j]['cap_info.parameter'] = ['[]','[{"value":"","key":"sahana:tsunami-wave-heigh-meters"},{"value":"","key":"FallingCondition"}]'];
 
-        var query = "insert into m_template (id, template_title, cap_scope, cap_info_category, cap_info_response_type, event_event_type_id,cap_info_description,cap_info_headline,cap_info_parameter) values (?,?,?,?,?,?,?,?,?)";
-        var dataDB = [parseInt(response[j]['id']),response[j]['template_title'],response[j]['scope'],JSON.stringify(response[j]['cap_info.category']),JSON.stringify(response[j]['cap_info.response_type']), parseInt(response[j]['cap_info.event_type_id']),JSON.stringify(response[j]['cap_info.description']),JSON.stringify(response[j]['cap_info.headline']),JSON.stringify(response[j]['cap_info.parameter'])];
+        var query = "insert into m_template (id, template_title, cap_scope, cap_info_category, cap_info_response_type, event_event_type_id,cap_info_description,cap_info_headline,cap_info_parameter,server_url_id) values (?,?,?,?,?,?,?,?,?,?)";
+        var dataDB = [parseInt(response[j]['id']),response[j]['template_title'],response[j]['scope'],JSON.stringify(response[j]['cap_info.category']),JSON.stringify(response[j]['cap_info.response_type']), parseInt(response[j]['cap_info.event_type_id']),JSON.stringify(response[j]['cap_info.description']),JSON.stringify(response[j]['cap_info.headline']),JSON.stringify(response[j]['cap_info.parameter']),ctrl.serverUrlId];
         var callBack = function(result){
           console.log('success insert to db');
           ctrl.setBooleanDataLoad(ctrlDetail.callBackFinish,"m_template");
@@ -434,6 +466,11 @@ angular.module("ngapp").service("shared", function($http,$localStorage,$sessionS
         ctrl.insertDB("m_template",query,dataDB,callBack,callBackErr);
         
       }
+
+      if(response.length == 0){
+        console.log('data empty m_template');
+        ctrl.setBooleanDataLoad(ctrlDetail.callBackFinish,"m_template");
+      }
     }, function(reason) {
       console.log('Failed: ' + reason);
     });
@@ -443,8 +480,8 @@ angular.module("ngapp").service("shared", function($http,$localStorage,$sessionS
       ctrl.deleteDB("m_group_user",null,null);
       for(var j=0;j<response.length;j++){
         
-        var query = "insert into m_group_user (id,name,group_type,comments,description) values (?,?,?,?,?)";
-        var dataDB = [parseInt(response[j]['id']),response[j]['name'],response[j]['group_type'],response[j]['comments'],response[j]['description']];
+        var query = "insert into m_group_user (id,name,group_type,comments,description,server_url_id) values (?,?,?,?,?,?)";
+        var dataDB = [parseInt(response[j]['id']),response[j]['name'],response[j]['group_type'],response[j]['comments'],response[j]['description'],ctrl.serverUrlId];
         var callBack = function(result){
           console.log('success insert to db');
           ctrl.setBooleanDataLoad(ctrlDetail.callBackFinish,"m_group_user");
@@ -455,6 +492,12 @@ angular.module("ngapp").service("shared", function($http,$localStorage,$sessionS
         ctrl.insertDB("m_group_user",query,dataDB,callBack,callBackErr);
         
       }
+
+      if(response.length == 0){
+        console.log('data empty m_group_user');
+        ctrl.setBooleanDataLoad(ctrlDetail.callBackFinish,"m_group_user");
+      }
+
     }, function(reason) {
       console.log('Failed: ' + reason);
     });
@@ -465,8 +508,8 @@ angular.module("ngapp").service("shared", function($http,$localStorage,$sessionS
       ctrl.deleteDB("m_warning_priority",null,null);
       for(var j=0;j<response.length;j++){
         
-        var query = "insert into m_warning_priority (id , name ,priority_rank , color_code , severity , certainty , urgency , event_type_id) values (?,?,?,?,?,?,?,?)";
-        var dataDB = [parseInt(response[j]['id']),response[j]['name'],response[j]['priority_rank'],response[j]['color_code'],response[j]['severity'], response[j]['certainty'],response[j]['urgency'],parseInt(response[j]['event_type_id']) ];
+        var query = "insert into m_warning_priority (id , name ,priority_rank , color_code , severity , certainty , urgency , event_type_id,server_url_id) values (?,?,?,?,?,?,?,?,?)";
+        var dataDB = [parseInt(response[j]['id']),response[j]['name'],response[j]['priority_rank'],response[j]['color_code'],response[j]['severity'], response[j]['certainty'],response[j]['urgency'],parseInt(response[j]['event_type_id']),ctrl.serverUrlId ];
         var callBack = function(result){
           console.log('success insert to db');
           ctrl.setBooleanDataLoad(ctrlDetail.callBackFinish,"m_warning_priority");
@@ -477,6 +520,11 @@ angular.module("ngapp").service("shared", function($http,$localStorage,$sessionS
         ctrl.insertDB("m_warning_priority",query,dataDB,callBack,callBackErr);
         
       }
+
+      if(response.length == 0){
+        console.log('data empty m_warning_priority');
+        ctrl.setBooleanDataLoad(ctrlDetail.callBackFinish,"m_warning_priority");
+      }
     }, function(reason) {
       console.log('Failed: ' + reason);
     });
@@ -486,8 +534,8 @@ angular.module("ngapp").service("shared", function($http,$localStorage,$sessionS
       //console.log(response);
       ctrl.deleteDB("m_predefined_area",null,null);
       for(var i=0;i<response.length;i++){
-        var query = "insert into m_predefined_area (id , name , event_type_id ,location_id) values (?,?,?,?)";
-        var dataDB = [parseInt(response[i]['id']),response[i]['name'],parseInt(response[i]['event_type_id']),parseInt(response[i]['cap_area_location.location_id']) ];
+        var query = "insert into m_predefined_area (id , name , event_type_id ,location_id,server_url_id) values (?,?,?,?,?)";
+        var dataDB = [parseInt(response[i]['id']),response[i]['name'],parseInt(response[i]['event_type_id']),parseInt(response[i]['cap_area_location.location_id']),ctrl.serverUrlId ];
         var callBack = function(result){
           console.log('success insert to db');
           ctrl.setBooleanDataLoad(ctrlDetail.callBackFinish,"m_predefined_area");
@@ -496,6 +544,11 @@ angular.module("ngapp").service("shared", function($http,$localStorage,$sessionS
           console.log('error to db');
         };
         ctrl.insertDB("m_predefined_area",query,dataDB,callBack,callBackErr);
+      }
+
+      if(response.length == 0){
+        console.log('data empty m_predefined_area');
+        ctrl.setBooleanDataLoad(ctrlDetail.callBackFinish,"m_predefined_area");
       }
       ctrl.getDataPredefinedAreaGeo();
       //ctrl.dataPredefinedAreaOptions = response;
@@ -509,8 +562,8 @@ angular.module("ngapp").service("shared", function($http,$localStorage,$sessionS
     var promiseLoadDataPredefinedAreaGeo = ctrl.loadDataAlert(ctrl.apiUrl+'cap/area.geojson?~.is_template=True');
     promiseLoadDataPredefinedAreaGeo.then(function(response) {
       for(var i=0;i<response.features.length;i++){
-        var query = "update m_predefined_area set spatial_val=? where id=?";
-        var dataDB = [JSON.stringify(response.features[i]['geometry']),parseInt(response.features[i]['properties'].id[1]) ];
+        var query = "update m_predefined_area set spatial_val=? where id=? and server_url_id=?";
+        var dataDB = [JSON.stringify(response.features[i]['geometry']),parseInt(response.features[i]['properties'].id[1]),ctrl.serverUrlId ];
         var callBack = function(result){
           console.log('success update area spatial to db');
         };

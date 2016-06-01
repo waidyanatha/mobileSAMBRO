@@ -197,6 +197,15 @@
         </md-list-item>
       </div>
 
+      <div ng-hide="alertForm.checkPageShow('category')">  
+        <md-subheader class="md-no-sticky">Category ({{alertForm.progressText}})</md-subheader>
+        <md-progress-linear md-mode="indeterminate" ng-show="alertForm.hidePage[alertForm.checkPageIdx('category')].loadData"></md-progress-linear>
+        <md-list-item ng-repeat="dataCategoryOption in alertForm.dataCategoryOptions" >
+          <p>{{dataCategoryOption['@value']}}</p>
+          <md-checkbox class="md-secondary" ng-model="dataCategoryOption.selected" ></md-checkbox>
+        </md-list-item>
+      </div>
+
       <div ng-hide="alertForm.checkPageShow('warning-priority')">  
         <md-subheader class="md-no-sticky">Warning Priority ({{alertForm.progressText}})</md-subheader>
         <md-progress-linear md-mode="indeterminate" ng-show="alertForm.hidePage[alertForm.checkPageIdx('warning-priority')].loadData"></md-progress-linear>
@@ -375,6 +384,12 @@
         <h4 style="padding-left:15px;" ng-click="alertForm.summaryClickDetail('response-type')" class="md-title">Response Type</h4>
         <md-list-item ng-click="alertForm.summaryClickDetail('response-type')" ng-repeat="dataResponseTypeOption in alertForm.dataResponseTypeOptions" ng-if="dataResponseTypeOption.selected">
           <p>{{dataResponseTypeOption['@value']}}</p>
+        </md-list-item>
+        <md-divider ></md-divider>
+
+        <h4 style="padding-left:15px;" ng-click="alertForm.summaryClickDetail('category')" class="md-title">Category</h4>
+        <md-list-item ng-click="alertForm.summaryClickDetail('category')" ng-repeat="dataCategoryOption in alertForm.dataCategoryOptions" ng-if="dataCategoryOption.selected">
+          <p>{{dataCategoryOption['@value']}}</p>
         </md-list-item>
         <md-divider ></md-divider>
 
