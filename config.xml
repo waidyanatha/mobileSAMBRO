@@ -1,12 +1,5 @@
-<?xml version="1.0" encoding="utf-8"?>
-<widget 
-    id="io.sahana.sambro.mobile" 
-    version="0.0.11"
-    versionCode="1" 
-    xmlns="http://www.w3.org/ns/widgets" 
-    xmlns:cdv="http://cordova.apache.org/ns/1.0"
-    xmlns:android="http://schemas.android.com/apk/res/android" 
-    xmlns:gap="http://phonegap.com/ns/1.0">
+<?xml version='1.0' encoding='utf-8'?>
+<widget id="io.sahana.sambro.mobile" version="0.0.12" versionCode="1" xmlns="http://www.w3.org/ns/widgets" xmlns:android="http://schemas.android.com/apk/res/android" xmlns:cdv="http://cordova.apache.org/ns/1.0" xmlns:gap="http://phonegap.com/ns/1.0">
     <name>SAMBRO mobile</name>
     <description>
         SAMBRO mobile client
@@ -16,45 +9,37 @@
     </author>
     <content src="index.html" />
     <icon src="www/sahana-sunflower-512.png" />
-
-    <preference name='phonegap-version' value='cli-5.2.0' />
+    <preference name="phonegap-version" value="cli-5.2.0" />
     <preference name="permissions" value="none" />
     <preference name="orientation" value="default" />
     <preference name="target-device" value="universal" />
-    <!--<preference name="fullscreen" value="true" />-->
     <preference name="webviewbounce" value="true" />
     <preference name="prerendered-icon" value="true" />
     <preference name="stay-in-webview" value="false" />
-    <!--<preference name="ios-statusbarstyle" value="black-opaque" />-->
     <preference name="detect-data-types" value="true" />
     <preference name="exit-on-suspend" value="false" />
-    <!--<preference name="show-splash-screen-spinner" value="true" />-->
-    <!--<preference name="auto-hide-splash-screen" value="true" />-->
     <preference name="disable-cursor" value="false" />
     <preference name="android-minSdkVersion" value="14" />
     <preference name="android-installLocation" value="auto" />
-
-    <feature name="http://api.phonegap.com/1.0/battery"/>
-    <feature name="http://api.phonegap.com/1.0/camera"/>
-    <feature name="http://api.phonegap.com/1.0/contacts"/>
-    <feature name="http://api.phonegap.com/1.0/file"/>
-    <feature name="http://api.phonegap.com/1.0/geolocation"/>
-    <feature name="http://api.phonegap.com/1.0/media"/>
-    <feature name="http://api.phonegap.com/1.0/network"/>
-    <feature name="http://api.phonegap.com/1.0/notification"/>
-
-    <plugin name="cordova-plugin-whitelist" spec="1.2.1" source="npm" />
-    <plugin name="org.apache.cordova.dialogs" spec="0.3.0" source="pgb" />
-    <plugin name="cordova-plugin-geolocation" spec="1.0.1" source="pgb" />
-    <gap:plugin name="cordova-plugin-statusbar" spec="2.1.1" source="npm" />
-    <plugin name="io.litehelpers.cordova.sqlite" spec="0.7.10" source="pgb" />
-    <plugin name="cordova-plugin-network-information" spec="1.0.1" source="pgb" />
-    <plugin name="com.phonegap.plugins.PushPlugin" spec="2.5.0" source="pgb" />
-    <plugin name="cordova-plugin-media" spec="2.2.0" source="npm" />
-    <plugin name="com.sharinglabs.cordova.plugin.cache" spec="1.0.0" source="pgb" />
-    <plugin name="cordova-plugin-inappbrowser" spec="1.0.1" source="pgb" />
-    <plugin name="cordova-plugin-app-version" spec="0.1.8" source="pgb" />
-
+    <feature name="http://api.phonegap.com/1.0/battery" />
+    <feature name="http://api.phonegap.com/1.0/camera" />
+    <feature name="http://api.phonegap.com/1.0/contacts" />
+    <feature name="http://api.phonegap.com/1.0/file" />
+    <feature name="http://api.phonegap.com/1.0/geolocation" />
+    <feature name="http://api.phonegap.com/1.0/media" />
+    <feature name="http://api.phonegap.com/1.0/network" />
+    <feature name="http://api.phonegap.com/1.0/notification" />
+    <plugin name="cordova-plugin-whitelist" source="npm" spec="1.2.1" />
+    <plugin name="org.apache.cordova.dialogs" source="pgb" spec="0.3.0" />
+    <plugin name="cordova-plugin-geolocation" source="pgb" spec="1.0.1" />
+    <gap:plugin name="cordova-plugin-statusbar" source="npm" spec="2.1.1" />
+    <plugin name="io.litehelpers.cordova.sqlite" source="pgb" spec="0.7.10" />
+    <plugin name="cordova-plugin-network-information" source="pgb" spec="1.0.1" />
+    <plugin name="com.phonegap.plugins.PushPlugin" source="pgb" spec="2.5.0" />
+    <plugin name="cordova-plugin-media" source="npm" spec="2.2.0" />
+    <plugin name="com.sharinglabs.cordova.plugin.cache" source="pgb" spec="1.0.0" />
+    <plugin name="cordova-plugin-inappbrowser" source="pgb" spec="1.0.1" />
+    <plugin name="cordova-plugin-app-version" source="pgb" spec="0.1.8" />
     <access origin="*" />
     <allow-intent href="http://*/*" />
     <allow-intent href="https://*/*" />
@@ -65,4 +50,8 @@
     <platform name="android">
         <allow-intent href="market:*" />
     </platform>
+    <preference name="xwalkVersion" value="xwalk_core_library_beta:18+" />
+    <preference name="xwalkCommandLine" value="--disable-pull-to-refresh-effect" />
+    <preference name="xwalkMode" value="embedded" />
+    <preference name="xwalkMultipleApk" value="true" />
 </widget>

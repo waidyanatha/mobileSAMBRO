@@ -1,0 +1,57 @@
+{
+    "prepare_queue": {
+        "installed": [],
+        "uninstalled": []
+    },
+    "config_munge": {
+        "files": {}
+    },
+    "installed_plugins": {
+        "com.phonegap.plugins.PushPlugin": {
+            "PACKAGE_NAME": "io.sahana.sambro.mobile"
+        },
+        "com.red_folder.phonegap.plugin.backgroundservice": {
+            "PACKAGE_NAME": "io.sahana.sambro.mobile"
+        },
+        "com.red_folder.phonegap.plugin.backgroundservice.sample": {
+            "PACKAGE_NAME": "io.sahana.sambro.mobile"
+        },
+        "com.sharinglabs.cordova.plugin.cache": {
+            "PACKAGE_NAME": "io.sahana.sambro.mobile"
+        },
+        "cordova-plugin-app-version": {
+            "PACKAGE_NAME": "io.sahana.sambro.mobile"
+        },
+        "cordova-plugin-file": {
+            "PACKAGE_NAME": "io.sahana.sambro.mobile"
+        },
+        "cordova-plugin-geolocation": {
+            "PACKAGE_NAME": "io.sahana.sambro.mobile"
+        },
+        "cordova-plugin-inappbrowser": {
+            "PACKAGE_NAME": "io.sahana.sambro.mobile"
+        },
+        "cordova-plugin-media": {
+            "PACKAGE_NAME": "io.sahana.sambro.mobile"
+        },
+        "cordova-plugin-network-information": {
+            "PACKAGE_NAME": "io.sahana.sambro.mobile"
+        },
+        "cordova-plugin-statusbar": {
+            "PACKAGE_NAME": "io.sahana.sambro.mobile"
+        },
+        "cordova-plugin-whitelist": {
+            "PACKAGE_NAME": "io.sahana.sambro.mobile"
+        },
+        "io.litehelpers.cordova.sqlite": {
+            "PACKAGE_NAME": "io.sahana.sambro.mobile"
+        },
+        "org.apache.cordova.dialogs": {
+            "PACKAGE_NAME": "io.sahana.sambro.mobile"
+        },
+        "cordova-plugin-crosswalk-webview": {
+            "PACKAGE_NAME": "io.sahana.sambro.mobile"
+        }
+    },
+    "dependent_plugins": {}
+}

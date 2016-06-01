@@ -36,11 +36,11 @@
     <script type="text/javascript" src="assets/lib/angular-material.js"></script>
 
     <!-- Leaflet -->
-    <script src="assets/lib/leaflet/leaflet/leaflet.js"></script>
+    <script src="assets/lib/leaflet/leaflet/leaflet-src.js"></script>
     <link rel="stylesheet" href="assets/lib/leaflet/leaflet/leaflet.css" />
 
     <!-- Leaflet Draw -->
-    <script src="assets/lib/leaflet/leaflet-draw/leaflet.draw.js"></script>
+    <script src="assets/lib/leaflet/leaflet-draw/leaflet.draw-src.js"></script>
     <link rel="stylesheet" href="assets/lib/leaflet/leaflet-draw/leaflet.draw.css" />
 
     <!-- Leaflet Wicket -->
@@ -56,15 +56,15 @@
     <!-- JS Crypt -->
     <script type="text/javascript" src="assets/lib/aes.js"></script>
 
-    <!-- Cordova -->
-    <script type="text/javascript" src="assets/lib/ng-cordova.min.js"></script>
-    <script src="cordova.js"></script>
+    
 
 <script type="text/javascript">
     var dbShared = null;
     var map = null;
     var mapThumbnail = null;
     var mapThumbnailSummary = null;
+    var mapThumbnailDetail = null;
+    var polygonDrawer;
     var mediaSound = null;
 
     var myService; //background service always running
@@ -89,9 +89,27 @@
        console.log("Service now running");
     }
 
-    
-</script>
+    function findFilterAttr(array, value, obj) {
+        for (var i = 0; i < array.length; i += 1) {
 
+            if (eval("array[i]" + obj) === value) {
+                return i;
+            }
+        }
+
+        return -1;
+    }
+
+    var varOutside = null;
+    var callBackButton = function(){
+        console.log("empty value");
+    };
+
+    var globalCallBtn = null;
+</script>
+    <!-- Cordova -->
+    <script type="text/javascript" src="assets/lib/ng-cordova.min.js"></script>
+    <script src="cordova.js"></script>
 
     <!-- Modules -->
     <script type="text/javascript" src="app/app.js"></script>

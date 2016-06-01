@@ -1,20 +1,9 @@
 <?xml version='1.0' encoding='utf-8'?>
-<widget id="io.cordova.hellocordova" version="0.0.1" xmlns="http://www.w3.org/ns/widgets" xmlns:cdv="http://cordova.apache.org/ns/1.0">
+<widget id="io.sahana.sambro.mobile" version="0.0.6" versionCode="1" xmlns="http://www.w3.org/ns/widgets" xmlns:android="http://schemas.android.com/apk/res/android" xmlns:cdv="http://cordova.apache.org/ns/1.0" xmlns:gap="http://phonegap.com/ns/1.0">
     <name>HelloCordova</name>
     <description>
         A sample Apache Cordova application that responds to the deviceready event.
     </description>
-    <author email="dev@cordova.apache.org" href="http://cordova.io">
-        Apache Cordova Team
-    </author>
-    <content src="index.html" />
-    <access origin="*" />
-    <allow-intent href="http://*/*" />
-    <allow-intent href="https://*/*" />
-    <allow-intent href="tel:*" />
-    <allow-intent href="sms:*" />
-    <allow-intent href="mailto:*" />
-    <allow-intent href="geo:*" />
     <feature name="Notification">
         <param name="wp-package" value="Notification" />
     </feature>
@@ -39,4 +28,36 @@
     <feature name="InAppBrowser">
         <param name="wp-package" value="InAppBrowser" />
     </feature>
+    <feature name="AppVersion">
+        <param name="wp-package" value="AppVersion" />
+    </feature>
+    <name>SAMBRO mobile</name>
+    <description>
+        SAMBRO mobile client
+    </description>
+    <author email="angga.bayu.marthafifsa@gmail.com" href="http://cordova.io">
+        Angga Bayu
+    </author>
+    <content src="index.html" />
+    <icon src="www/sahana-sunflower-512.png" />
+    <preference name="phonegap-version" value="cli-5.2.0" />
+    <preference name="permissions" value="none" />
+    <preference name="orientation" value="default" />
+    <preference name="target-device" value="universal" />
+    <preference name="webviewbounce" value="true" />
+    <preference name="prerendered-icon" value="true" />
+    <preference name="stay-in-webview" value="false" />
+    <preference name="detect-data-types" value="true" />
+    <preference name="exit-on-suspend" value="false" />
+    <preference name="disable-cursor" value="false" />
+    <preference name="android-minSdkVersion" value="14" />
+    <preference name="android-installLocation" value="auto" />
+    <gap:plugin name="cordova-plugin-statusbar" source="npm" spec="2.1.1" />
+    <access origin="*" />
+    <allow-intent href="http://*/*" />
+    <allow-intent href="https://*/*" />
+    <allow-intent href="tel:*" />
+    <allow-intent href="sms:*" />
+    <allow-intent href="mailto:*" />
+    <allow-intent href="geo:*" />
 </widget>

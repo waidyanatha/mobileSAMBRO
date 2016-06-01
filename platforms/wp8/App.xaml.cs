@@ -32,7 +32,7 @@ using System.Windows.Shapes;
 using Microsoft.Phone.Controls;
 using Microsoft.Phone.Shell;
 
-namespace io.cordova.hellocordova
+namespace io.sahana.sambro.mobile
 {
     public partial class App : Application
     {

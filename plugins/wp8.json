@@ -118,6 +118,9 @@
         },
         "cordova-plugin-app-version": {
             "PACKAGE_NAME": "{0d8f1fb0-61fa-11e5-82ab-8de24a0a18b8}"
+        },
+        "cordova-plugin-crosswalk-webview": {
+            "PACKAGE_NAME": "{0d8f1fb0-61fa-11e5-82ab-8de24a0a18b8}"
         }
     },
     "dependent_plugins": {
