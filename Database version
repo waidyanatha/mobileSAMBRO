@@ -60,3 +60,7 @@ add table db_info
 add id integer primary key AUTOINCREMENT
 add database_version text
 add database_schema text
+
+v1.5
+table t_alert
+alter id integer
