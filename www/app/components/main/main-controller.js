@@ -18,7 +18,7 @@ angular.module("ngapp")
     ctrl.showProfilePage = false;
     ctrl.showSettingPage = false;
 
-    ctrl.serverUrlId = $localStorage['serverId'];
+    ctrl.serverUrlId = parseInt($localStorage['serverId']);
     ctrl.serverUrl = $localStorage['serverUrl'];
     shared.refreshServerUrlId();
 
@@ -104,6 +104,9 @@ angular.module("ngapp")
     };
 
     ctrl.evenTypeIcon = function(eventTypeName){
+        if(eventTypeName == null){
+          eventTypeName = "";
+        }
         return "assets/images/disaster/"+ shared.evenTypeIcon(eventTypeName) + ".png";
     }; 
 
@@ -254,7 +257,7 @@ angular.module("ngapp")
         
       }, function (err) {
         //$cordovaDialogs.alert('err', err, 'OK');
-        console.error(err);
+        console.error(JSON.stringify(err));
       });
     };
     ctrl.deleteAlert = function() {
@@ -264,7 +267,7 @@ angular.module("ngapp")
         
       }, function (err) {
         //$cordovaDialogs.alert('err', err, 'OK');
-        console.error(err);
+        console.error( JSON.stringify(err) );
       });
     };
     ctrl.selectAlert = function() {
@@ -290,7 +293,7 @@ angular.module("ngapp")
           }
         }
       }, function(error) {
-          console.error(error);
+          console.error(JSON.stringify(error));
       });
     };
 
@@ -322,7 +325,7 @@ angular.module("ngapp")
         
         //ctrl.dataAlerts = response;
       }, function(reason) {
-        console.log('Failed: ' + reason);
+        console.log('Failed: ' + JSON.stringify(reason));
       });
 
     };

@@ -5,7 +5,7 @@ angular.module("ngapp")
     var ctrl = this;
 
     //version 1.1
-    var databaseVersion = "1.4";
+    var databaseVersion = "1.5";
     $localStorage['databaseVersion'] = databaseVersion;
     var databaseSchema = {
       "tables": [{
@@ -42,7 +42,7 @@ angular.module("ngapp")
           "name": "t_alert",
           "columns": [{
               "name": "id",
-              "type": "integer primary key AUTOINCREMENT"
+              "type": "integer"
           }, {
               "name": "cap_info_headline",
               "type": "text"
@@ -620,6 +620,21 @@ angular.module("ngapp")
                 };
                 getTablesName();
               }
+              else{
+                ctrl.customInsertForNewDBSchema = function(){
+                  console.log("version upper then 1.1");
+
+                  //init run
+                  ctrl.setServerUrl(function(){
+                    ctrl.selectAllUser();
+                  });
+                };
+
+                getTablesName();
+
+                
+              }
+
             }
             else{
               console.log("same database version");
@@ -806,6 +821,9 @@ angular.module("ngapp")
     ctrl.auth = shared.info.auth;
     ctrl.title = shared.info.title;
     ctrl.hideErrorMessage = true;
+    ctrl.hideErrorMessage1 = true;
+    ctrl.errorMessage = "";
+    ctrl.errorMessage1 = "";
     ctrl.shared = shared;
     ctrl.serverUrl = $localStorage['serverUrl'];
     ctrl.serverLocation = "POINT(100.612952 14.082130)";
@@ -913,6 +931,7 @@ angular.module("ngapp")
     ctrl.directLoginContainer = false;
     ctrl.selectLoginContainer = false;
     ctrl.serverUrlChangeContainer = false;
+    ctrl.serverUrlFormChangeContainer = false;
 
     ctrl.userName = "";
     ctrl.userId = 0;
@@ -968,6 +987,7 @@ angular.module("ngapp")
       ctrl.directLoginContainer = false;
       ctrl.selectLoginContainer = true;
       ctrl.serverUrlChangeContainer = false;
+      ctrl.serverUrlFormChangeContainer = false;
     };
     ctrl.clickDirectLoginUsers = function(idx){
       $localStorage['username'] = ctrl.dataUsers[idx].email;
@@ -985,12 +1005,24 @@ angular.module("ngapp")
       ctrl.directLoginContainer = false;
       ctrl.selectLoginContainer = false;
       ctrl.serverUrlChangeContainer = false;
+      ctrl.serverUrlFormChangeContainer = false;
     };
-    ctrl.clickChangeServerUrlForm = function(){
+    ctrl.clickChangeServerUrlList = function(){
       ctrl.loginFormContainer = false;
       ctrl.directLoginContainer = false;
       ctrl.selectLoginContainer = false;
       ctrl.serverUrlChangeContainer = true;
+      ctrl.serverUrlFormChangeContainer = false;
+    };
+    ctrl.clickChangeServerUrlForm = function(){
+      ctrl.errorMessage1 = "";
+      ctrl.hideErrorMessage1 = true;
+
+      ctrl.loginFormContainer = false;
+      ctrl.directLoginContainer = false;
+      ctrl.selectLoginContainer = false;
+      ctrl.serverUrlChangeContainer = false;
+      ctrl.serverUrlFormChangeContainer = true;
     };
 
     ctrl.cancelChangeServerUrl = function(){
@@ -1005,12 +1037,73 @@ angular.module("ngapp")
       //$localStorage['serverUrl'] = ctrl.serverUrl;
 
       console.log("add server "+ctrl.serverUrl);
-      shared.insertDB("t_server_url","insert into t_server_url (server_location,server_name,server_url,active_server) values (?,?,?,?)",[ctrl.serverLocation,ctrl.serverName,ctrl.serverUrl,'false'],function(){
-        ctrl.setServerUrl();
-      },null);
+      var sameServer = false;
+      var errorMessageDetail = "";
+      for(var i=0;i<ctrl.listServerUrl.length;i++){
+        if(ctrl.serverUrl == ctrl.listServerUrl[i].serverUrl ){
+          sameServer = true;
+          errorMessageDetail = "Server url is available!";
+        }
+        if(ctrl.serverName == ctrl.listServerUrl[i].serverName){
+          sameServer = true;
+          errorMessageDetail = "Server name is available!";
+        }
+
+
+      }
+      if(sameServer == false){
+        shared.insertDB("t_server_url","insert into t_server_url (server_location,server_name,server_url,active_server) values (?,?,?,?)",[ctrl.serverLocation,ctrl.serverName,ctrl.serverUrl,'false'],function(){
+            ctrl.setServerUrl();
+            ctrl.clickChangeServerUrlList();
+          },null);
+      }
+      else{
+        ctrl.hideErrorMessage1 = false;
+        ctrl.errorMessage1 = errorMessageDetail;
+      }
+      
+      
 
       //shared.deleteDBWithFilter("sync_data_master","where server_url_id=?",[ctrl.serverUrlId],null,null);
       //ctrl.cancelChangeServerUrl();
+    };
+
+    ctrl.isDataServerExist = function(){
+      if(ctrl.listServerUrl.length>0){
+        return true;
+      }
+
+      return false;
+    };
+
+    ctrl.deleteServerUrl = function(){
+     
+      shared.deleteDBWithFilter("t_server_url","where id=?",[$localStorage['serverId']]
+      ,function(result){
+        console.log("success delete t_server_url ");
+
+        ctrl.serverUrlId = -1;
+        $localStorage['serverUrl'] = "";
+        $localStorage['serverId'] = "";
+
+        if(ctrl.listServerUrl.length>0){
+          ctrl.serverUrlId = ctrl.listServerUrl[0].serverId;
+          $localStorage['serverUrl'] = ctrl.listServerUrl[0].serverUrl;
+          $localStorage['serverId'] = ctrl.serverUrlId;
+
+          shared.updateDB("t_server_url","update t_server_url set active_server='true' where id=?",[ctrl.serverUrlId]
+          ,function(result1){
+            console.log("success update t_server_url active_server = true");
+            ctrl.setServerUrl();
+
+          },function(error1){
+            console.log("error update t_server_url active_server = true");
+          });      
+        }
+
+      },function(error){
+        console.log("error update t_server_url ");
+      });
     };
 
     ctrl.userRole = "";
