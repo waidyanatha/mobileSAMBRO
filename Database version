@@ -61,6 +61,6 @@ add id integer primary key AUTOINCREMENT
 add database_version text
 add database_schema text
 
-v1.5
+v1.5 (2, June 2016)
 table t_alert
 alter id integer
