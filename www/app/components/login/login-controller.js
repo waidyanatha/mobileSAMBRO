@@ -1254,7 +1254,7 @@ angular.module("ngapp")
     ctrl.checkTokenId = function(dataJson){
       console.log("check token id");
       //GCM , OTHER
-      var typeContact = "OTHER";
+      var typeContact = "GCM";
       var otherContacts = dataJson['$_pr_person'][0];
       var isTokenIdExist = false;
       if(otherContacts['$_pr_contact'] != undefined){
@@ -1281,7 +1281,7 @@ angular.module("ngapp")
     ctrl.saveToken = function(userId){
       console.log("saving token id");
       //GCM , OTHER
-      var typeContact = "OTHER";
+      var typeContact = "GCM";
       var dataJsonToken = {
           "$_pr_person": [{ 
             "$_pr_contact": [{
