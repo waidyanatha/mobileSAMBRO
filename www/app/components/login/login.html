@@ -1,17 +1,18 @@
 <link rel="stylesheet" type="text/css" href="app/components/login/login.css">
 
 <md-content class="content" layout="column" style="background: #e2a704;" flex>
-  <div style="height:40px;"></div>
+  <div style="height:20px;"></div>
   <div layout="row">
     <div flex="5"></div>
       <div layout="column" flex="90">
         <div layout="row" layout-align="space-around center" flex="20">
-            <img src="cap.png">
+            <img src="sahana-sunflower-512.png" height="90" width="90" >
         </div>
         
 
           <div ng-show="login.loginFormContainer">
             <form style="margin:1em auto;" name="loginForm" novalidate flex="100">
+
               <md-input-container class="md-block" md-no-float>
                   <input type="email" name="email" ng-model="login.loginForm.email" placeholder="Email"
                          ng-pattern="/^.+@.+\..+$/" required>
@@ -42,11 +43,12 @@
                 <div ng-hide="login.hideErrorMessage" class="msg-wrong-pass md-warn-fg text-center">Username or Password is Wrong</div>   
 
                 <md-button type="submit" class="md-raised md-accent" aria-label="Server Url" style="width:90%;"
-                           ng-click="login.clickChangeServerUrlForm()">
+                           ng-click="login.clickChangeServerUrlList()">
                     Change server url
                 </md-button> 
             </form>     
           </div>
+
           <div ng-show="login.directLoginContainer">
               <md-button class="md-raised md-accent" aria-label="{{login.userName}}" style="width:90%;"
                            ng-click="login.clickDirectLogin()">
@@ -68,7 +70,7 @@
               
                 <h4></h4>
               <div class="md-accent-fg text-center" ng-click="login.clickToLoginForm()">Different account?</div>  
-              <div style="padding-top: 10px;" class="md-accent-fg text-center" ng-click="login.clickChangeServerUrlForm()">Change server url</div> 
+              <div style="padding-top: 10px;" class="md-accent-fg text-center" ng-click="login.clickChangeServerUrlList()">Change server url</div> 
           </div>
 
           <div ng-show="login.serverUrlChangeContainer">
@@ -85,6 +87,28 @@
               </md-list-item>
             </md-radio-group>
 
+
+            <div layout="row" layout-align="center center">
+              <md-button class="md-raised md-accent" aria-label="Cancel"
+                       ng-click="login.cancelChangeServerUrl();">
+                Back
+              </md-button>  
+
+              <md-button type="submit" class="md-raised md-accent" aria-label="New" ng-click="login.clickChangeServerUrlForm();">
+                  New
+              </md-button>
+
+              <md-button class="md-raised md-accent" aria-label="Delete" ng-show="login.isDataServerExist();"
+                       ng-click="login.deleteServerUrl();">
+                Delete
+              </md-button> 
+              
+            </div>
+              
+          </div>
+
+          <div ng-show="login.serverUrlFormChangeContainer">
+    
             <form style="margin:1em auto;" name="serverForm" novalidate flex="100">
             <md-input-container class="md-block" md-no-float>
                 <input type="text" name="serverUrl" ng-model="login.serverUrl" placeholder="Server Url" required>
@@ -115,10 +139,11 @@
                     
                 </div>
             </md-input-container> 
+            <div ng-hide="login.hideErrorMessage1" class="msg-wrong-pass md-warn-fg text-center">{{login.errorMessage1}}</div>   
 
             <div layout="row" layout-align="center center">
               <md-button class="md-raised md-accent" aria-label="Cancel"
-                       ng-click="login.cancelChangeServerUrl();">
+                       ng-click="login.clickChangeServerUrlList();">
                 Cancel
               </md-button>  
               <md-button type="submit" class="md-raised md-accent" aria-label="LOG IN" style="width:90%;" ng-click="login.submitChangeServerUrl();">
@@ -127,10 +152,7 @@
             </div>
             </form>
               
-          </div>
-
-          
-        
+          </div>        
           
       </div>
     <div flex="5"></div>
