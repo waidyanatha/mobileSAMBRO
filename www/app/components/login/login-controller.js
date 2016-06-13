@@ -1166,6 +1166,15 @@ angular.module("ngapp")
         });
     }
 
+    ctrl.inputTypePwd = 'password';
+    // Hide & show password function
+    ctrl.hideShowPassword = function(){
+      if (ctrl.inputTypePwd == 'password')
+        ctrl.inputTypePwd = 'text';
+      else
+        ctrl.inputTypePwd = 'password';
+    };
+
     ctrl.sendFormFnc = function()
     {
       console.log('call this sendform');
