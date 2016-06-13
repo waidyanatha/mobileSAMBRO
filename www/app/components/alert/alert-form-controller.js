@@ -146,7 +146,7 @@ angular.module("ngapp")
     };
 
     ctrl.currPage = 1;
-    ctrl.hidePage = [{'pageName':'event-type','isHide':false,'loadData':true},{'pageName':'status','isHide':true,'loadData':true},{'pageName':'msgType','isHide':true,'loadData':true},{'pageName':'template','isHide':true,'loadData':true},{'pageName':'location','isHide':true,'loadData':true},{'pageName':'response-type','isHide':true,'loadData':true},{'pageName':'category','isHide':true,'loadData':true},{'pageName':'warning-priority','isHide':true,'loadData':true},{'pageName':'scope','isHide':true,'loadData':true},{'pageName':'addresses','isHide':true,'loadData':true},{'pageName':'note','isHide':true,'loadData':true},{'pageName':'date','isHide':true,'loadData':true},{'pageName':'parameter','isHide':true,'loadData':true},{'pageName':'submit','isHide':true,'loadData':true}];
+    ctrl.hidePage = [{'pageName':'event-type','isHide':false,'loadData':true},{'pageName':'status','isHide':true,'loadData':true},{'pageName':'msgType','isHide':true,'loadData':true},{'pageName':'template','isHide':true,'loadData':true},{'pageName':'location','isHide':true,'loadData':true},{'pageName':'response-type','isHide':true,'loadData':true},{'pageName':'category','isHide':true,'loadData':true},{'pageName':'warning-priority','isHide':true,'loadData':true},{'pageName':'severity','isHide':true,'loadData':true},{'pageName':'scope','isHide':true,'loadData':true},{'pageName':'addresses','isHide':true,'loadData':true},{'pageName':'note','isHide':true,'loadData':true},{'pageName':'date','isHide':true,'loadData':true},{'pageName':'parameter','isHide':true,'loadData':true},{'pageName':'submit','isHide':true,'loadData':true}];
     ctrl.progress = 100/ctrl.hidePage.length;
     ctrl.progressText = ctrl.currPage.toString()+"/"+ctrl.hidePage.length.toString();
     ctrl.btnBackName = "< Home";
@@ -285,8 +285,11 @@ angular.module("ngapp")
             else{
                 return false;
             }
-            
-            
+        }
+        else if(ctrl.hidePage[ctrl.currPage-1].pageName == 'severity'){
+            if(ctrl.dataAlertForm.urgency != null && ctrl.dataAlertForm.certainty != null && ctrl.dataAlertForm.severity != null){
+                return false;
+            }
         }
         else if(ctrl.hidePage[ctrl.currPage-1].pageName == 'scope'){
             if(ctrl.dataAlertForm.scope != null){
@@ -392,11 +395,11 @@ angular.module("ngapp")
 
         //ctrl.showNoAvailableWarningPrioritys
         var warningPriorityXml = "";
-        if(ctrl.showNoAvailableWarningPrioritys == false){
+        //if(ctrl.showNoAvailableWarningPrioritys == false){
             warningPriorityXml = '<data field="urgency">'+ctrl.dataAlertForm.urgency+'</data>'+
             '<data field="severity">'+ctrl.dataAlertForm.severity+'</data>'+
             '<data field="certainty">'+ctrl.dataAlertForm.certainty+'</data>';
-        }
+        //}
 
         var responseTypeVal = '';   //sample [\"AllClear\",\"Prepare\"]
         var responseTypeValXML = '';   //sample [\"AllClear\",\"Prepare\"]
@@ -787,6 +790,9 @@ angular.module("ngapp")
     ctrl.dataSeverityOptions = new Array();
     shared.selectDB("m_severity","select * from m_severity where server_url_id=?",[ctrl.serverUrlId],function(result){
       if(result.rows.length > 0) {
+
+        ctrl.hidePage[ctrl.checkPageIdx('severity')].loadData = false;
+
         for(var i=0;i<result.rows.length;i++){
             var dataSeverityOption = {
                 '@value':result.rows.item(i).fvalue,
