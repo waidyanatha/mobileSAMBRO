@@ -859,6 +859,13 @@ angular.module("ngapp")
         ctrl.showNoAvailableGroupUsers = true;
       }
     },null);
+    ctrl.disableScopePrivate = function(value){
+        if(value == "Private" && ctrl.showNoAvailableGroupUsers == true){
+            return true;
+        }
+
+        return false;
+    };
 
     ctrl.dataStatusOptions = new Array();
     shared.selectDB("m_status","select * from m_status where server_url_id=?",[ctrl.serverUrlId],function(result){
