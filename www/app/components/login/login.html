@@ -9,7 +9,13 @@
             <img src="sahana-sunflower-512.png" height="90" width="90" >
         </div>
         
-
+          <div ng-show="login.loadingContainer">
+            <span>Updating database...</span>
+            <div layout="row" layout-sm="column" layout-align="space-around">
+              <md-progress-circular md-mode="indeterminate"></md-progress-circular>
+            </div>
+          </div>
+          
           <div ng-show="login.loginFormContainer">
             <form style="margin:1em auto;" name="loginForm" novalidate flex="100">
 
@@ -41,16 +47,16 @@
                 <span ng-if="!login.passwordCheckbox">Show password</span>    
               </md-checkbox>
                  
-                <md-button type="submit" class="md-raised md-accent" aria-label="LOG IN" style="width:90%;"
-                           ng-disabled="loginForm.$invalid || loginForm.$pristine" ng-click="login.sendForm();">
-                    LOG IN
-                </md-button>
-                <div ng-hide="login.hideErrorMessage" class="msg-wrong-pass md-warn-fg text-center">Username or Password is Wrong</div>   
+              <md-button type="submit" class="md-raised md-accent" aria-label="LOG IN" style="width:90%;"
+                         ng-disabled="loginForm.$invalid || loginForm.$pristine" ng-click="login.sendForm();">
+                  LOG IN
+              </md-button>
+              <div ng-hide="login.hideErrorMessage" class="msg-wrong-pass md-warn-fg text-center">Username or Password is Wrong</div>   
 
-                <md-button type="submit" class="md-raised md-accent" aria-label="Server Url" style="width:90%;"
-                           ng-click="login.clickChangeServerUrlList()">
-                    Change server url
-                </md-button> 
+              <md-button type="submit" class="md-raised md-accent" aria-label="Server Url" style="width:90%;"
+                         ng-click="login.clickChangeServerUrlList()">
+                  Change server url
+              </md-button> 
             </form>     
           </div>
 

@@ -591,6 +591,7 @@ angular.module("ngapp")
     };
 
     var checkDBVersion = function(){
+      ctrl.updatingDatabase();
       shared.selectDB("db_info","SELECT * FROM db_info",[],function(result){
         console.log("result db_info");
         if(result.rows.length > 0) {
@@ -621,6 +622,7 @@ angular.module("ngapp")
                   });
                   //init run
                   ctrl.setServerUrl(function(){
+                    ctrl.clickToLoginForm();
                     ctrl.selectAllUser();
                   });
                 };
@@ -640,6 +642,7 @@ angular.module("ngapp")
 
                   //init run
                   ctrl.setServerUrl(function(){
+                    ctrl.clickToLoginForm();
                     ctrl.selectAllUser();
                   });
                 };
@@ -654,12 +657,14 @@ angular.module("ngapp")
               console.log("same database version");
               //init run
               ctrl.setServerUrl(function(){
+                ctrl.clickToLoginForm();
                 ctrl.selectAllUser();
               });
             }
           }
           else{
             console.log("app without database schema - old version");
+            ctrl.clickToLoginForm();
             getTablesName();
           }
         }
@@ -676,6 +681,7 @@ angular.module("ngapp")
 
           //init run
           ctrl.setServerUrl(function(){
+            ctrl.clickToLoginForm();
             ctrl.selectAllUser();
           });
         } 
@@ -692,6 +698,7 @@ angular.module("ngapp")
 
         //init run
         ctrl.setServerUrl(function(){
+          ctrl.clickToLoginForm();
           ctrl.selectAllUser();
         });
       });
@@ -941,6 +948,7 @@ angular.module("ngapp")
     //$cordovaStatusbar.overlaysWebView(true); // Always Show Status Bar
     //$cordovaStatusbar.styleHex('#E53935'); // Status Bar With Red Color, Using Angular-Material Style
 
+    ctrl.loadingContainer = false;
     ctrl.loginFormContainer = true;
     ctrl.directLoginContainer = false;
     ctrl.selectLoginContainer = false;
@@ -997,6 +1005,7 @@ angular.module("ngapp")
       $location.path("/main");
     };
     ctrl.clickSelectLogin = function(){
+      ctrl.loadingContainer = false;
       ctrl.loginFormContainer = false;
       ctrl.directLoginContainer = false;
       ctrl.selectLoginContainer = true;
@@ -1015,6 +1024,7 @@ angular.module("ngapp")
       $location.path("/main");
     };
     ctrl.clickToLoginForm = function(){
+      ctrl.loadingContainer = false;
       ctrl.loginFormContainer = true;
       ctrl.directLoginContainer = false;
       ctrl.selectLoginContainer = false;
@@ -1022,6 +1032,7 @@ angular.module("ngapp")
       ctrl.serverUrlFormChangeContainer = false;
     };
     ctrl.clickChangeServerUrlList = function(){
+      ctrl.loadingContainer = false;
       ctrl.loginFormContainer = false;
       ctrl.directLoginContainer = false;
       ctrl.selectLoginContainer = false;
@@ -1032,11 +1043,20 @@ angular.module("ngapp")
       ctrl.errorMessage1 = "";
       ctrl.hideErrorMessage1 = true;
 
+      ctrl.loadingContainer = false;
       ctrl.loginFormContainer = false;
       ctrl.directLoginContainer = false;
       ctrl.selectLoginContainer = false;
       ctrl.serverUrlChangeContainer = false;
       ctrl.serverUrlFormChangeContainer = true;
+    };
+    ctrl.updatingDatabase = function(){
+      ctrl.loadingContainer = true;
+      ctrl.loginFormContainer = false;
+      ctrl.directLoginContainer = false;
+      ctrl.selectLoginContainer = false;
+      ctrl.serverUrlChangeContainer = false;
+      ctrl.serverUrlFormChangeContainer = false;
     };
 
     ctrl.cancelChangeServerUrl = function(){
@@ -1051,6 +1071,12 @@ angular.module("ngapp")
       //$localStorage['serverUrl'] = ctrl.serverUrl;
 
       console.log("add server "+ctrl.serverUrl);
+      console.log( ctrl.serverUrl.substring(ctrl.serverUrl.length - 1, ctrl.serverUrl.length) );
+      if(ctrl.serverUrl.substring(ctrl.serverUrl.length - 1, ctrl.serverUrl.length) != "/"){
+        ctrl.serverUrl = ctrl.serverUrl + "/";
+        console.log("add /");
+      }
+
       var sameServer = false;
       var errorMessageDetail = "";
       for(var i=0;i<ctrl.listServerUrl.length;i++){
