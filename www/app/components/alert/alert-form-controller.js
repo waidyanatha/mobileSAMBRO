@@ -650,6 +650,13 @@ angular.module("ngapp")
         }
         ctrl.dataAlertForm.parameters = templateObj['cap_info.parameter'];
 
+        //set category
+        for(var i=0;i<ctrl.dataCategoryOptions.length;i++){
+            if(templateObj['cap_info.category'] == ctrl.dataCategoryOptions[i]['@value']){
+                ctrl.dataCategoryOptions[i].selected = true;
+            }
+        }
+
         console.log("cap_info.parameter");
         console.log(JSON.stringify(ctrl.dataAlertForm.parameters));
 

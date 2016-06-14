@@ -251,8 +251,8 @@ angular.module("ngapp")
     ctrl.dataAlert = {};
     ctrl.loadDataAlert = true;
     ctrl.insertAlert = function(dataAlert) {
-      var query = "insert into t_alert (id, cap_info_headline, cap_area_name, cap_scope,event_event_type_name,sent,server_url_id) values (?,?,?,?,?,?,?)";
-      $cordovaSQLite.execute(dbShared, query, [dataAlert.id, JSON.stringify(dataAlert['cap_info.headline']),JSON.stringify(dataAlert['cap_area.name']),dataAlert['scope'],JSON.stringify(dataAlert['event_event_type.name']),dataAlert['sent'],ctrl.serverUrlId]).then(function(result) {
+      var query = "insert into t_alert (id, cap_info_headline, cap_area_name, cap_scope,event_event_type_name,sent,server_url_id,effective_date,expires_date) values (?,?,?,?,?,?,?,?,?)";
+      $cordovaSQLite.execute(dbShared, query, [dataAlert.id, JSON.stringify(dataAlert['cap_info.headline']),JSON.stringify(dataAlert['cap_area.name']),dataAlert['scope'],JSON.stringify(dataAlert['event_event_type.name']),dataAlert['sent'],ctrl.serverUrlId,dataAlert['effective_date'],dataAlert['expires_date']]).then(function(result) {
         console.log("insert alert");
         
       }, function (err) {
@@ -316,7 +316,9 @@ angular.module("ngapp")
             'cap_area.name':angular.isArray(response[i]['cap_area.name']) ? response[i]['cap_area.name'] : [response[i]['cap_area.name']],
             'scope':response[i].scope,
             'event_event_type.name':angular.isArray(response[i]['event_event_type.name']) ? response[i]['event_event_type.name'] : [response[i]['event_event_type.name']],
-            'sent': response[i]['sent']
+            'sent': response[i]['sent'],
+            'effective_date': response[i]['cap_info.effective'],
+            'expires_date': response[i]['cap_info.expires']
           };
 
           ctrl.insertAlert(dataAlert);

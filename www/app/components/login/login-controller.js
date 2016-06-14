@@ -5,7 +5,7 @@ angular.module("ngapp")
     var ctrl = this;
 
     //version 1.1
-    var databaseVersion = "1.5";
+    var databaseVersion = "1.6";
     $localStorage['databaseVersion'] = databaseVersion;
     var databaseSchema = {
       "tables": [{
@@ -64,6 +64,12 @@ angular.module("ngapp")
           }, {
               "name": "server_url_id",
               "type": "integer"
+          }, {
+              "name": "effective_date",
+              "type": "text"
+          }, {
+              "name": "expires_date",
+              "type": "text"
           }]
       }, {
           "name": "t_alert_offline",
@@ -623,6 +629,14 @@ angular.module("ngapp")
               else{
                 ctrl.customInsertForNewDBSchema = function(){
                   console.log("version upper then 1.1");
+
+                  shared.updateDB("db_info","update db_info set database_version=?,database_schema='"+JSON.stringify(databaseSchema)+"'",[databaseVersion]
+                  ,function(result){
+                    console.log("success update db_info set version = "+databaseVersion);
+
+                  },function(error){
+                    console.log("error update db_info");
+                  });
 
                   //init run
                   ctrl.setServerUrl(function(){
