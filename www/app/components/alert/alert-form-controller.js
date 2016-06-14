@@ -20,6 +20,14 @@ angular.module("ngapp")
             map.setView([position.coords.latitude, position.coords.longitude], 16);
             mapThumbnail.setView([position.coords.latitude, position.coords.longitude], 16);
             mapThumbnailSummary.setView([position.coords.latitude, position.coords.longitude], 16);
+
+            shared.updateDB("sync_data_master","update sync_data_master set curr_location=? where server_url_id=? ",['POINT('+ctrl.longitude+' '+ctrl.latitude+')',$localStorage['serverId']]
+              ,function(result){
+                console.log("success update and set current location");
+
+              },function(error){
+                console.log("error update to set current location");
+              });
         }, function(err) {
             // error
         });
@@ -1226,6 +1234,22 @@ angular.module("ngapp")
     };
 
     //=================================== map ===================================================
+    var currLocationLon = parseFloat($localStorage['currLocationLon']);
+    var currLocationLat = parseFloat($localStorage['currLocationLat']);
+    var serverLocationLon = parseFloat($localStorage['serverLocationLon']);
+    var serverLocationLat = parseFloat($localStorage['serverLocationLat']);
+
+    var lonMap = 100.612952;
+    var latMap = 14.082130;
+    if(currLocationLon == 0){
+        lonMap = serverLocationLon;
+        latMap = serverLocationLat;
+    }
+    else{
+        lonMap = currLocationLon;
+        latMap = currLocationLat;
+    }
+
     var mapOSM;
     var ggl;
     var ggls;
@@ -1233,7 +1257,7 @@ angular.module("ngapp")
       maxZoom: 16,
       minZoom: 2,
       attributionControl:false
-    }).setView([-6.1918, 106.8345], 2);
+    }).setView([latMap, lonMap], 2);
 
     //map.locate({setView: true, maxZoom: 16});
 
@@ -1249,7 +1273,7 @@ angular.module("ngapp")
       maxZoom: 16,
       minZoom: 2,
       attributionControl:false
-    }).setView([-6.1918, 106.8345], 2);
+    }).setView([latMap, lonMap], 2);
     mapOSMThumbnail = new L.TileLayer('http://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png');
     mapThumbnail.addLayer(mapOSMThumbnail);
     
@@ -1258,7 +1282,7 @@ angular.module("ngapp")
       maxZoom: 16,
       minZoom: 2,
       attributionControl:false
-    }).setView([-6.1918, 106.8345], 2);
+    }).setView([latMap, lonMap], 2);
     mapOSMThumbnailSummary = new L.TileLayer('http://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png');
     mapThumbnailSummary.addLayer(mapOSMThumbnailSummary);
     

@@ -146,6 +146,37 @@ angular.module("ngapp")
       ctrl.toggle();
     };
 
+    ctrl.getLocation = function(){
+      shared.selectDB("sync_data_master","select * from sync_data_master where server_url_id=?",[ctrl.serverUrlId],function(result){
+       
+        if(result.rows.length > 0) {
+
+          var currLocation =result.rows.item(0).curr_location;
+          currLocation = currLocation.replace("POINT(", "");
+          currLocation = currLocation.replace(")", "");
+          var arrCurrLocation = currLocation.split(" ");
+
+          $localStorage['currLocationLon'] = arrCurrLocation[0];
+          $localStorage['currLocationLat'] = arrCurrLocation[1];
+        } 
+      },null);
+
+      shared.selectDB("t_server_url","select * from t_server_url where id=?",[ctrl.serverUrlId],function(result){
+       
+        if(result.rows.length > 0) {
+
+          var currLocation =result.rows.item(0).server_location;
+          currLocation = currLocation.replace("POINT(", "");
+          currLocation = currLocation.replace(")", "");
+          var arrCurrLocation = currLocation.split(" ");
+
+          $localStorage['serverLocationLon'] = arrCurrLocation[0];
+          $localStorage['serverLocationLat'] = arrCurrLocation[1];
+        } 
+      },null);
+    };
+    ctrl.getLocation();
+
     //============================================================ Data Alert Offline ===============================================
     ctrl.sendAlertToServerProgress = false;
     ctrl.sendAlertsToServer = function(){

@@ -850,6 +850,11 @@ angular.module("ngapp")
     ctrl.serverLocation = "POINT(100.612952 14.082130)";
     ctrl.serverName = "AIT";
 
+    $localStorage['currLocationLon'] = "0";
+    $localStorage['currLocationLat'] = "0";
+    $localStorage['serverLocationLon'] = "100.612952";
+    $localStorage['serverLocationLat'] = "14.082130";
+
     //$localStorage.$reset();
     $localStorage['username'] = "";
     $localStorage['password'] = "";
