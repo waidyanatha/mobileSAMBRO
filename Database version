@@ -64,3 +64,8 @@ add database_schema text
 v1.5 (2, June 2016)
 table t_alert
 alter id integer
+
+v1.6 (13, June 2016)
+table t_alert
+add effective_date text
+add expires_date text
