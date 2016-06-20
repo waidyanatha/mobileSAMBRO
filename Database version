@@ -69,3 +69,12 @@ v1.6 (13, June 2016)
 table t_alert
 add effective_date text
 add expires_date text
+
+v1.7 (20, June 2016)
+add table m_parameter
+add name text
+add mobile text
+add value text
+add alert_id integer
+add info_id integer
+add id integer
