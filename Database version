@@ -78,6 +78,7 @@ add value text
 add alert_id integer
 add info_id integer
 add id integer
+add server_url_id integer
 
 alter table m_template
 remove cap_info_parameter text
