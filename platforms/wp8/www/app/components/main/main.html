@@ -1,47 +1,178 @@
-<md-content layout="column" layout-align="space-around center" style="width: 100%; height: 100%;">
-    <md-toolbar>
-        <div class="md-toolbar-tools" layout="row" layout-align="space-between center">
- 
-            <md-button class="md-icon-button md-primary" ng-click="main.back()" aria-label="Back">
-                <ng-md-icon icon="chevron_left"></ng-md-icon>    
-            </md-button>
+
+
+<md-toolbar class="mainToolbar" flex>
+  <div class="md-toolbar-tools" layout="row" layout-align="space-between center">
+    <md-button class="md-icon-button md-primary" aria-label="Menu" ng-click="main.toggle()">
+      <ng-md-icon icon="menu"></ng-md-icon>
+    </md-button>
+    <p>{{ main.title }}</p>
+    <div ></div>
+  </div>
+</md-toolbar>
+
+<md-sidenav class="md-sidenav-left" md-component-id="left">
+  <md-toolbar class="sideLeftNavTopBar">
+    <h1 class="md-toolbar-tools" >{{main.username}}</h1>
+  </md-toolbar>
+  <md-list ng-cloak>
+    <md-list-item ng-click="main.clickUserProfile()" >
+      <ng-md-icon icon="verified_user"></ng-md-icon>
+      <p>Profile</p>
+    </md-list-item>
+    <md-list-item ng-click="main.clickSettings()" >
+      <ng-md-icon icon="settings"></ng-md-icon>
+      <p>Setting</p>
+    </md-list-item>
+    <md-list-item ng-click="main.logout()">
+      <ng-md-icon icon="logout"></ng-md-icon>
+      <p>Logout</p>
+    </md-list-item>
+  </md-list>
+</md-sidenav>
+
+<md-content class="content" layout="column" flex>
+  <div class="spaceTop"></div>
+  <div layout="row">
+    <div flex="5"></div>
+      <md-whiteframe class="md-whiteframe-3dp" layout="column" flex="90">
+
+        <div ng-show="main.showAlertListPage">
+
+          <div layout="row" layout-align="center center">
+            <h3 class="md-title" >{{main.username}}</h3>
+          </div>
+
+          <md-progress-linear md-mode="indeterminate" ng-show="main.isSync"></md-progress-linear>
+          <md-list ng-cloak layout-align="center center">
+            <md-button class="md-raised md-accent" style="width:95%;" aria-label="Submit" ng-hide="main.hideAddAlert" ng-disabled="main.isSync" ng-click="main.addAlert()">
+            Issue new Alert
+            </md-button>  
+
+            <md-subheader ng-show="main.isOfflineDataExist" class="md-no-sticky">Offline Alert List</md-subheader>
+            <md-list-item ng-show="!dataAlert.is_send" layout="column" class="md-3-line" ng-repeat="dataAlert in main.dataOfflineAlerts" >
+              
+              <md-progress-linear md-mode="indeterminate" ng-show="dataAlert.is_progress"></md-progress-linear>
+              <div layout="row" layout-align="start start" >
+                  <img alt="{{ dataAlert.data_form['$_cap_alert'][0]['$_cap_info'][0]['event'] }}" ng-src="{{main.evenTypeIcon(dataAlert.data_form['$_cap_alert'][0]['$_cap_info'][0]['event'])}}" class="md-avatar" />
+                  <div class="md-list-item-text" style="width:50%;" layout="column" flex="90">
+                    <h4 class="text-truncate" style="width:90%;">{{ dataAlert.data_form['$_cap_alert'][0]['$_cap_area'][0]['name'] }}</h4>
+                    <p class="text-truncate" style="width:90%;">{{ dataAlert.data_form['$_cap_alert'][0]['$_cap_info'][0]['event'] }} - {{ dataAlert.data_form['$_cap_alert'][0]['scope']['@value'] }}</p>
+                  </div>
+              </div>
             
-            <p>{{ main.title }}</p>
-            
-            <md-button class="md-icon-button md-primary" aria-label="Menu" ng-click="main.toggle()">
-                <ng-md-icon icon="menu"></ng-md-icon>
-            </md-button>
-            
+            </md-list-item>
+            <md-divider ng-show="main.isOfflineDataExist" ></md-divider>
+
+            <md-subheader class="md-no-sticky">Alert List</md-subheader>
+            <md-progress-linear md-mode="indeterminate" ng-show="main.loadDataAlert"></md-progress-linear>
+            <md-list-item layout="row" layout-align="start start" class="md-3-line" ng-click="main.clickAlertDetail(main.dataAlerts.indexOf(dataAlert))" ng-repeat="dataAlert in main.dataAlerts" >
+              
+                <img alt="{{ dataAlert['event_event_type.name'][0] }}" ng-src="{{main.evenTypeIcon(dataAlert['event_event_type.name'][0])}}" class="md-avatar" />
+                <div class="md-list-item-text" style="width:50%;" layout="column" flex="90">
+                  <h3 class="text-truncate" style="width:90%;">{{ dataAlert['cap_info.headline'][0] }}</h3>
+                  <h4 class="text-truncate" style="width:90%;">{{ dataAlert['cap_area.name'][0] }}</h4>
+                  <p class="text-truncate" style="width:90%;">{{ dataAlert['event_event_type.name'][0]}} - {{ dataAlert.scope }}
+                  </br>
+                  {{ dataAlert.sent | date:'MMM d, y h:mm:ss a' }}
+                  </br>
+                  &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+                  </p>
+                </div>
+            </md-list-item>
+
+          </md-list>
+
+          <md-divider></md-divider>
         </div>
-    </md-toolbar>
 
-    
-    <md-sidenav class="md-sidenav-right md-whiteframe-z2" md-component-id="right">
-        <md-toolbar>
-            <h1 class="md-toolbar-tools">Menu</h1>
-        </md-toolbar>
-        <md-content layout="column" layout-align="space-around start">
-            <p style="margin-left: 1em;">Seed by: <br/> {{ main.auth }}</p>
-            <md-button ng-click="main.close()" class="md-primary">
-                <p>Fechar</p>
-            </md-button>
-        </md-content>
-    </md-sidenav>
+        <div ng-show="main.showAlertDetailPage">
+          
+          <md-list-item ng-repeat="eventType in main.dataAlert['event_event_type.name']" >
+            <img alt="{{ eventType }}" ng-src="{{main.evenTypeIcon(eventType)}}" class="md-avatar" />
+            <div layout="column">
+              <p>{{eventType}} - {{main.dataAlert.scope}}<br/>
+              {{main.dataAlert.sent | date:'MMM d, y h:mm:ss a'}}</p>
+            </div>
+            
+          </md-list-item>
+
+          <div id="mapThumbnailDetail" style="height:100px;"></div>
+          
+          <md-list-item layout-align="start start" layout="column">
+              Location 
+              <div ng-repeat="area in main.dataAlert['cap_area.name']" >
+                &nbsp;&nbsp;&nbsp;&nbsp;{{area}}
+              </div>
+          </md-list-item>
+          <h4></h4>
+
+          <md-list-item ng-repeat="headline in main.dataAlert['cap_info.headline']" >
+              <p>{{headline}}</p>
+          </md-list-item>
+
+          <md-button style="width: 95%;" layout-align="center center" class="md-raised md-accent" aria-label="Back"
+                                 ng-click="main.clickHyperlinkAlert(main.dataAlert.id)">
+                          VIEW WEB ALERT
+                        </md-button>  
 
 
-    <md-whiteframe class="md-whiteframe-z4" layout="column" layout-align="center center" style="width: 95%; height: 65%;">
+          <md-button style="width: 95%;" layout-align="center center" class="md-raised md-accent" aria-label="Back"
+                                 ng-click="main.clickBackBtn()">
+                          Back
+                        </md-button>  
 
+        </div>
+
+        <div ng-show="main.showProfilePage">
+          <md-subheader class="md-no-sticky">Email</md-subheader>
+          <md-dialog-content>
+            <div class="md-dialog-content" style="padding-left:15px;" >
+              <p>{{main.username}}</p>
+            </div>
+           </md-dialog-content> 
+          <md-divider ></md-divider>
+
+          <md-button style="width: 95%;" layout-align="center center" class="md-raised md-accent" aria-label="Back"
+                                 ng-click="main.clickBackBtn()">
+                          Back
+                        </md-button> 
+
+
+        </div>
+
+        <div ng-show="main.showSettingPage">
+          <md-subheader class="md-no-sticky">Server Setting</md-subheader>
+          <md-input-container style="padding-left:15px;" class="md-block">
+              <input type="text" name="serverUrl" ng-model="main.serverUrl" ng-blur="main.changeServerUrl()" placeholder="Server Url"
+                 required>   
+          </md-input-container>
+          <md-divider ></md-divider>
+
+          <md-progress-linear md-mode="indeterminate" ng-show="main.isSync"></md-progress-linear>
+          <md-button style="width: 95%;" layout-align="center center" class="md-raised md-accent" aria-label="Back"
+                   ng-click="main.syncFromSetting()">
+            Sync the data
+          </md-button> 
+
+          <md-subheader class="md-no-sticky">Version Number</md-subheader>
+          <md-dialog-content>
+            <div class="md-dialog-content" style="padding-left:15px;" >
+              <p>{{main.verisonNumber}}</p>
+            </div>
+           </md-dialog-content> 
+          <md-divider ></md-divider>
+
+          <md-button style="width: 95%;" layout-align="center center" class="md-raised md-accent" aria-label="Back"
+                   ng-click="main.clickBackBtn()">
+            Back
+          </md-button> 
+        </div>
+
+          
         
-
-    </md-whiteframe>
-    
-    
-    <md-button class="md-raised" style="width: 95%;" ng-click="main.link()">
-        <p>Project</p>
-    </md-button>
-
-    
-    <md-button class="md-raised" style="width: 95%;" ng-click="main.seed()">
-        <p>Seed Type</p>
-    </md-button>
+      </md-whiteframe>
+    <div flex="5"></div>
+  </div>
+  <div class="spaceBottom"></div>
 </md-content>
+

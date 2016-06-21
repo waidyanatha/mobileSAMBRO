@@ -209,7 +209,7 @@ angular.module("ngapp")
                 ctrl.renderPolygonOnThumbnailSummMap();
             }, 1000);
         }
-    }
+    };
 
     ctrl.goBack = function(){
         console.log("go back alert form");
@@ -656,7 +656,6 @@ angular.module("ngapp")
                 ctrl.dataResponseTypeOptions[i].selected = true;
             }
         }
-        ctrl.dataAlertForm.parameters = templateObj['cap_info.parameter'];
 
         //set category
         for(var i=0;i<ctrl.dataCategoryOptions.length;i++){
@@ -665,8 +664,10 @@ angular.module("ngapp")
             }
         }
 
-        console.log("cap_info.parameter");
-        console.log(JSON.stringify(ctrl.dataAlertForm.parameters));
+        //parameter
+        //ctrl.dataAlertForm.parameters = new Array();
+        ctrl.dataParameters = new Array();
+        ctrl.getParameterData("where alert_id = ? and server_url_id = ? ",[templateObj['id'],ctrl.serverUrlId]);
 
         ctrl.dataAlertForm.headline = templateObj['cap_info.headline'][0];
         ctrl.dataAlertForm.description = templateObj['cap_info.description'][0];
@@ -919,64 +920,10 @@ angular.module("ngapp")
                     'cap_info.response_type':JSON.parse(result.rows.item(i).cap_info_response_type),
                     'cap_info.event_type_id':result.rows.item(i).event_event_type_id,
                     'cap_info.description':JSON.parse(result.rows.item(i).cap_info_description),
-                    'cap_info.headline':JSON.parse(result.rows.item(i).cap_info_headline),
-                    'cap_info.parameter':JSON.parse(result.rows.item(i).cap_info_parameter)
+                    'cap_info.headline':JSON.parse(result.rows.item(i).cap_info_headline)
                 };
                 dataTemplateOption['cap_info.description'] = angular.isArray(dataTemplateOption['cap_info.description']) ? dataTemplateOption['cap_info.description'] : [dataTemplateOption['cap_info.description']];
                 dataTemplateOption['cap_info.headline'] = angular.isArray(dataTemplateOption['cap_info.headline']) ? dataTemplateOption['cap_info.headline'] : [dataTemplateOption['cap_info.headline']];
-
-                //filter value for parameter value
-                var arrNewVal = new Array();
-                console.log("cap_info.parameter");
-                console.log(dataTemplateOption['cap_info.parameter']);
-                var nextInfoParameter = false;
-                if(dataTemplateOption['cap_info.parameter'] != null){
-                    console.log("1");
-                    if(angular.isArray(dataTemplateOption['cap_info.parameter'])){
-                        console.log("2");
-                        for(var j=0;j<dataTemplateOption['cap_info.parameter'].length;j++){
-                            console.log("3");
-                            var val = JSON.parse(dataTemplateOption['cap_info.parameter'][j]);
-                            if(angular.isArray(val)){
-                                console.log("4");
-                                if(val.length>0){
-                                    console.log("5");
-                                    var valDetail = new Array();
-                                    for(var k=0;k<val.length;k++){
-                                        console.log("6");
-                                        if(val[k].key.indexOf("sahana") > -1){
-                                            console.log("7");
-                                            valDetail.push(val[k]);
-                                        }
-                                    }
-                                    arrNewVal = valDetail;
-                                }   
-                            }
-                        }
-                        
-                    }
-                    else{
-                        dataTemplateOption['cap_info.parameter'] = JSON.parse(dataTemplateOption['cap_info.parameter']);
-                        console.log("1_");
-                        if(angular.isArray(dataTemplateOption['cap_info.parameter'])){
-                            console.log("1__");
-                            console.log("2");
-                            for(var j=0;j<dataTemplateOption['cap_info.parameter'].length;j++){
-                                console.log("3");
-
-                                var val = dataTemplateOption['cap_info.parameter'][j];
-                                console.log( JSON.stringify(val));
-                                var valDetail = new Array();
-                                if(val.key.indexOf("sahana") > -1){
-                                    console.log("7");
-                                    arrNewVal.push(val);
-                                }
-                            
-                            }
-                        }
-                    }
-                }
-                dataTemplateOption['cap_info.parameter'] = arrNewVal;
 
                 ctrl.dataTemplateOptions.push(dataTemplateOption);   
             } 
@@ -1047,6 +994,40 @@ angular.module("ngapp")
           } 
           else{
             ctrl.hidePage[ctrl.checkPageIdx('location')].loadData = false;
+          }
+        },null);
+     };
+
+    ctrl.dataParameters = new Array();
+    ctrl.getParameterData = function(filter,dataDB){
+        ctrl.dataAlertForm.parameters = new Array();
+        ctrl.hidePage[ctrl.checkPageIdx('parameter')].loadData = true;
+
+        var query = "select * from m_parameter "+filter;
+        shared.selectDB("m_parameter",query,dataDB,function(result){
+      
+          if(result.rows.length > 0) {
+
+            ctrl.hidePage[ctrl.checkPageIdx('parameter')].loadData = false;
+
+            for(var i=0;i<result.rows.length;i++){
+                var dataParameter = {     
+                  'id':result.rows.item(i).id,  
+                  'name': result.rows.item(i).name,
+                  'mobile':result.rows.item(i).mobile,
+                  'value': result.rows.item(i).value,
+                  'alert_id':result.rows.item(i).alert_id,
+                  'info_id':result.rows.item(i).info_id
+                };
+                ctrl.dataParameters.push(dataParameter); 
+                 
+            } 
+
+            ctrl.dataAlertForm.parameters = ctrl.dataParameters;
+
+          } 
+          else{
+            ctrl.hidePage[ctrl.checkPageIdx('parameter')].loadData = false;
           }
         },null);
      }; 

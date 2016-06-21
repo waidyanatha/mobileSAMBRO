@@ -5,7 +5,7 @@ angular.module("ngapp")
     var ctrl = this;
 
     //version 1.1
-    var databaseVersion = "1.6";
+    var databaseVersion = "1.7";
     $localStorage['databaseVersion'] = databaseVersion;
     var databaseSchema = {
       "tables": [{
@@ -266,9 +266,6 @@ angular.module("ngapp")
               "name": "cap_info_headline",
               "type": "text"
           }, {
-              "name": "cap_info_parameter",
-              "type": "text"
-          }, {
               "name": "server_url_id",
               "type": "integer"
           }]
@@ -340,6 +337,30 @@ angular.module("ngapp")
           }, {
               "name": "name",
               "type": "text"
+          }, {
+              "name": "server_url_id",
+              "type": "integer"
+          }]
+      }, {
+          "name": "m_parameter",
+          "columns": [{
+              "name": "name",
+              "type": "text"
+          }, {
+              "name": "mobile",
+              "type": "text"
+          }, {
+              "name": "value",
+              "type": "text"
+          }, {
+              "name": "alert_id",
+              "type": "integer"
+          }, {
+              "name": "info_id",
+              "type": "integer"
+          }, {
+              "name": "id",
+              "type": "integer"
           }, {
               "name": "server_url_id",
               "type": "integer"
@@ -596,10 +617,11 @@ angular.module("ngapp")
         console.log("result db_info");
         if(result.rows.length > 0) {
           if(result.rows.item(0).database_version != undefined){
+            console.log("Database version current = "+result.rows.item(0).database_version);
             if(databaseVersion != result.rows.item(0).database_version){
               //diffrent database version
               console.log("Different database version");
-              console.log("Database version old = "+result.rows.item(0).database_version);
+              
               console.log("Database version new = "+databaseVersion);
               if(databaseVersion == "1.2" && result.rows.item(0).database_version == "1.1"){
                 console.log("version 1.1 to 1.2");

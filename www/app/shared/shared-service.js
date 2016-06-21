@@ -221,7 +221,7 @@ angular.module("ngapp").service("shared", function($http,$localStorage,$sessionS
   }
 
   //
-  ctrl.booleanAllDataLoad = [{tblName:"m_event_type",isDataLoad:false},{tblName:"m_urgency",isDataLoad:false},{tblName:"m_certainty",isDataLoad:false},{tblName:"m_severity",isDataLoad:false},{tblName:"m_scope",isDataLoad:false},{tblName:"m_template",isDataLoad:false},{tblName:"m_warning_priority",isDataLoad:false},{tblName:"m_predefined_area",isDataLoad:false},{tblName:"m_response_type",isDataLoad:false},{tblName:"m_category",isDataLoad:false},{tblName:"m_status",isDataLoad:false},{tblName:"m_msg_type",isDataLoad:false},{tblName:"m_group_user",isDataLoad:false}];
+  ctrl.booleanAllDataLoad = [{tblName:"m_event_type",isDataLoad:false},{tblName:"m_urgency",isDataLoad:false},{tblName:"m_certainty",isDataLoad:false},{tblName:"m_severity",isDataLoad:false},{tblName:"m_scope",isDataLoad:false},{tblName:"m_template",isDataLoad:false},{tblName:"m_warning_priority",isDataLoad:false},{tblName:"m_predefined_area",isDataLoad:false},{tblName:"m_response_type",isDataLoad:false},{tblName:"m_category",isDataLoad:false},{tblName:"m_status",isDataLoad:false},{tblName:"m_msg_type",isDataLoad:false},{tblName:"m_group_user",isDataLoad:false},{tblName:"m_parameter",isDataLoad:false}];
   ctrl.setBooleanDataLoad = function (callBackFinish,tblName){
     var countBoolLoadData = 0;
     for(var i=0;i<ctrl.booleanAllDataLoad.length;i++){
@@ -446,7 +446,7 @@ angular.module("ngapp").service("shared", function($http,$localStorage,$sessionS
       console.log('Failed: ' + JSON.stringify(reason));
     });
 
-    var promiseLoadDataTemplate = ctrl.loadDataAlert(ctrl.apiUrl+'cap/template.json');
+    var promiseLoadDataTemplate = ctrl.loadDataAlert(ctrl.apiUrl+'cap/template.json');   //?limit=none
     promiseLoadDataTemplate.then(function(response) {
       ctrl.deleteDB("m_template",null,null);
       for(var j=0;j<response.length;j++){
@@ -454,8 +454,8 @@ angular.module("ngapp").service("shared", function($http,$localStorage,$sessionS
         //this is only just a dummy data
         //response[j]['cap_info.parameter'] = ['[]','[{"value":"","key":"sahana:tsunami-wave-heigh-meters"},{"value":"","key":"FallingCondition"}]'];
 
-        var query = "insert into m_template (id, template_title, cap_scope, cap_info_category, cap_info_response_type, event_event_type_id,cap_info_description,cap_info_headline,cap_info_parameter,server_url_id) values (?,?,?,?,?,?,?,?,?,?)";
-        var dataDB = [parseInt(response[j]['id']),response[j]['template_title'],response[j]['scope'],JSON.stringify(response[j]['cap_info.category']),JSON.stringify(response[j]['cap_info.response_type']), parseInt(response[j]['cap_info.event_type_id']),JSON.stringify(response[j]['cap_info.description']),JSON.stringify(response[j]['cap_info.headline']),JSON.stringify(response[j]['cap_info.parameter']),ctrl.serverUrlId];
+        var query = "insert into m_template (id, template_title, cap_scope, cap_info_category, cap_info_response_type, event_event_type_id,cap_info_description,cap_info_headline,server_url_id) values (?,?,?,?,?,?,?,?,?)";
+        var dataDB = [parseInt(response[j]['id']),response[j]['template_title'],response[j]['scope'],JSON.stringify(response[j]['cap_info.category']),JSON.stringify(response[j]['cap_info.response_type']), parseInt(response[j]['cap_info.event_type_id']),JSON.stringify(response[j]['cap_info.description']),JSON.stringify(response[j]['cap_info.headline']),ctrl.serverUrlId];
         var callBack = function(result){
           console.log('success insert to db');
           ctrl.setBooleanDataLoad(ctrlDetail.callBackFinish,"m_template");
@@ -474,6 +474,8 @@ angular.module("ngapp").service("shared", function($http,$localStorage,$sessionS
     }, function(reason) {
       console.log('Failed: ' + reason);
     });
+
+
 
     var promiseLoadDataGroupPerson = ctrl.loadDataAlert(ctrl.apiUrl+'pr/group.json');
     promiseLoadDataGroupPerson.then(function(response) {
@@ -496,6 +498,33 @@ angular.module("ngapp").service("shared", function($http,$localStorage,$sessionS
       if(response.length == 0){
         console.log('data empty m_group_user');
         ctrl.setBooleanDataLoad(ctrlDetail.callBackFinish,"m_group_user");
+      }
+
+    }, function(reason) {
+      console.log('Failed: ' + reason);
+    });
+
+    var promiseLoadDataParameter = ctrl.loadDataAlert(ctrl.apiUrl+'cap/info_parameter.json');   //?limit=none
+    promiseLoadDataParameter.then(function(response) {
+      ctrl.deleteDB("m_parameter",null,null);
+      for(var j=0;j<response.length;j++){
+        
+        var query = "insert into m_parameter (name, mobile, value, alert_id, info_id, id,server_url_id) values (?,?,?,?,?,?,?)";
+        var dataDB = [response[j]['name'],response[j]['mobile'],response[j]['value'],parseInt(response[j]['alert_id']),parseInt(response[j]['info_id']),parseInt(response[j]['id']),ctrl.serverUrlId];
+        var callBack = function(result){
+          console.log('success insert to db');
+          ctrl.setBooleanDataLoad(ctrlDetail.callBackFinish,"m_parameter");
+        };
+        var callBackErr = function(error){
+          console.log('error to db');
+        };
+        ctrl.insertDB("m_parameter",query,dataDB,callBack,callBackErr);
+        
+      }
+
+      if(response.length == 0){
+        console.log('data empty m_parameter');
+        ctrl.setBooleanDataLoad(ctrlDetail.callBackFinish,"m_parameter");
       }
 
     }, function(reason) {
@@ -633,6 +662,24 @@ angular.module("ngapp").service("shared", function($http,$localStorage,$sessionS
 
 //<div>Font made from <a href="http://www.onlinewebfonts.com">oNline Web Fonts</a>is licensed by CC BY 3.0</div>
 //<div>Icons made by <a href="http://www.flaticon.com/authors/amit-jakhu" title="Amit Jakhu">Amit Jakhu</a> from <a href="http://www.flaticon.com" title="Flaticon">www.flaticon.com</a> is licensed by <a href="http://creativecommons.org/licenses/by/3.0/" title="Creative Commons BY 3.0" target="_blank">CC 3.0 BY</a></div>
+  };
+
+  ctrl.dateTimeDBtoApp = function(dateVal){
+    //date = 2016-06-20 09:56:12
+    //yyyy/MM/dd
+
+    //var dateTemp = new Date(dateVal);
+    //console.log(dateTemp);
+    //if(dateTemp == undefined){
+      var dateVal1Arr = dateVal.split(" ");
+      var dateVal2Arr = dateVal1Arr[0].split("-");
+      var dateValEdited = dateVal2Arr[0]+"/"+dateVal2Arr[1]+"/"+dateVal2Arr[2]+" "+dateVal1Arr[1];
+
+      return new Date(dateValEdited);
+    //}
+
+    //return dateTemp;
+    
   };
 
   ctrl.guid = function() {

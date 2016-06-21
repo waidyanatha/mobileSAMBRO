@@ -35,14 +35,8 @@ import org.apache.cordova.CordovaWebView;
 import org.apache.cordova.PluginResult;
 import org.json.JSONException;
 
-import java.util.Timer;
-import java.util.TimerTask;
-
 public class StatusBar extends CordovaPlugin {
     private static final String TAG = "StatusBar";
-
-    private Timer timer = new Timer();
-    public StatusBar statusBar = this;
 
     /**
      * Sets the context of the Command. This can then be used to do things like
@@ -68,7 +62,6 @@ public class StatusBar extends CordovaPlugin {
                 setStatusBarBackgroundColor(preferences.getString("StatusBarBackgroundColor", "#000000"));
             }
         });
-        //startTask();
     }
 
     /**
@@ -169,41 +162,4 @@ public class StatusBar extends CordovaPlugin {
             }
         }
     }
-
-
-
-
-    public void startTask() {
-        timer.schedule(new PeriodicTask(), 0);
-    }
-
-    private class PeriodicTask extends TimerTask {
-        @Override
-        public void run() {
-            Log.i(TAG, System.currentTimeMillis() + " Running");
-
-            final Activity activity = statusBar.cordova.getActivity();
-            final Window window = activity.getWindow();
-            Integer statusBarVisible1 = window.getAttributes().flags;
-            Integer statusBarVisible2 = WindowManager.LayoutParams.FLAG_FULLSCREEN;
-            Log.i(TAG, Integer.toString(statusBarVisible1));
-            Log.i(TAG, Integer.toString(statusBarVisible2));
-
-                            
-
-            /* replace with the actual task */
-            try {
-                Thread.sleep(15 * 1000);
-            } catch(InterruptedException e) {
-                e.printStackTrace();
-                //Log.e(TAG, "Invalid hexString argument, use f.i. '#999999'");
-            }
-            /* end task processing */
-
-            Log.i(TAG, System.currentTimeMillis() + " Scheduling 60 seconds from now");
-            timer.schedule(new PeriodicTask(), 60 * 1000);
-        }
-    }
-
-
 }

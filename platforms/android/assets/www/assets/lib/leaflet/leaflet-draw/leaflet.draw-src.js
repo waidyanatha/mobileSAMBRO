@@ -2289,7 +2289,7 @@ L.Control.Draw = L.Control.extend({
 			addedTopClass = false,
 			topClassName = 'leaflet-draw-toolbar-top',
 			toolbarContainer;
-
+			globalCallBtn = this._toolbars;
 		for (var toolbarId in this._toolbars) {
 			if (this._toolbars.hasOwnProperty(toolbarId)) {
 				toolbarContainer = this._toolbars[toolbarId].addToolbar(map);

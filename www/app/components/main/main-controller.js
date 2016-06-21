@@ -309,13 +309,14 @@ angular.module("ngapp")
           ctrl.loadDataAlert = false;
           ctrl.dataAlerts = new Array();
           for(var i=0;i<result.rows.length;i++){
+            console.log("date = "+result.rows.item(i).sent);
             var dataAlert = {
               'id' : result.rows.item(i).id,
               'cap_info.headline': JSON.parse(result.rows.item(i).cap_info_headline),
               'cap_area.name': JSON.parse(result.rows.item(i).cap_area_name),
               'scope': result.rows.item(i).cap_scope,
               'event_event_type.name': JSON.parse(result.rows.item(i).event_event_type_name),
-              'sent': new Date(result.rows.item(i).sent),
+              'sent': shared.dateTimeDBtoApp(result.rows.item(i).sent),
               'spatial_val':result.rows.item(i).spatial_val
             };
 
@@ -404,6 +405,7 @@ angular.module("ngapp")
     ctrl.isSync = true;
     shared.selectDB("sync_data_master","select * from sync_data_master where server_url_id=?",[ctrl.serverUrlId],function(result){
       if(result.rows.length > 0) {
+          console.log(result.rows.item(0).time_sync);
           var dateLastSync = new Date(result.rows.item(0).time_sync);
           var currentDate = new Date();
           var dateDiff = DateDiff('n',dateLastSync,currentDate);
