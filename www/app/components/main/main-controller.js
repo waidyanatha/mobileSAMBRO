@@ -146,6 +146,37 @@ angular.module("ngapp")
       ctrl.toggle();
     };
 
+    ctrl.getLocation = function(){
+      shared.selectDB("sync_data_master","select * from sync_data_master where server_url_id=?",[ctrl.serverUrlId],function(result){
+       
+        if(result.rows.length > 0) {
+
+          var currLocation =result.rows.item(0).curr_location;
+          currLocation = currLocation.replace("POINT(", "");
+          currLocation = currLocation.replace(")", "");
+          var arrCurrLocation = currLocation.split(" ");
+
+          $localStorage['currLocationLon'] = arrCurrLocation[0];
+          $localStorage['currLocationLat'] = arrCurrLocation[1];
+        } 
+      },null);
+
+      shared.selectDB("t_server_url","select * from t_server_url where id=?",[ctrl.serverUrlId],function(result){
+       
+        if(result.rows.length > 0) {
+
+          var currLocation =result.rows.item(0).server_location;
+          currLocation = currLocation.replace("POINT(", "");
+          currLocation = currLocation.replace(")", "");
+          var arrCurrLocation = currLocation.split(" ");
+
+          $localStorage['serverLocationLon'] = arrCurrLocation[0];
+          $localStorage['serverLocationLat'] = arrCurrLocation[1];
+        } 
+      },null);
+    };
+    ctrl.getLocation();
+
     //============================================================ Data Alert Offline ===============================================
     ctrl.sendAlertToServerProgress = false;
     ctrl.sendAlertsToServer = function(){
@@ -251,8 +282,8 @@ angular.module("ngapp")
     ctrl.dataAlert = {};
     ctrl.loadDataAlert = true;
     ctrl.insertAlert = function(dataAlert) {
-      var query = "insert into t_alert (id, cap_info_headline, cap_area_name, cap_scope,event_event_type_name,sent,server_url_id) values (?,?,?,?,?,?,?)";
-      $cordovaSQLite.execute(dbShared, query, [dataAlert.id, JSON.stringify(dataAlert['cap_info.headline']),JSON.stringify(dataAlert['cap_area.name']),dataAlert['scope'],JSON.stringify(dataAlert['event_event_type.name']),dataAlert['sent'],ctrl.serverUrlId]).then(function(result) {
+      var query = "insert into t_alert (id, cap_info_headline, cap_area_name, cap_scope,event_event_type_name,sent,server_url_id,effective_date,expires_date) values (?,?,?,?,?,?,?,?,?)";
+      $cordovaSQLite.execute(dbShared, query, [dataAlert.id, JSON.stringify(dataAlert['cap_info.headline']),JSON.stringify(dataAlert['cap_area.name']),dataAlert['scope'],JSON.stringify(dataAlert['event_event_type.name']),dataAlert['sent'],ctrl.serverUrlId,dataAlert['effective_date'],dataAlert['expires_date']]).then(function(result) {
         console.log("insert alert");
         
       }, function (err) {
@@ -278,13 +309,14 @@ angular.module("ngapp")
           ctrl.loadDataAlert = false;
           ctrl.dataAlerts = new Array();
           for(var i=0;i<result.rows.length;i++){
+            console.log("date = "+result.rows.item(i).sent);
             var dataAlert = {
               'id' : result.rows.item(i).id,
               'cap_info.headline': JSON.parse(result.rows.item(i).cap_info_headline),
               'cap_area.name': JSON.parse(result.rows.item(i).cap_area_name),
               'scope': result.rows.item(i).cap_scope,
               'event_event_type.name': JSON.parse(result.rows.item(i).event_event_type_name),
-              'sent': new Date(result.rows.item(i).sent),
+              'sent': shared.dateTimeDBtoApp(result.rows.item(i).sent),
               'spatial_val':result.rows.item(i).spatial_val
             };
 
@@ -316,7 +348,9 @@ angular.module("ngapp")
             'cap_area.name':angular.isArray(response[i]['cap_area.name']) ? response[i]['cap_area.name'] : [response[i]['cap_area.name']],
             'scope':response[i].scope,
             'event_event_type.name':angular.isArray(response[i]['event_event_type.name']) ? response[i]['event_event_type.name'] : [response[i]['event_event_type.name']],
-            'sent': response[i]['sent']
+            'sent': response[i]['sent'],
+            'effective_date': response[i]['cap_info.effective'],
+            'expires_date': response[i]['cap_info.expires']
           };
 
           ctrl.insertAlert(dataAlert);
@@ -371,6 +405,7 @@ angular.module("ngapp")
     ctrl.isSync = true;
     shared.selectDB("sync_data_master","select * from sync_data_master where server_url_id=?",[ctrl.serverUrlId],function(result){
       if(result.rows.length > 0) {
+          console.log(result.rows.item(0).time_sync);
           var dateLastSync = new Date(result.rows.item(0).time_sync);
           var currentDate = new Date();
           var dateDiff = DateDiff('n',dateLastSync,currentDate);

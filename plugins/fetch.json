@@ -82,5 +82,57 @@
         },
         "is_top_level": true,
         "variables": {}
+    },
+    "cordova-plugin-file": {
+        "source": {
+            "type": "local",
+            "path": "/Users/anggabayu/Downloads/cordova-plugin-file-4.1.1"
+        }
+    },
+    "cordova-plugin-geolocation": {
+        "source": {
+            "type": "local",
+            "path": "/Users/anggabayu/Downloads/cordova-plugin-geolocation-1.0.1"
+        }
+    },
+    "cordova-plugin-media": {
+        "source": {
+            "type": "local",
+            "path": "/Users/anggabayu/Downloads/cordova-plugin-media-2.2.0"
+        }
+    },
+    "cordova-plugin-network-information": {
+        "source": {
+            "type": "local",
+            "path": "/Users/anggabayu/Downloads/cordova-plugin-network-information-1.0.1"
+        }
+    },
+    "io.litehelpers.cordova.sqlite": {
+        "source": {
+            "type": "local",
+            "path": "/Users/anggabayu/Downloads/Cordova-sqlite-storage-0.7.10"
+        }
+    },
+    "org.apache.cordova.dialogs": {
+        "source": {
+            "type": "local",
+            "path": "/Users/anggabayu/Downloads/cordova-plugin-dialogs-0.3.0"
+        }
+    },
+    "cordova-plugin-dialogs": {
+        "source": {
+            "type": "registry",
+            "id": "cordova-plugin-dialogs"
+        },
+        "is_top_level": true,
+        "variables": {}
+    },
+    "cordova-plugin-console": {
+        "source": {
+            "type": "registry",
+            "id": "cordova-plugin-console"
+        },
+        "is_top_level": true,
+        "variables": {}
     }
 }

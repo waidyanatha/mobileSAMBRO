@@ -64,3 +64,21 @@ add database_schema text
 v1.5 (2, June 2016)
 table t_alert
 alter id integer
+
+v1.6 (13, June 2016)
+table t_alert
+add effective_date text
+add expires_date text
+
+v1.7 (20, June 2016)
+add table m_parameter
+add name text
+add mobile text
+add value text
+add alert_id integer
+add info_id integer
+add id integer
+add server_url_id integer
+
+alter table m_template
+remove cap_info_parameter text

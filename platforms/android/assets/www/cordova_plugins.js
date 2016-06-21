@@ -243,6 +243,13 @@ module.exports = [
         ]
     },
     {
+        "file": "plugins/cordova-plugin-app-version/www/AppVersionPlugin.js",
+        "id": "cordova-plugin-app-version.AppVersionPlugin",
+        "clobbers": [
+            "cordova.getAppVersion"
+        ]
+    },
+    {
         "file": "plugins/com.red_folder.phonegap.plugin.backgroundservice/www/backgroundService.js",
         "id": "com.red_folder.phonegap.plugin.backgroundservice.BackgroundService"
     }
@@ -262,6 +269,8 @@ module.exports.metadata =
     "com.red_folder.phonegap.plugin.backgroundservice.sample": "2.0.0",
     "com.sharinglabs.cordova.plugin.cache": "1.0.0",
     "cordova-plugin-inappbrowser": "1.3.1-dev",
+    "cordova-plugin-app-version": "0.1.8",
+    "cordova-plugin-console": "1.0.3",
     "com.red_folder.phonegap.plugin.backgroundservice": "2.0.0"
 }
 // BOTTOM OF METADATA

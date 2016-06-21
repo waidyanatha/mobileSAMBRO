@@ -209,6 +209,27 @@ module.exports = [
             "cordova.InAppBrowser.open",
             "window.open"
         ]
+    },
+    {
+        "file": "plugins/cordova-plugin-app-version/www/AppVersionPlugin.js",
+        "id": "cordova-plugin-app-version.AppVersionPlugin",
+        "clobbers": [
+            "cordova.getAppVersion"
+        ]
+    },
+    {
+        "file": "plugins/cordova-plugin-console/www/console-via-logger.js",
+        "id": "cordova-plugin-console.console",
+        "clobbers": [
+            "console"
+        ]
+    },
+    {
+        "file": "plugins/cordova-plugin-console/www/logger.js",
+        "id": "cordova-plugin-console.logger",
+        "clobbers": [
+            "cordova.logger"
+        ]
     }
 ];
 module.exports.metadata = 
@@ -226,6 +247,8 @@ module.exports.metadata =
     "com.red_folder.phonegap.plugin.backgroundservice.sample": "2.0.0",
     "com.sharinglabs.cordova.plugin.cache": "1.0.0",
     "cordova-plugin-inappbrowser": "1.3.1-dev",
+    "cordova-plugin-app-version": "0.1.8",
+    "cordova-plugin-console": "1.0.3",
     "com.red_folder.phonegap.plugin.backgroundservice": "2.0.0"
 }
 // BOTTOM OF METADATA

@@ -225,6 +225,48 @@
         </md-list-item>
       </div>
 
+      <div ng-hide="alertForm.checkPageShow('severity')">  
+        <md-subheader class="md-no-sticky">Urgency, Severity and Certainty ({{alertForm.progressText}})</md-subheader>
+        <md-progress-linear md-mode="indeterminate" ng-show="alertForm.hidePage[alertForm.checkPageIdx('severity')].loadData"></md-progress-linear>
+
+        <form name="dataForm" class="md-inline-form" novalidate>
+          <md-dialog-content>
+            <div class="md-dialog-content" style="padding-left:15px;" >
+              <div layout="column" layout-gt-sm="column">
+                <md-input-container>
+                  <label>Severity</label>
+                  <md-select ng-model="alertForm.dataAlertForm.severity">
+                    <md-option ng-repeat="severity in alertForm.dataSeverityOptions" value="{{severity['@value']}}" >
+                      {{severity['@value']}}
+                    </md-option>
+                  </md-select>
+                </md-input-container>
+
+                <md-input-container>
+                  <label>Urgency</label>
+                  <md-select ng-model="alertForm.dataAlertForm.urgency">
+                    <md-option ng-repeat="urgency in alertForm.dataUrgencyOptions" value="{{urgency['@value']}}" >
+                      {{urgency['@value']}}
+                    </md-option>
+                  </md-select>
+                </md-input-container>
+
+                <md-input-container>
+                  <label>Certainty</label>
+                  <md-select ng-model="alertForm.dataAlertForm.certainty">
+                    <md-option ng-repeat="certainty in alertForm.dataCertaintyOptions" value="{{certainty['@value']}}" >
+                      {{certainty['@value']}}
+                    </md-option>
+                  </md-select>
+                </md-input-container>
+
+              </div>
+            </div>
+          </md-dialog-content>    
+        </form>
+
+      </div>
+
       <div ng-hide="alertForm.checkPageShow('scope')">  
         <md-subheader class="md-no-sticky">Scope ({{alertForm.progressText}})</md-subheader>
         <md-progress-linear md-mode="indeterminate" ng-show="alertForm.hidePage[alertForm.checkPageIdx('scope')].loadData"></md-progress-linear>
@@ -232,7 +274,9 @@
           <md-list-item ng-repeat="dataScopeOption in alertForm.dataScopeOptions" >
             <md-radio-button flex
                 ng-value="dataScopeOption['@value']"
-                class="md-primary" >
+                class="md-primary"
+                ng-disabled="alertForm.disableScopePrivate(dataScopeOption['@value'])"
+                 >
                 {{dataScopeOption['@value']}}
             </md-radio-button>
           </md-list-item>
@@ -292,7 +336,7 @@
                    
                     <div ng-repeat="parameter in alertForm.dataAlertForm.parameters">
                       <md-input-container class="md-block" flex-gt-sm>
-                        <label>{{parameter.key}}</label>
+                        <label>{{parameter.name}}</label>
                         <input ng-model="parameter.value">
                       </md-input-container>
                     </div>

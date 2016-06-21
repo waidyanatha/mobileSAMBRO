@@ -1,16 +1,24 @@
 <link rel="stylesheet" type="text/css" href="app/components/login/login.css">
 
-<md-content class="content" layout="column" style="background: #e53935;" flex>
-  <div style="height:40px;"></div>
+<md-content class="content" layout="column" style="background: #e2a704;" flex>
+  <div style="height:20px;"></div>
   <div layout="row">
     <div flex="5"></div>
       <div layout="column" flex="90">
         <div layout="row" layout-align="space-around center" flex="20">
-            <img src="cap.png">
+            <img src="sahana-sunflower-512.png" height="90" width="90" >
         </div>
-        <form style="margin:1em auto;" name="loginForm" novalidate flex="80">
-
+        
+          <div ng-show="login.loadingContainer">
+            <span>Updating database...</span>
+            <div layout="row" layout-sm="column" layout-align="space-around">
+              <md-progress-circular md-mode="indeterminate"></md-progress-circular>
+            </div>
+          </div>
+          
           <div ng-show="login.loginFormContainer">
+            <form style="margin:1em auto;" name="loginForm" novalidate flex="100">
+
               <md-input-container class="md-block" md-no-float>
                   <input type="email" name="email" ng-model="login.loginForm.email" placeholder="Email"
                          ng-pattern="/^.+@.+\..+$/" required>
@@ -25,21 +33,33 @@
               </md-input-container>
 
               <md-input-container class="md-block" md-no-float>
-                  <input type="password" name="password" ng-model="login.loginForm.password" placeholder="Password"
-                         required>
+                  <input type="{{login.inputTypePwd}}" name="password" ng-model="login.loginForm.password" placeholder="Password"
+                         required>  
                   <div ng-messages="loginForm.password.$error" ng-show="loginForm.password.$touched" role="alert">
                       <div ng-message="required">
                           <span >Password field is required</span>
                       </div>
                   </div>
               </md-input-container>
-              
-                <md-button type="submit" class="md-raised md-accent" aria-label="LOG IN" style="width:90%;"
-                           ng-disabled="loginForm.$invalid || loginForm.$pristine" ng-click="login.sendForm();">
-                    LOG IN
-                </md-button>
-                <div ng-hide="login.hideErrorMessage" class="msg-wrong-pass md-warn-fg text-center">Username or Password is Wrong</div>    
+
+              <md-checkbox ng-model="login.passwordCheckbox" ng-click="login.hideShowPassword()" >
+                <span ng-if="login.passwordCheckbox">Hide password</span>
+                <span ng-if="!login.passwordCheckbox">Show password</span>    
+              </md-checkbox>
+                 
+              <md-button type="submit" class="md-raised md-accent" aria-label="LOG IN" style="width:90%;"
+                         ng-disabled="loginForm.$invalid || loginForm.$pristine" ng-click="login.sendForm();">
+                  LOG IN
+              </md-button>
+              <div ng-hide="login.hideErrorMessage" class="msg-wrong-pass md-warn-fg text-center">Username or Password is Wrong</div>   
+
+              <md-button type="submit" class="md-raised md-accent" aria-label="Server Url" style="width:90%;"
+                         ng-click="login.clickChangeServerUrlList()">
+                  Change server url
+              </md-button> 
+            </form>     
           </div>
+
           <div ng-show="login.directLoginContainer">
               <md-button class="md-raised md-accent" aria-label="{{login.userName}}" style="width:90%;"
                            ng-click="login.clickDirectLogin()">
@@ -60,11 +80,90 @@
               </div>  
               
                 <h4></h4>
-              <div class="md-accent-fg text-center" ng-click="login.clickToLoginForm()">Different account?</div>   
+              <div class="md-accent-fg text-center" ng-click="login.clickToLoginForm()">Different account?</div>  
+              <div style="padding-top: 10px;" class="md-accent-fg text-center" ng-click="login.clickChangeServerUrlList()">Change server url</div> 
           </div>
 
-          
-        </form>
+          <div ng-show="login.serverUrlChangeContainer">
+            
+            <md-subheader class="md-no-sticky">Server List</md-subheader>
+            <md-radio-group ng-model="login.serverUrl" >
+              <md-list-item ng-repeat="serverUrlObj in login.listServerUrl" >
+                <md-radio-button flex
+                    ng-value="serverUrlObj.serverUrl"
+                    class="md-primary"
+                    ng-click="login.clickChangeServerUrl(login.listServerUrl.indexOf(serverUrlObj))" >
+                    {{serverUrlObj.serverName}} - {{serverUrlObj.serverUrl}}
+                </md-radio-button>
+              </md-list-item>
+            </md-radio-group>
+
+
+            <div layout="row" layout-align="center center">
+              <md-button class="md-raised md-accent" aria-label="Cancel"
+                       ng-click="login.cancelChangeServerUrl();">
+                Back
+              </md-button>  
+
+              <md-button type="submit" class="md-raised md-accent" aria-label="New" ng-click="login.clickChangeServerUrlForm();">
+                  New
+              </md-button>
+
+              <md-button class="md-raised md-accent" aria-label="Delete" ng-show="login.isDataServerExist();"
+                       ng-click="login.deleteServerUrl();">
+                Delete
+              </md-button> 
+              
+            </div>
+              
+          </div>
+
+          <div ng-show="login.serverUrlFormChangeContainer">
+    
+            <form style="margin:1em auto;" name="serverForm" novalidate flex="100">
+            <md-input-container class="md-block" md-no-float>
+                <input type="text" name="serverUrl" ng-model="login.serverUrl" placeholder="Server Url" required>
+                <div ng-messages="serverForm.serverUrl.$error" ng-show="serverForm.serverUrl.$touched" role="alert" multiple>
+                    <div ng-message="required">
+                        <span >Server url field is required</span>
+                    </div>
+                    
+                </div>
+            </md-input-container> 
+
+            <md-input-container class="md-block" md-no-float>
+                <input type="text" name="serverName" ng-model="login.serverName" placeholder="Server Name" required>
+                <div ng-messages="serverForm.serverName.$error" ng-show="serverForm.serverName.$touched" role="alert" multiple>
+                    <div ng-message="required">
+                        <span >Server name field is required</span>
+                    </div>
+                    
+                </div>
+            </md-input-container> 
+
+            <md-input-container class="md-block" md-no-float>
+                <input type="text" name="serverLocation" ng-model="login.serverLocation" placeholder="Server Url" required>
+                <div ng-messages="serverForm.serverLocation.$error" ng-show="serverForm.serverLocation.$touched" role="alert" multiple>
+                    <div ng-message="required">
+                        <span >Server location field is required</span>
+                    </div>
+                    
+                </div>
+            </md-input-container> 
+            <div ng-hide="login.hideErrorMessage1" class="msg-wrong-pass md-warn-fg text-center">{{login.errorMessage1}}</div>   
+
+            <div layout="row" layout-align="center center">
+              <md-button class="md-raised md-accent" aria-label="Cancel"
+                       ng-click="login.clickChangeServerUrlList();">
+                Cancel
+              </md-button>  
+              <md-button type="submit" class="md-raised md-accent" aria-label="LOG IN" style="width:90%;" ng-click="login.submitChangeServerUrl();">
+                  Add
+              </md-button>
+            </div>
+            </form>
+              
+          </div>        
           
       </div>
     <div flex="5"></div>

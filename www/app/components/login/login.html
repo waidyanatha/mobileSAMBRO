@@ -9,7 +9,13 @@
             <img src="sahana-sunflower-512.png" height="90" width="90" >
         </div>
         
-
+          <div ng-show="login.loadingContainer">
+            <span>Updating database...</span>
+            <div layout="row" layout-sm="column" layout-align="space-around">
+              <md-progress-circular md-mode="indeterminate"></md-progress-circular>
+            </div>
+          </div>
+          
           <div ng-show="login.loginFormContainer">
             <form style="margin:1em auto;" name="loginForm" novalidate flex="100">
 
@@ -27,25 +33,30 @@
               </md-input-container>
 
               <md-input-container class="md-block" md-no-float>
-                  <input type="password" name="password" ng-model="login.loginForm.password" placeholder="Password"
-                         required>
+                  <input type="{{login.inputTypePwd}}" name="password" ng-model="login.loginForm.password" placeholder="Password"
+                         required>  
                   <div ng-messages="loginForm.password.$error" ng-show="loginForm.password.$touched" role="alert">
                       <div ng-message="required">
                           <span >Password field is required</span>
                       </div>
                   </div>
               </md-input-container>
-              
-                <md-button type="submit" class="md-raised md-accent" aria-label="LOG IN" style="width:90%;"
-                           ng-disabled="loginForm.$invalid || loginForm.$pristine" ng-click="login.sendForm();">
-                    LOG IN
-                </md-button>
-                <div ng-hide="login.hideErrorMessage" class="msg-wrong-pass md-warn-fg text-center">Username or Password is Wrong</div>   
 
-                <md-button type="submit" class="md-raised md-accent" aria-label="Server Url" style="width:90%;"
-                           ng-click="login.clickChangeServerUrlList()">
-                    Change server url
-                </md-button> 
+              <md-checkbox ng-model="login.passwordCheckbox" ng-click="login.hideShowPassword()" >
+                <span ng-if="login.passwordCheckbox">Hide password</span>
+                <span ng-if="!login.passwordCheckbox">Show password</span>    
+              </md-checkbox>
+                 
+              <md-button type="submit" class="md-raised md-accent" aria-label="LOG IN" style="width:90%;"
+                         ng-disabled="loginForm.$invalid || loginForm.$pristine" ng-click="login.sendForm();">
+                  LOG IN
+              </md-button>
+              <div ng-hide="login.hideErrorMessage" class="msg-wrong-pass md-warn-fg text-center">Username or Password is Wrong</div>   
+
+              <md-button type="submit" class="md-raised md-accent" aria-label="Server Url" style="width:90%;"
+                         ng-click="login.clickChangeServerUrlList()">
+                  Change server url
+              </md-button> 
             </form>     
           </div>
 

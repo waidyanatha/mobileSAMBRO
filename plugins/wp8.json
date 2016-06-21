@@ -73,6 +73,10 @@
                         {
                             "xml": "<feature name=\"AppVersion\"><param name=\"wp-package\" value=\"AppVersion\" /></feature>",
                             "count": 1
+                        },
+                        {
+                            "xml": "<feature name=\"Console\"><param name=\"wp-package\" value=\"DebugConsole\" /></feature>",
+                            "count": 1
                         }
                     ]
                 }
@@ -117,6 +121,9 @@
             "PACKAGE_NAME": "{0d8f1fb0-61fa-11e5-82ab-8de24a0a18b8}"
         },
         "cordova-plugin-app-version": {
+            "PACKAGE_NAME": "{0d8f1fb0-61fa-11e5-82ab-8de24a0a18b8}"
+        },
+        "cordova-plugin-console": {
             "PACKAGE_NAME": "{0d8f1fb0-61fa-11e5-82ab-8de24a0a18b8}"
         }
     },

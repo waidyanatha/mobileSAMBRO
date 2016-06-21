@@ -20,6 +20,14 @@ angular.module("ngapp")
             map.setView([position.coords.latitude, position.coords.longitude], 16);
             mapThumbnail.setView([position.coords.latitude, position.coords.longitude], 16);
             mapThumbnailSummary.setView([position.coords.latitude, position.coords.longitude], 16);
+
+            shared.updateDB("sync_data_master","update sync_data_master set curr_location=? where server_url_id=? ",['POINT('+ctrl.longitude+' '+ctrl.latitude+')',$localStorage['serverId']]
+              ,function(result){
+                console.log("success update and set current location");
+
+              },function(error){
+                console.log("error update to set current location");
+              });
         }, function(err) {
             // error
         });
@@ -146,7 +154,7 @@ angular.module("ngapp")
     };
 
     ctrl.currPage = 1;
-    ctrl.hidePage = [{'pageName':'event-type','isHide':false,'loadData':true},{'pageName':'status','isHide':true,'loadData':true},{'pageName':'msgType','isHide':true,'loadData':true},{'pageName':'template','isHide':true,'loadData':true},{'pageName':'location','isHide':true,'loadData':true},{'pageName':'response-type','isHide':true,'loadData':true},{'pageName':'category','isHide':true,'loadData':true},{'pageName':'warning-priority','isHide':true,'loadData':true},{'pageName':'scope','isHide':true,'loadData':true},{'pageName':'addresses','isHide':true,'loadData':true},{'pageName':'note','isHide':true,'loadData':true},{'pageName':'date','isHide':true,'loadData':true},{'pageName':'parameter','isHide':true,'loadData':true},{'pageName':'submit','isHide':true,'loadData':true}];
+    ctrl.hidePage = [{'pageName':'event-type','isHide':false,'loadData':true},{'pageName':'status','isHide':true,'loadData':true},{'pageName':'msgType','isHide':true,'loadData':true},{'pageName':'template','isHide':true,'loadData':true},{'pageName':'location','isHide':true,'loadData':true},{'pageName':'response-type','isHide':true,'loadData':true},{'pageName':'category','isHide':true,'loadData':true},{'pageName':'warning-priority','isHide':true,'loadData':true},{'pageName':'severity','isHide':true,'loadData':true},{'pageName':'scope','isHide':true,'loadData':true},{'pageName':'addresses','isHide':true,'loadData':true},{'pageName':'note','isHide':true,'loadData':true},{'pageName':'date','isHide':true,'loadData':true},{'pageName':'parameter','isHide':true,'loadData':true},{'pageName':'submit','isHide':true,'loadData':true}];
     ctrl.progress = 100/ctrl.hidePage.length;
     ctrl.progressText = ctrl.currPage.toString()+"/"+ctrl.hidePage.length.toString();
     ctrl.btnBackName = "< Home";
@@ -201,7 +209,7 @@ angular.module("ngapp")
                 ctrl.renderPolygonOnThumbnailSummMap();
             }, 1000);
         }
-    }
+    };
 
     ctrl.goBack = function(){
         console.log("go back alert form");
@@ -285,8 +293,11 @@ angular.module("ngapp")
             else{
                 return false;
             }
-            
-            
+        }
+        else if(ctrl.hidePage[ctrl.currPage-1].pageName == 'severity'){
+            if(ctrl.dataAlertForm.urgency != null && ctrl.dataAlertForm.certainty != null && ctrl.dataAlertForm.severity != null){
+                return false;
+            }
         }
         else if(ctrl.hidePage[ctrl.currPage-1].pageName == 'scope'){
             if(ctrl.dataAlertForm.scope != null){
@@ -392,11 +403,11 @@ angular.module("ngapp")
 
         //ctrl.showNoAvailableWarningPrioritys
         var warningPriorityXml = "";
-        if(ctrl.showNoAvailableWarningPrioritys == false){
+        //if(ctrl.showNoAvailableWarningPrioritys == false){
             warningPriorityXml = '<data field="urgency">'+ctrl.dataAlertForm.urgency+'</data>'+
             '<data field="severity">'+ctrl.dataAlertForm.severity+'</data>'+
             '<data field="certainty">'+ctrl.dataAlertForm.certainty+'</data>';
-        }
+        //}
 
         var responseTypeVal = '';   //sample [\"AllClear\",\"Prepare\"]
         var responseTypeValXML = '';   //sample [\"AllClear\",\"Prepare\"]
@@ -645,10 +656,18 @@ angular.module("ngapp")
                 ctrl.dataResponseTypeOptions[i].selected = true;
             }
         }
-        ctrl.dataAlertForm.parameters = templateObj['cap_info.parameter'];
 
-        console.log("cap_info.parameter");
-        console.log(JSON.stringify(ctrl.dataAlertForm.parameters));
+        //set category
+        for(var i=0;i<ctrl.dataCategoryOptions.length;i++){
+            if(templateObj['cap_info.category'] == ctrl.dataCategoryOptions[i]['@value']){
+                ctrl.dataCategoryOptions[i].selected = true;
+            }
+        }
+
+        //parameter
+        //ctrl.dataAlertForm.parameters = new Array();
+        ctrl.dataParameters = new Array();
+        ctrl.getParameterData("where alert_id = ? and server_url_id = ? ",[templateObj['id'],ctrl.serverUrlId]);
 
         ctrl.dataAlertForm.headline = templateObj['cap_info.headline'][0];
         ctrl.dataAlertForm.description = templateObj['cap_info.description'][0];
@@ -787,6 +806,9 @@ angular.module("ngapp")
     ctrl.dataSeverityOptions = new Array();
     shared.selectDB("m_severity","select * from m_severity where server_url_id=?",[ctrl.serverUrlId],function(result){
       if(result.rows.length > 0) {
+
+        ctrl.hidePage[ctrl.checkPageIdx('severity')].loadData = false;
+
         for(var i=0;i<result.rows.length;i++){
             var dataSeverityOption = {
                 '@value':result.rows.item(i).fvalue,
@@ -838,6 +860,13 @@ angular.module("ngapp")
         ctrl.showNoAvailableGroupUsers = true;
       }
     },null);
+    ctrl.disableScopePrivate = function(value){
+        if(value == "Private" && ctrl.showNoAvailableGroupUsers == true){
+            return true;
+        }
+
+        return false;
+    };
 
     ctrl.dataStatusOptions = new Array();
     shared.selectDB("m_status","select * from m_status where server_url_id=?",[ctrl.serverUrlId],function(result){
@@ -891,64 +920,10 @@ angular.module("ngapp")
                     'cap_info.response_type':JSON.parse(result.rows.item(i).cap_info_response_type),
                     'cap_info.event_type_id':result.rows.item(i).event_event_type_id,
                     'cap_info.description':JSON.parse(result.rows.item(i).cap_info_description),
-                    'cap_info.headline':JSON.parse(result.rows.item(i).cap_info_headline),
-                    'cap_info.parameter':JSON.parse(result.rows.item(i).cap_info_parameter)
+                    'cap_info.headline':JSON.parse(result.rows.item(i).cap_info_headline)
                 };
                 dataTemplateOption['cap_info.description'] = angular.isArray(dataTemplateOption['cap_info.description']) ? dataTemplateOption['cap_info.description'] : [dataTemplateOption['cap_info.description']];
                 dataTemplateOption['cap_info.headline'] = angular.isArray(dataTemplateOption['cap_info.headline']) ? dataTemplateOption['cap_info.headline'] : [dataTemplateOption['cap_info.headline']];
-
-                //filter value for parameter value
-                var arrNewVal = new Array();
-                console.log("cap_info.parameter");
-                console.log(dataTemplateOption['cap_info.parameter']);
-                var nextInfoParameter = false;
-                if(dataTemplateOption['cap_info.parameter'] != null){
-                    console.log("1");
-                    if(angular.isArray(dataTemplateOption['cap_info.parameter'])){
-                        console.log("2");
-                        for(var j=0;j<dataTemplateOption['cap_info.parameter'].length;j++){
-                            console.log("3");
-                            var val = JSON.parse(dataTemplateOption['cap_info.parameter'][j]);
-                            if(angular.isArray(val)){
-                                console.log("4");
-                                if(val.length>0){
-                                    console.log("5");
-                                    var valDetail = new Array();
-                                    for(var k=0;k<val.length;k++){
-                                        console.log("6");
-                                        if(val[k].key.indexOf("sahana") > -1){
-                                            console.log("7");
-                                            valDetail.push(val[k]);
-                                        }
-                                    }
-                                    arrNewVal = valDetail;
-                                }   
-                            }
-                        }
-                        
-                    }
-                    else{
-                        dataTemplateOption['cap_info.parameter'] = JSON.parse(dataTemplateOption['cap_info.parameter']);
-                        console.log("1_");
-                        if(angular.isArray(dataTemplateOption['cap_info.parameter'])){
-                            console.log("1__");
-                            console.log("2");
-                            for(var j=0;j<dataTemplateOption['cap_info.parameter'].length;j++){
-                                console.log("3");
-
-                                var val = dataTemplateOption['cap_info.parameter'][j];
-                                console.log( JSON.stringify(val));
-                                var valDetail = new Array();
-                                if(val.key.indexOf("sahana") > -1){
-                                    console.log("7");
-                                    arrNewVal.push(val);
-                                }
-                            
-                            }
-                        }
-                    }
-                }
-                dataTemplateOption['cap_info.parameter'] = arrNewVal;
 
                 ctrl.dataTemplateOptions.push(dataTemplateOption);   
             } 
@@ -1019,6 +994,40 @@ angular.module("ngapp")
           } 
           else{
             ctrl.hidePage[ctrl.checkPageIdx('location')].loadData = false;
+          }
+        },null);
+     };
+
+    ctrl.dataParameters = new Array();
+    ctrl.getParameterData = function(filter,dataDB){
+        ctrl.dataAlertForm.parameters = new Array();
+        ctrl.hidePage[ctrl.checkPageIdx('parameter')].loadData = true;
+
+        var query = "select * from m_parameter "+filter;
+        shared.selectDB("m_parameter",query,dataDB,function(result){
+      
+          if(result.rows.length > 0) {
+
+            ctrl.hidePage[ctrl.checkPageIdx('parameter')].loadData = false;
+
+            for(var i=0;i<result.rows.length;i++){
+                var dataParameter = {     
+                  'id':result.rows.item(i).id,  
+                  'name': result.rows.item(i).name,
+                  'mobile':result.rows.item(i).mobile,
+                  'value': result.rows.item(i).value,
+                  'alert_id':result.rows.item(i).alert_id,
+                  'info_id':result.rows.item(i).info_id
+                };
+                ctrl.dataParameters.push(dataParameter); 
+                 
+            } 
+
+            ctrl.dataAlertForm.parameters = ctrl.dataParameters;
+
+          } 
+          else{
+            ctrl.hidePage[ctrl.checkPageIdx('parameter')].loadData = false;
           }
         },null);
      }; 
@@ -1213,6 +1222,22 @@ angular.module("ngapp")
     };
 
     //=================================== map ===================================================
+    var currLocationLon = parseFloat($localStorage['currLocationLon']);
+    var currLocationLat = parseFloat($localStorage['currLocationLat']);
+    var serverLocationLon = parseFloat($localStorage['serverLocationLon']);
+    var serverLocationLat = parseFloat($localStorage['serverLocationLat']);
+
+    var lonMap = 100.612952;
+    var latMap = 14.082130;
+    if(currLocationLon == 0){
+        lonMap = serverLocationLon;
+        latMap = serverLocationLat;
+    }
+    else{
+        lonMap = currLocationLon;
+        latMap = currLocationLat;
+    }
+
     var mapOSM;
     var ggl;
     var ggls;
@@ -1220,7 +1245,7 @@ angular.module("ngapp")
       maxZoom: 16,
       minZoom: 2,
       attributionControl:false
-    }).setView([-6.1918, 106.8345], 2);
+    }).setView([latMap, lonMap], 2);
 
     //map.locate({setView: true, maxZoom: 16});
 
@@ -1236,7 +1261,7 @@ angular.module("ngapp")
       maxZoom: 16,
       minZoom: 2,
       attributionControl:false
-    }).setView([-6.1918, 106.8345], 2);
+    }).setView([latMap, lonMap], 2);
     mapOSMThumbnail = new L.TileLayer('http://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png');
     mapThumbnail.addLayer(mapOSMThumbnail);
     
@@ -1245,7 +1270,7 @@ angular.module("ngapp")
       maxZoom: 16,
       minZoom: 2,
       attributionControl:false
-    }).setView([-6.1918, 106.8345], 2);
+    }).setView([latMap, lonMap], 2);
     mapOSMThumbnailSummary = new L.TileLayer('http://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png');
     mapThumbnailSummary.addLayer(mapOSMThumbnailSummary);
     

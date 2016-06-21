@@ -5,7 +5,7 @@ angular.module("ngapp")
     var ctrl = this;
 
     //version 1.1
-    var databaseVersion = "1.5";
+    var databaseVersion = "1.7";
     $localStorage['databaseVersion'] = databaseVersion;
     var databaseSchema = {
       "tables": [{
@@ -64,6 +64,12 @@ angular.module("ngapp")
           }, {
               "name": "server_url_id",
               "type": "integer"
+          }, {
+              "name": "effective_date",
+              "type": "text"
+          }, {
+              "name": "expires_date",
+              "type": "text"
           }]
       }, {
           "name": "t_alert_offline",
@@ -260,9 +266,6 @@ angular.module("ngapp")
               "name": "cap_info_headline",
               "type": "text"
           }, {
-              "name": "cap_info_parameter",
-              "type": "text"
-          }, {
               "name": "server_url_id",
               "type": "integer"
           }]
@@ -334,6 +337,30 @@ angular.module("ngapp")
           }, {
               "name": "name",
               "type": "text"
+          }, {
+              "name": "server_url_id",
+              "type": "integer"
+          }]
+      }, {
+          "name": "m_parameter",
+          "columns": [{
+              "name": "name",
+              "type": "text"
+          }, {
+              "name": "mobile",
+              "type": "text"
+          }, {
+              "name": "value",
+              "type": "text"
+          }, {
+              "name": "alert_id",
+              "type": "integer"
+          }, {
+              "name": "info_id",
+              "type": "integer"
+          }, {
+              "name": "id",
+              "type": "integer"
           }, {
               "name": "server_url_id",
               "type": "integer"
@@ -585,14 +612,16 @@ angular.module("ngapp")
     };
 
     var checkDBVersion = function(){
+      ctrl.updatingDatabase();
       shared.selectDB("db_info","SELECT * FROM db_info",[],function(result){
         console.log("result db_info");
         if(result.rows.length > 0) {
           if(result.rows.item(0).database_version != undefined){
+            console.log("Database version current = "+result.rows.item(0).database_version);
             if(databaseVersion != result.rows.item(0).database_version){
               //diffrent database version
               console.log("Different database version");
-              console.log("Database version old = "+result.rows.item(0).database_version);
+              
               console.log("Database version new = "+databaseVersion);
               if(databaseVersion == "1.2" && result.rows.item(0).database_version == "1.1"){
                 console.log("version 1.1 to 1.2");
@@ -615,6 +644,7 @@ angular.module("ngapp")
                   });
                   //init run
                   ctrl.setServerUrl(function(){
+                    ctrl.clickToLoginForm();
                     ctrl.selectAllUser();
                   });
                 };
@@ -624,8 +654,17 @@ angular.module("ngapp")
                 ctrl.customInsertForNewDBSchema = function(){
                   console.log("version upper then 1.1");
 
+                  shared.updateDB("db_info","update db_info set database_version=?,database_schema='"+JSON.stringify(databaseSchema)+"'",[databaseVersion]
+                  ,function(result){
+                    console.log("success update db_info set version = "+databaseVersion);
+
+                  },function(error){
+                    console.log("error update db_info");
+                  });
+
                   //init run
                   ctrl.setServerUrl(function(){
+                    ctrl.clickToLoginForm();
                     ctrl.selectAllUser();
                   });
                 };
@@ -640,12 +679,14 @@ angular.module("ngapp")
               console.log("same database version");
               //init run
               ctrl.setServerUrl(function(){
+                ctrl.clickToLoginForm();
                 ctrl.selectAllUser();
               });
             }
           }
           else{
             console.log("app without database schema - old version");
+            ctrl.clickToLoginForm();
             getTablesName();
           }
         }
@@ -662,6 +703,7 @@ angular.module("ngapp")
 
           //init run
           ctrl.setServerUrl(function(){
+            ctrl.clickToLoginForm();
             ctrl.selectAllUser();
           });
         } 
@@ -678,6 +720,7 @@ angular.module("ngapp")
 
         //init run
         ctrl.setServerUrl(function(){
+          ctrl.clickToLoginForm();
           ctrl.selectAllUser();
         });
       });
@@ -829,6 +872,11 @@ angular.module("ngapp")
     ctrl.serverLocation = "POINT(100.612952 14.082130)";
     ctrl.serverName = "AIT";
 
+    $localStorage['currLocationLon'] = "0";
+    $localStorage['currLocationLat'] = "0";
+    $localStorage['serverLocationLon'] = "100.612952";
+    $localStorage['serverLocationLat'] = "14.082130";
+
     //$localStorage.$reset();
     $localStorage['username'] = "";
     $localStorage['password'] = "";
@@ -927,6 +975,7 @@ angular.module("ngapp")
     //$cordovaStatusbar.overlaysWebView(true); // Always Show Status Bar
     //$cordovaStatusbar.styleHex('#E53935'); // Status Bar With Red Color, Using Angular-Material Style
 
+    ctrl.loadingContainer = false;
     ctrl.loginFormContainer = true;
     ctrl.directLoginContainer = false;
     ctrl.selectLoginContainer = false;
@@ -983,6 +1032,7 @@ angular.module("ngapp")
       $location.path("/main");
     };
     ctrl.clickSelectLogin = function(){
+      ctrl.loadingContainer = false;
       ctrl.loginFormContainer = false;
       ctrl.directLoginContainer = false;
       ctrl.selectLoginContainer = true;
@@ -1001,6 +1051,7 @@ angular.module("ngapp")
       $location.path("/main");
     };
     ctrl.clickToLoginForm = function(){
+      ctrl.loadingContainer = false;
       ctrl.loginFormContainer = true;
       ctrl.directLoginContainer = false;
       ctrl.selectLoginContainer = false;
@@ -1008,6 +1059,7 @@ angular.module("ngapp")
       ctrl.serverUrlFormChangeContainer = false;
     };
     ctrl.clickChangeServerUrlList = function(){
+      ctrl.loadingContainer = false;
       ctrl.loginFormContainer = false;
       ctrl.directLoginContainer = false;
       ctrl.selectLoginContainer = false;
@@ -1018,11 +1070,20 @@ angular.module("ngapp")
       ctrl.errorMessage1 = "";
       ctrl.hideErrorMessage1 = true;
 
+      ctrl.loadingContainer = false;
       ctrl.loginFormContainer = false;
       ctrl.directLoginContainer = false;
       ctrl.selectLoginContainer = false;
       ctrl.serverUrlChangeContainer = false;
       ctrl.serverUrlFormChangeContainer = true;
+    };
+    ctrl.updatingDatabase = function(){
+      ctrl.loadingContainer = true;
+      ctrl.loginFormContainer = false;
+      ctrl.directLoginContainer = false;
+      ctrl.selectLoginContainer = false;
+      ctrl.serverUrlChangeContainer = false;
+      ctrl.serverUrlFormChangeContainer = false;
     };
 
     ctrl.cancelChangeServerUrl = function(){
@@ -1037,6 +1098,12 @@ angular.module("ngapp")
       //$localStorage['serverUrl'] = ctrl.serverUrl;
 
       console.log("add server "+ctrl.serverUrl);
+      console.log( ctrl.serverUrl.substring(ctrl.serverUrl.length - 1, ctrl.serverUrl.length) );
+      if(ctrl.serverUrl.substring(ctrl.serverUrl.length - 1, ctrl.serverUrl.length) != "/"){
+        ctrl.serverUrl = ctrl.serverUrl + "/";
+        console.log("add /");
+      }
+
       var sameServer = false;
       var errorMessageDetail = "";
       for(var i=0;i<ctrl.listServerUrl.length;i++){
@@ -1165,6 +1232,15 @@ angular.module("ngapp")
           console.error(err);
         });
     }
+
+    ctrl.inputTypePwd = 'password';
+    // Hide & show password function
+    ctrl.hideShowPassword = function(){
+      if (ctrl.inputTypePwd == 'password')
+        ctrl.inputTypePwd = 'text';
+      else
+        ctrl.inputTypePwd = 'password';
+    };
 
     ctrl.sendFormFnc = function()
     {

@@ -190,6 +190,9 @@
         },
         "cordova-plugin-app-version": {
             "PACKAGE_NAME": "io.sahana.sambro.mobile"
+        },
+        "cordova-plugin-console": {
+            "PACKAGE_NAME": "io.sahana.sambro.mobile"
         }
     },
     "dependent_plugins": {
