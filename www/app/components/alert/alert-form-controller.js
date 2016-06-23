@@ -543,7 +543,8 @@ angular.module("ngapp")
             '<resource name="cap_alert">'+
             '    <data field="status">'+ctrl.dataAlertForm.status+'</data>'+
             '    <data field="msg_type">'+ctrl.dataAlertForm.msgType+'</data>'+
-            '    <data field="is_template" value="false"/>'+
+            '    <data field="is_template" value="false"/>'+  
+            '    <data field="external" value="false"/>'+
             '    <data field="scope">'+ctrl.dataAlertForm.scope+'</data>'+
             '    <data field="template_id">'+ctrl.dataAlertForm.template.id.toString()+'</data>'+
             '    <data field="restriction">'+ctrl.dataAlertForm.restriction+'</data>'+
