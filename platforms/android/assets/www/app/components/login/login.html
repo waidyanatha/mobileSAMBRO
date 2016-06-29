@@ -5,7 +5,7 @@
   <div layout="row">
     <div flex="5"></div>
       <div layout="column" flex="90">
-        <div layout="row" layout-align="space-around center" flex="20">
+        <div layout="row" layout-align="space-around center" flex="20" style="height:100px;margin-bottom:40px;margin-top:30px;">
             <img src="sahana-sunflower-512.png" height="90" width="90" >
         </div>
         
@@ -84,7 +84,7 @@
               <div style="padding-top: 10px;" class="md-accent-fg text-center" ng-click="login.clickChangeServerUrlList()">Change server url</div> 
           </div>
 
-          <div ng-show="login.serverUrlChangeContainer">
+          <div ng-show="login.serverUrlChangeContainer" style="margin-top:10px;">
             
             <md-subheader class="md-no-sticky">Server List</md-subheader>
             <md-radio-group ng-model="login.serverUrl" >

@@ -543,7 +543,8 @@ angular.module("ngapp")
             '<resource name="cap_alert">'+
             '    <data field="status">'+ctrl.dataAlertForm.status+'</data>'+
             '    <data field="msg_type">'+ctrl.dataAlertForm.msgType+'</data>'+
-            '    <data field="is_template" value="false"/>'+
+            '    <data field="is_template" value="false"/>'+  
+            '    <data field="external" value="false"/>'+
             '    <data field="scope">'+ctrl.dataAlertForm.scope+'</data>'+
             '    <data field="template_id">'+ctrl.dataAlertForm.template.id.toString()+'</data>'+
             '    <data field="restriction">'+ctrl.dataAlertForm.restriction+'</data>'+
@@ -709,7 +710,7 @@ angular.module("ngapp")
 
     ctrl.dataEventTypeOptions = new Array();
 
-    shared.selectDB("m_event_type","SELECT distinct met.* FROM m_event_type met INNER JOIN m_template mt ON met.id = mt.event_event_type_id",[],function(result){
+    shared.selectDB("m_event_type","SELECT distinct met.* FROM m_event_type met INNER JOIN m_template mt ON met.id = mt.event_event_type_id where mt.event_event_type_id is not null",[],function(result){
       if(result.rows.length > 0) {
 
         for(var i=0;i<result.rows.length;i++){
@@ -727,7 +728,7 @@ angular.module("ngapp")
 
     //SELECT met.* FROM m_event_type met INNER JOIN m_template mt ON met.id = mt.event_event_type_id
     //select * from m_event_type
-    shared.selectDB("m_event_type","SELECT distinct met.* FROM m_event_type met INNER JOIN m_template mt ON met.id = mt.event_event_type_id where met.server_url_id=?",[ctrl.serverUrlId],function(result){
+    shared.selectDB("m_event_type","SELECT distinct met.* FROM m_event_type met INNER JOIN m_template mt ON met.id = mt.event_event_type_id where mt.event_event_type_id is not null and met.server_url_id=?",[ctrl.serverUrlId],function(result){
       if(result.rows.length > 0) {
 
         ctrl.hidePage[ctrl.checkPageIdx('event-type')].loadData = false;
@@ -740,6 +741,9 @@ angular.module("ngapp")
             ctrl.dataEventTypeOptions.push(dataEventTypeOption);   
         } 
       } 
+      else{
+        console.log("m_event_type empty");
+      }
     },null);
 
     ctrl.dataResponseTypeOptions = new Array();
@@ -757,6 +761,9 @@ angular.module("ngapp")
             ctrl.dataResponseTypeOptions.push(dataResponseTypeOption);   
         } 
       } 
+      else{
+        console.log("m_response_type empty");
+      }
     },null);
 
     ctrl.dataCategoryOptions = new Array();
@@ -773,6 +780,9 @@ angular.module("ngapp")
             };
             ctrl.dataCategoryOptions.push(dataCategoryOption);   
         } 
+      }
+      else{
+        console.log("m_category empty");
       } 
     },null);
 
@@ -787,7 +797,10 @@ angular.module("ngapp")
             };
             ctrl.dataUrgencyOptions.push(dataUrgencyOption);   
         } 
-      } 
+      }
+      else{
+        console.log("m_urgency empty");
+      }  
     },null);
 
     ctrl.dataCertaintyOptions = new Array();
@@ -800,6 +813,9 @@ angular.module("ngapp")
             };
             ctrl.dataCertaintyOptions.push(dataCertaintyOption);   
         } 
+      }
+      else{
+        console.log("m_certainty empty");
       } 
     },null);
 
@@ -816,6 +832,9 @@ angular.module("ngapp")
             };
             ctrl.dataSeverityOptions.push(dataSeverityOption);   
         } 
+      }
+      else{
+        console.log("m_severity empty");
       } 
     },null);
 
@@ -832,6 +851,9 @@ angular.module("ngapp")
             };
             ctrl.dataScopeOptions.push(dataScopeOption);   
         } 
+      }
+      else{
+        console.log("m_scope empty");
       } 
     },null);
 
@@ -882,6 +904,9 @@ angular.module("ngapp")
             ctrl.dataStatusOptions.push(dataStatusOption);   
         } 
       } 
+      else{
+        console.log("m_status empty");
+      } 
     },null);
 
     ctrl.dataMsgTypeOptions = new Array();
@@ -897,7 +922,10 @@ angular.module("ngapp")
             };
             ctrl.dataMsgTypeOptions.push(dataMsgTypeOption);   
         } 
-      } 
+      }
+      else{
+        console.log("m_msg_type empty");
+      }  
     },null);
 
     ctrl.dataTemplateOptions = new Array();
@@ -927,7 +955,10 @@ angular.module("ngapp")
 
                 ctrl.dataTemplateOptions.push(dataTemplateOption);   
             } 
-          } 
+          }
+          else{
+            console.log("m_template empty");
+          }  
         },null);
     };   
 
