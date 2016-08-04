@@ -928,6 +928,26 @@ angular.module("ngapp")
               
               console.log('error to db db server url');
           });
+
+          shared.insertDB("t_server_url","insert into t_server_url (server_url,server_name,server_location,active_server) values (?,?,?,?)",["http://203.81.87.42/eden/","Myanmar","POINT(96.178312 21.497448)","false"],     //[new Date(),JSON.stringify(submitFormVal)],
+          function(result){
+          
+              console.log('success insert to db server url');
+              ctrl.setServerUrl();
+          },function(error){
+              
+              console.log('error to db db server url');
+          });
+
+          shared.insertDB("t_server_url","insert into t_server_url (server_url,server_name,server_location,active_server) values (?,?,?,?)",["http://202.1.196.251/eden/","Maldives","POINT(73.542926 1.927672)","false"],     //[new Date(),JSON.stringify(submitFormVal)],
+          function(result){
+          
+              console.log('success insert to db server url');
+              ctrl.setServerUrl();
+          },function(error){
+              
+              console.log('error to db db server url');
+          });
         }
         $localStorage['serverUrl'] = serverUrl;
         $localStorage['serverId'] = ctrl.serverUrlId;
