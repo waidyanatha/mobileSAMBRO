@@ -705,6 +705,7 @@ angular.module("ngapp")
           ctrl.setServerUrl(function(){
             ctrl.clickToLoginForm();
             ctrl.selectAllUser();
+            ctrl.clickChangeServerUrlList();
           });
         } 
       },function(result){
@@ -722,6 +723,7 @@ angular.module("ngapp")
         ctrl.setServerUrl(function(){
           ctrl.clickToLoginForm();
           ctrl.selectAllUser();
+          ctrl.clickChangeServerUrlList();
         });
       });
     };
@@ -929,6 +931,16 @@ angular.module("ngapp")
               console.log('error to db db server url');
           });
 
+          shared.insertDB("t_server_url","insert into t_server_url (server_url,server_name,server_location,active_server) values (?,?,?,?)",["http://sambro.meteopilipinas.gov.ph/eden/","Philippine","POINT(121.0429814 14.6420614)","false"],     //[new Date(),JSON.stringify(submitFormVal)],
+          function(result){
+          
+              console.log('success insert to db server url');
+              ctrl.setServerUrl();
+          },function(error){
+              
+              console.log('error to db db server url');
+          });
+            
           shared.insertDB("t_server_url","insert into t_server_url (server_url,server_name,server_location,active_server) values (?,?,?,?)",["http://203.81.87.42/eden/","Myanmar","POINT(96.178312 21.497448)","false"],     //[new Date(),JSON.stringify(submitFormVal)],
           function(result){
           
